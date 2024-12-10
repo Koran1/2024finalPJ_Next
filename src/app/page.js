@@ -6,11 +6,16 @@ import img01 from "/public/images/coffee-blue.jpg";
 
 // 자식컴포넌트
 import ItemList from '../app/itemList/page.jsx'; // 경로를 실제 파일 구조에 맞게 조정하세요
+import Header from './header/header.jsx';
+import Main from './main/main.jsx';
+import Footer from './footer/footer.jsx';
 
 export default function Home() {
   return (
     <>
-      <ItemList />
+      <Header />
+      <Main />
+      <Footer />
     </>
   );
 }
