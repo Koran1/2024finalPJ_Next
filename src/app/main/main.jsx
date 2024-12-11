@@ -44,10 +44,10 @@ function Main() {
           </div>
           <div className="carousel-inner">
             <div className="carousel-item active">
-              <img src="/images/reviewImage01.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
+              <img src="/images/reviewImage03.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption text-start">
-                  <h1>양평 여행</h1>
+                  <h1>양평 캠핑장</h1>
                   <p className="opacity-75">캠핑이 처음이라도 무사히 해낼 수 있는 곳!을 찾다가 캠핑과 백팽킹을 사랑하는 지인이 직접 캠핑장을 차렸다는 소식을 듣고</p>
                   <p><a className="btn btn-lg btn-primary" href="#">Review more</a></p>
                 </div>
@@ -57,14 +57,14 @@ function Main() {
               <img src="/images/reviewImage02.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption">
-                  <h1>여기가 천국</h1>
+                  <h1>서해안 여행계획</h1>
                   <p>테이블이랑 의자 그리고 간단하게 먹을 거리만 좀 챙겨서 나가도 충분</p>
                   <p><a className="btn btn-lg btn-primary" href="#">Review more</a></p>
                 </div>
               </div>
             </div>
             <div className="carousel-item">
-              <img src="/images/reviewImage03.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
+              <img src="/images/reviewImage01.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption text-end">
                   <h1>나만의 아이템</h1>
@@ -118,11 +118,11 @@ function Main() {
           <hr className="featurette-divider" /> */}
           <div className="row featurette">
             <div className="col-md-7">
-              <h2 className="featurette-heading fw-normal lh-1">양평 여행 <p><span className="text-body-secondary">집밖으로 캠핑장 솔직후기!</span></p></h2>
+              <h2 className="featurette-heading fw-normal lh-1">양평 캠핑장 <p><span className="text-body-secondary">집밖으로 캠핑장 솔직후기!</span></p></h2>
               <p className="lead">캠핑이 처음이라도 무사히 해낼 수 있는 곳!을 찾다가 캠핑과 백팽킹을 사랑하는 지인이 직접 캠핑장을 차렸다는 소식을 듣고 바로 달려갔어요</p>
             </div>
             <div className="col-md-5">
-              <img src="/images/reviewImage01.png" alt="Review Image" className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" style={{width: '500px', height: '500px'}} />
+              <img src="/images/reviewImage03.png" alt="Review Image" className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" style={{width: '500px', height: '500px'}} />
                 <title>Placeholder</title>
                 <rect width="100%" height="100%" fill="var(--bs-secondary-bg)" />
                 <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">Image01</text>
@@ -132,7 +132,7 @@ function Main() {
           <hr className="featurette-divider" />
           <div className="row featurette">
             <div className="col-md-7 order-md-2">
-              <h2 className="featurette-heading fw-normal lh-1">여기가 천국 <p><span className="text-body-secondary">맛있는 먹거리와 함께</span></p></h2>
+              <h2 className="featurette-heading fw-normal lh-1">서해안 여행계획 <p><span className="text-body-secondary">맛있는 먹거리와 함께</span></p></h2>
               <p className="lead">테이블이랑 의자 그리고 간단하게 먹을 거리만 좀 챙겨서 나가도 충분해요. 이렇게 세팅하고 아이들은 바다에 발 담그러 가고 저희는 음악 들으며 보내는 시간이 참 좋더라구요. 여기에 컵라면까지 먹으면 천국이 따로 없어요.</p>
             </div>
             <div className="col-md-5 order-md-1">
@@ -150,7 +150,7 @@ function Main() {
               <p className="lead">필수품까지는 아니고 추천템이지만 있으면 너무 좋은 아이템. 바로 우리 가족만의 캠핑 간판! 캠핑을 본격적으로 시작하고 난 후부터 제작해서 들고 다니고 있는데 애들이 너무 좋아해요. 왠지 모를 단결심도 생기는 것 같구요.^^ 소소한 아이템이지만 아이와의 캠핑을 더욱 재미있고 보람차게 만들어주는 아이템이라 적극적으로 추천해봅니다!</p>
             </div>
             <div className="col-md-5">
-            <img src="/images/reviewImage03.png" alt="Review Image" className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" style={{width: '500px', height: '500px'}} />
+            <img src="/images/reviewImage01.png" alt="Review Image" className="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" style={{width: '500px', height: '500px'}} />
                 <title>Placeholder</title>
                 <rect width="100%" height="100%" fill="var(--bs-secondary-bg)" />
                 <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">Image03</text>
