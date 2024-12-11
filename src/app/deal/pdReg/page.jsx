@@ -78,7 +78,7 @@ function Page() {
       <h2>상품정보</h2>
       <br />
       <div className="image-upload-section">
-        <h5>상품 이미지</h5>
+        <h4>상품 이미지</h4>
         <hr />
         <div className="image-preview-container">
           {[...Array(5)].map((_, index) => (
@@ -106,7 +106,7 @@ function Page() {
 
       <div className="form-group">
         <br />
-        <h5>상품명</h5>
+        <h4>상품명</h4>
         <input
           type="text"
           placeholder="상품명을 입력해 주세요"
@@ -118,7 +118,7 @@ function Page() {
 
       <div className="category-section">
         <br />
-        <h5>카테고리</h5>
+        <h4>카테고리</h4>
         <hr />
         <div className="category-options">
           <p>
@@ -178,7 +178,7 @@ function Page() {
               <input
                 type="radio"
                 name="category"
-                value="디지털기���"
+                value="디지털기기"
                 onChange={e => setSelectedCategory(e.target.value)}
                 checked={selectedCategory === "디지털기기"}
               />
@@ -287,7 +287,7 @@ function Page() {
 
       <div className="state-section">
         <br />
-        <h5>상품상태</h5>
+        <h4>상품상태</h4>
         <hr />
         <div className="state-options">
           <p>
@@ -355,22 +355,23 @@ function Page() {
       <br /><br />
 
       <div className="form-group">
-        <h5>상품설명</h5>
+        <h4>상품설명</h4>
         <textarea
           placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
-전화번호, SNS 계정 등 개인정보 기재로 인해 피해가 발생 할 수 있으니 입력 자제해 주세요.
+전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
-안전하고 건전한 거래 문화 조성에 협조 해주시기 바랍니다.`}
+안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
           rows="5"
           name="description"
           value={formData.description}
           onChange={handleChange}
+          style={{ height: '270px' }}
         ></textarea>
       </div>
       <br />
 
       <div className="price-section">
-        <h5>가격</h5>
+        <h4>가격</h4>
         <hr />
         <div className="price-options">
           <label>
@@ -417,7 +418,7 @@ function Page() {
       <br /><br />
 
       <div className="package-section">
-        <h5>택배거래</h5>
+        <h4>택배거래</h4>
         <hr />
         <div className="package-options">
           <label>
@@ -445,7 +446,7 @@ function Page() {
       <br /><br /><br />
 
       <div className="direct-section">
-        <h5>직거래</h5>
+        <h4>직거래</h4>
         <hr />
         <div className="direct-options">
           <label>
@@ -494,7 +495,7 @@ function Page() {
       <br /><br />
 
       <div className="form-group">
-        <h5>수량</h5>
+        <h4>수량</h4>
         <div className="input-wrapper">
           <input
             type="number"
@@ -503,7 +504,7 @@ function Page() {
             onChange={(e) => {
               const value = parseInt(e.target.value);
               if (value < 1) {
-                alert("1 이상을 입력해주세요.");
+                alert("1개 이상을 입력해주세요.");
                 setFormData(prev => ({...prev, count: 1}));
               } else {
                 handleChange(e);
@@ -515,11 +516,9 @@ function Page() {
               }
             }}
             min="1" 
-            placeholder="숫자만 입력해주세요"
+            placeholder="수량을 입력해주세요"
             className="number-input"
-            style={{ paddingRight: '35px' }}
           />
-          <span className="input-unit">개</span>
         </div>
       </div>
 
@@ -528,14 +527,8 @@ function Page() {
 
       <div className="button-group">
         <Button
-          className="submit-btn"
+          className={`submit-btn ${isFormComplete() ? 'submit-btn-enabled' : 'submit-btn-disabled'}`}
           variant="contained"
-          style={{
-            backgroundColor: isFormComplete() ? '#4CAF50' : '#ccc',
-            color: 'white',
-            cursor: isFormComplete() ? 'pointer' : 'not-allowed',
-            transition: 'all 0.3s ease'
-          }}
           disabled={!isFormComplete()}
           onClick={handleSubmit}
         >
@@ -545,7 +538,6 @@ function Page() {
         <Button
           className="cancel-btn"
           variant="contained"
-          style={{ backgroundColor: 'lightgrey', color: 'black' }}
           onClick={handleCancel}
         >
           취소

@@ -1,9 +1,9 @@
 "use client";
 import './globals.css';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './main/main.css';
-import DealMain from './deal/page';
+import { Collapse } from 'bootstrap';
 
 
 // layout.js는 선택이다 (RootLayout 제외)
@@ -36,6 +36,28 @@ export default function RootLayout({ children }) {
     fontStyle: "normal"
   };
 
+  // Collapse 상태를 관리하기 위한 useRef 추가
+  const navbarCollapseRef = useRef(null);
+  const bsCollapseRef = useRef(null);
+
+  useEffect(() => {
+    const collapseElement = navbarCollapseRef.current;
+    if (collapseElement) {
+      bsCollapseRef.current = new Collapse(collapseElement, { toggle: false });
+    }
+    return () => {
+      if (bsCollapseRef.current) {
+        bsCollapseRef.current.dispose();
+      }
+    };
+  }, []);
+
+  // 메뉴 클릭 시 네비게이션 바를 닫는 함수
+  const handleNavLinkClick = () => {
+    if (bsCollapseRef.current) {
+      bsCollapseRef.current.hide();
+    }
+  };
 
   return (
     <html lang="en">
@@ -43,45 +65,28 @@ export default function RootLayout({ children }) {
         <header data-bs-theme="light" style={{ height: '20px' }}>
           <nav className="navbar navbar-expand-md navbar-dark fixed-top" style={{ backgroundColor: 'white' }}>
             <div className="container-fluid">
-              <a className="navbar-brand" href="/" style={{ color: 'black', fontSize: '32px', fontFamily: "'Jaro', sans-serif" }}>CAMPERS</a>
-              <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <a className="navbar-brand" href="/" style={{ color: 'black', fontSize: '240%', fontFamily: "'Jaro', sans-serif", marginRight: '50px' }}>CAMPERS</a>
+              <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" style={{backgroundColor: 'gray'}}>
                 <span className="navbar-toggler-icon"></span>
               </button>
-              <div className="collapse navbar-collapse" id="navbarCollapse">
+              <div className="collapse navbar-collapse" id="navbarCollapse" ref={navbarCollapseRef}>
                 <ul className="navbar-nav me-auto mb-2 mb-md-0">
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/" style={{ color: 'black' }}>캠핑장검색</Link>
+                    <Link className="nav-link active" href="/" style={{ color: 'black', fontSize: '150%' }} onClick={handleNavLinkClick}>캠핑장검색</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/" style={{ color: 'black' }}>캠핑로그</Link>
+                    <Link className="nav-link active" href="/" style={{ color: 'black', fontSize: '150%' }} onClick={handleNavLinkClick}>캠핑로그</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/deal" style={{ color: 'black' }}>나의거래</Link>
+                    <Link className="nav-link active" href="/deal" style={{ color: 'black', fontSize: '150%' }} onClick={handleNavLinkClick}>나의거래</Link>
                   </li>
                 </ul>
                 <div style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
                   <Avatar src="/images/kitten-3.jpg" />
                   <div style={{ marginLeft: '10px' }}>냐옹이님 환영합니다</div>
                 </div>
-                {/*<div class="dropdown text-end">
-                   <a href="/go_my_page" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-			              <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-			            </a>
-			        <ul class="dropdown-menu text-small">
-	            <c:choose>
-				 <c:when test="${empty userId}">
-	            		<li><a class="dropdown-item" href="/mem_login">Sign in</a></li>
-	             </c:when>
-				 <c:otherwise>
-			            <li><a class="dropdown-item" href="/go_my_page">My Page</a></li>
-			            <li><hr class="dropdown-divider"></li>
-					 	<li><a class="dropdown-item" href="/mem_logout">Sign out</a></li>
-				 </c:otherwise>
-				</c:choose>
-	          </ul>
-	        </div> */}
-                </div>
               </div>
+            </div>
           </nav>
         </header>
         <hr />
