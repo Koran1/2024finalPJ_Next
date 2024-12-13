@@ -58,33 +58,30 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <header data-bs-theme="dark" style={{ height: '20px' }}>
+        <header data-bs-theme="dark" style={{ height: '38px' }}>
           <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark" >
             <div className="container-fluid">
-              <a className="navbar-brand" href="/" style={{ fontSize: '240%', fontFamily: "'Jaro', sans-serif", marginRight: '50px' }}>CAMPERS</a>
+              <a className="navbar-brand" href="/" style={{ fontSize: '250%', fontFamily: "'Jaro', sans-serif", marginRight: '50px' }}>CAMPERS</a>
               <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" >
                 <span className="navbar-toggler-icon"></span>
               </button>
               <div className="collapse navbar-collapse" id="navbarCollapse" ref={navbarCollapseRef}>
                 <ul className="navbar-nav me-auto mb-2 mb-md-0">
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/" style={{ fontSize: '150%' }} onClick={handleNavLinkClick}>캠핑장검색</Link>
+                    <Link className="nav-link active" href="/" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑장소</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/" style={{ fontSize: '150%' }} onClick={handleNavLinkClick}>캠핑로그</Link>
+                    <Link className="nav-link active" href="/" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑로그</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/deal" style={{ fontSize: '150%' }} onClick={handleNavLinkClick}>나의거래</Link>
+                    <Link className="nav-link active" href="/deal" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif" }} onClick={handleNavLinkClick}>캠핑마켓</Link>
                   </li>
                 </ul>
-                <div style={{ color: 'black', display: 'flex', alignItems: 'center' }}>
-                  <Avatar src="/images/kitten-3.jpg" />
-                </div>
+                  <Avatar src="/images/kitten-3.jpg" style={{ marginRight: '30px', width: '60px', height: '60px' }} />
               </div>
             </div>
           </nav>
         </header>
-        <hr />
         {children}
         <hr />
         <footer className="container">
