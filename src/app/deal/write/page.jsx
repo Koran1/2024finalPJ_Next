@@ -1,5 +1,5 @@
 'use client'
-import './pdReg.css';
+import './write.css';
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
 

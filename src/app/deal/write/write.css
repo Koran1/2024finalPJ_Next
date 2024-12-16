@@ -133,13 +133,15 @@ h1 {
   gap: 10px;
   justify-content: center;
   margin-top: 40px;
+
 }
 
-.button-group button {
+.button-group Button {
   padding: 10px 40px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 180px;
 }
 
 .cancel-btn {
