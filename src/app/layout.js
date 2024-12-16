@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
                     <Link className="nav-link active" href="/" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑로그</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/deal/list" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif" }} onClick={handleNavLinkClick}>캠핑마켓</Link>
+                    <Link className="nav-link active" href="/deal/dealMain" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif" }} onClick={handleNavLinkClick}>캠핑마켓</Link>
                   </li>
                 </ul>
                   <Avatar src="/images/kitten-3.jpg" style={{ marginRight: '30px', width: '60px', height: '60px' }} />

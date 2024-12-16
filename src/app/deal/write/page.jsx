@@ -54,7 +54,7 @@ function Page() {
   };
 
   const handleCancel = () => {
-    window.location.href = '/deal/list';
+    window.location.href = '/deal/dealMain';
   };
 
   function insertImage(targetCellIndex, imageUrl) {
