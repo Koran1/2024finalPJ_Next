@@ -1,11 +1,10 @@
 "use client"
 
-import React from 'react';
 import Link from 'next/link';
 import { useState } from 'react';
 import './dealMain.css';
 
-function Page(props) {
+const Page = () => {
 // 상태 관리
 const [selectedCategories, setSelectedCategories] = useState([]);
 const [searchQuery, setSearchQuery] = useState('');
@@ -43,7 +42,6 @@ const handleSearch = (e) => {
 };
 
   return (
-    <>
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
    
@@ -53,8 +51,8 @@ const handleSearch = (e) => {
 
         </button>
       </form>
-      <Link href="/deal/write" className="btn1">상품등록</Link>
       <Link href="/deal/management" className="btn1">나의거래</Link>
+      <Link href="/deal/pdReg" className="btn1">상품등록</Link>
       <br />
       상품 70,000
       <br />
@@ -70,23 +68,9 @@ const handleSearch = (e) => {
         ))}
       </div>
 
-      <br />
-      <div className="product-grid">
-        {/* 상품 목록 컴포넌트들이 들어갈 자리 */}
-        <div className="product-item">
-          <div className="product-image">
-            <Link href="/deal/detail/1">
-              <img src="../images/dealDetailImage01.png" alt="상품 이미지" style={{ width: '200px', height: '200px' }} />
-              <div className="product-title">
-                <h6>캠핑 접이식 불멍 화로대</h6>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </div>
-      </div>
-    </>
+      <Link href="/deal/detail">상품상세</Link>
+    </div>
   );
-}
+};
 
 export default Page;
