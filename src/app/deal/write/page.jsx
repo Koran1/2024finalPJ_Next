@@ -54,7 +54,7 @@ function Page() {
   };
 
   const handleCancel = () => {
-    // 취소 로직을 여기에 추가하세요
+    window.location.href = '/deal/list';
   };
 
   function insertImage(targetCellIndex, imageUrl) {

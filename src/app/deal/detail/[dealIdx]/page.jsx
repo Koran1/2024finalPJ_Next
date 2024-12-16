@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import './detail.css';
+import { Button } from '@mui/material';
 
 function Page() {
   const [isLiked, setIsLiked] = useState(false);
@@ -17,7 +18,7 @@ function Page() {
     <div className="detail-container">
       <div className="product-main">
         <img 
-          src="../images/dealDetailImage01.png" 
+          src="/images/dealDetailImage01.png"
           alt="상품 이미지" 
           className="product-image"
         />
@@ -45,8 +46,8 @@ function Page() {
           </div>
 
           <div className="action-buttons">
-            <button className="message-btn">쪽지하기</button>
-            <button className="report-btn">신고하기</button>
+            <Button variant="contained" color="primary" className="message-btn" style={{marginRight: '10px', width: '150px', height: '50px'}}>쪽지하기</Button>
+            <Button variant="contained" color="error" className="report-btn" style={{marginRight: '10px', width: '150px', height: '50px'}}>신고하기</Button>
           </div>
         </div>
         <hr />
@@ -66,7 +67,10 @@ function Page() {
           </li>
         </ul> */}
 
+
       </div>
+
+      
   
 
       <div className="product-description">
@@ -78,6 +82,16 @@ function Page() {
         (테스트 겸 고구마 구워 먹느라 2시간 이상 태워봤습니다.) 
         사용감은 다소 있지만 크게 흠집이나 누른곳 없구요 다만 외부에 보관하다보니 가방은 색이 바랬습니다.
         직거래 희망(논현1동 1층 토영 자갈치 꼼장어 옆) 평일은 20시 이후 가능합니다.</span>
+      </div>
+
+      <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
+        <Button
+          variant="contained"
+          color="darkgray"
+          onClick={() => window.location.href = '/deal/write'}
+        >
+          상품 수정
+        </Button>
       </div>
 
       <div className="seller-products">
