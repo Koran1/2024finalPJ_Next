@@ -152,10 +152,6 @@ h1 {
   width: 180px;
 }
 
-.cancel-btn {
-  background-color: #f0f0f0;
-  color: rgb(97, 95, 95);
-}
 .submit-btn {
   background-color: #f0f0f0;
   color: rgb(97, 95, 95);
@@ -187,6 +183,11 @@ h1 {
   color: rgb(97, 95, 95);
   cursor: not-allowed;
   transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: rgb(97, 95, 95);
 }
 
 @media (max-width: 955px) {
