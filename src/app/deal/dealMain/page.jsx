@@ -47,9 +47,9 @@ const handleSearch = (e) => {
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
    
-      <form class="search-box" action="" method="get">
-        <input class="search-txt" type='text' name='' placeholder='상품검색'></input>
-        <button class="search-btn" type="submit">
+      <form className="search-box" action="" method="get">
+        <input className="search-txt" type='text' name='' placeholder='상품검색'></input>
+        <button className="search-btn" type="submit">
 
         </button>
       </form>

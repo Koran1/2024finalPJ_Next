@@ -1,24 +1,35 @@
 'use client'
 import './write.css';
-import React, { useState } from 'react';
-import { Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import Button from '@mui/material/Button';
 
 function Page() {
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
+    file: '',
     name: '',
-    place1: '',
+    description: '',
     price: '0',
-    count: 1,
-    description: ''
+    place: '',
+    count: 1
   });
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedState, setSelectedState] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('기타 물품');
+  const [selectedState, setSelectedState] = useState('미개봉(미사용)');
   const [selectedPrice, setSelectedPrice] = useState('나눔');
-  const [selectedPackage, setSelectedPackage] = useState('');
-  const [selectedDirect, setSelectedDirect] = useState('직거래 가능');
-  const [selectedFree, setSelectedFree] = useState('');
+  const [selectedPackage, setSelectedPackage] = useState('배송비 포함');
+  const [selectedDirect, setSelectedDirect] = useState('직거래 불가');
+
+  useEffect(() => {
+    const checkFormValidity = () => {
+      const { name, description, price, count } = formData;
+      const isValid = name !== '' && description !== '' && price !== '' && count > 0;
+      setIsFormValid(isValid);
+    };
+
+    checkFormValidity();
+  }, [formData]);
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -38,13 +49,7 @@ function Page() {
     return (
       images.length > 0 && // 상품 이미지
       formData.name.trim() !== '' && // 상품명
-      formData.description.trim() !== '' && // 상품설명
-      selectedCategory && // 카테고리
-      selectedState && // 상품상태
-      selectedPackage && // 택배거래
-      selectedDirect && // 직거래
-      formData.count > 0 && // 수량
-      (selectedFree === "나눔" || formData.price.trim() !== '') // 가격
+      formData.description.trim() !== '' // 상품설명
     );
   };
 
@@ -75,7 +80,7 @@ function Page() {
 
   return (
     <div className="pd-reg-container">
-      <h2>상품정보</h2>
+      <h2 className="title">상품정보</h2>
       <br />
       <div className="image-upload-section">
         <h4>상품 이미지</h4>
@@ -158,7 +163,7 @@ function Page() {
               <input
                 type="radio"
                 name="category"
-                value="식품/음료"
+                value="식료품/음료"
                 onChange={e => setSelectedCategory(e.target.value)}
                 checked={selectedCategory === "식품/음료"}
               />
@@ -274,6 +279,19 @@ function Page() {
               <input
                 type="radio"
                 name="category"
+                value="휴대용 가구"
+                onChange={e => setSelectedCategory(e.target.value)}
+                checked={selectedCategory === "휴대용 가구"}
+              />
+              휴대용 가구
+            </label>
+
+          </p>
+          <p>
+          <label>
+              <input
+                type="radio"
+                name="category"
                 value="기타 물품"
                 onChange={e => setSelectedCategory(e.target.value)}
                 checked={selectedCategory === "기타 물품" || !selectedCategory}
@@ -357,6 +375,7 @@ function Page() {
       <div className="form-group">
         <h4>상품설명</h4>
         <textarea
+          className="description-textarea"
           placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
@@ -365,7 +384,6 @@ function Page() {
           name="description"
           value={formData.description}
           onChange={handleChange}
-          style={{ height: '270px' }}
         ></textarea>
       </div>
       <br />
@@ -459,7 +477,7 @@ function Page() {
                 if (e.target.value === "직거래 가능") {
                   // 추가 로직이 필요할 경우 여기에 작성
                 } else {
-                  setFormData(prev => ({...prev, place1: ''}));
+                  setFormData(prev => ({...prev, place: ''}));
                 }
               }}
               checked={selectedDirect === "직거래 가능"}
@@ -470,8 +488,8 @@ function Page() {
             <input
               type="text"
               placeholder="직거래 가능지역을 입력해 주세요"
-              name="place1"
-              value={formData.place1}
+              name="place"
+              value={formData.place}
               onChange={handleChange}
               disabled={selectedDirect === "직거래 불가"}
             />
@@ -483,7 +501,7 @@ function Page() {
               value="직거래 불가"
               onChange={e => {
                 setSelectedDirect(e.target.value);
-                setFormData(prev => ({...prev, place1: ''}));
+                setFormData(prev => ({...prev, place: ''}));
               }}
               checked={selectedDirect === "직거래 불가"}
             />
@@ -523,7 +541,9 @@ function Page() {
       </div>
 
       <br />
-      <h6 style={{ color: 'green', textAlign: 'center' }}>모든 항목이 입력되어야 상품등록이 가능합니다</h6>
+      <h6 className={`form-completion-message ${isFormComplete() ? 'complete' : 'incomplete'}`}>
+        {isFormComplete() ? "이제 상품을 등록해보세요." : "모든 항목이 입력되어야 상품등록이 가능합니다"}
+      </h6>
 
       <div className="button-group">
         <Button
@@ -531,6 +551,16 @@ function Page() {
           variant="contained"
           disabled={!isFormComplete()}
           onClick={handleSubmit}
+          sx={{
+            mt: 2,
+            width: '180px',
+            fontSize: '20px',
+            bgcolor: isFormComplete() ? 'primary.main' : 'action.disabledBackground',
+            '&:hover': {
+              bgcolor: isFormComplete() ? 'primary.dark' : 'action.disabledBackground'
+            },
+            boxShadow: '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)'
+          }}
         >
           등록
         </Button>
@@ -539,6 +569,11 @@ function Page() {
           className="cancel-btn"
           variant="contained"
           onClick={handleCancel}
+          sx={{
+            mt: 2,
+            width: '180px',
+            fontSize: '20px'
+          }}
         >
           취소
         </Button>

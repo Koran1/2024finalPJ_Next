@@ -10,11 +10,8 @@ function Page() {
     setIsLiked(!isLiked);
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
+    <>
     <div className="detail-container">
       <div className="product-main">
         <img 
@@ -29,6 +26,7 @@ function Page() {
             <button 
               className="like-btn"
               onClick={handleLike}
+              style={{ background: 'none', border: 'none', fontSize: '30px' }}
             >
               {isLiked ? '❤️' : '🤍'}
             </button>
@@ -46,30 +44,72 @@ function Page() {
           </div>
 
           <div className="action-buttons">
-            <Button variant="contained" color="primary" className="message-btn" style={{marginRight: '10px', width: '150px', height: '50px'}}>쪽지하기</Button>
-            <Button variant="contained" color="error" className="report-btn" style={{marginRight: '10px', width: '150px', height: '50px'}}>신고하기</Button>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              className="message-btn" 
+              style={{marginRight: '10px', width: '150px', height: '50px'}}
+              onClick={() => window.location.href = '/deal/note/1'}
+            >
+              쪽지하기
+            </Button>
+            
           </div>
-        </div>
-        <hr />
+    
+          <hr />
 
-        {/* <ul className="">
-          <li>
-            <span>상품상태</span>
-            <span>새 상품</span>
-          </li>
-          <li>
-            <span>배송비</span>
-            <span>일반 4,000원</span>
-          </li>
-          <li>
-            <span>직거래</span>
-            <span>서울시 강남구 논현1동 1층 토영 자갈치 꼼장어 옆</span>
-          </li>
-        </ul> */}
+          <ul className="product-details">
+            <li>
+              <span>상품상태</span>
+              <span>새 상품</span>
+            </li>
+            <li>
+              <span>배송비</span>
+              <span>일반 4,000원</span>
+            </li>
+            <li>
+              <span>직거래</span>
+              <span>서울시 강남구 논현1동 1층 토영 자갈치 꼼장어 옆</span>
+            </li>
+          </ul>
 
+          <Button variant="contained" color="error" className="report-btn" style={{marginRight: '10px', width: '150px', height: '50px'}}>신고하기</Button>
 
+          <div className="status-buttons" style={{ textAlign: 'center', marginTop: '30px', marginBottom: '30px' }}>
+            <Button
+              variant="contained"
+              color="primary" 
+              style={{marginRight: '10px', width: '150px', height: '50px'}}
+              onClick={() => {
+                const button = document.querySelector('.status-buttons button');
+                const isSelling = button.textContent === '판매 중';
+                
+                if (isSelling) {
+                  if (window.confirm("확인 시 판매완료 상태로 변경됩니다.")) {
+                    button.textContent = '판매완료';
+                    button.style.backgroundColor = '#808080';
+                  }
+                } else {
+                  if (window.confirm("확인 시 판매 중 상태로 변경됩니다.")) {
+                    button.textContent = '판매 중';
+                    button.style.backgroundColor = '#1976d2';
+                  }
+                }
+              }}
+            >
+              판매 중
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              style={{marginRight: '10px', width: '150px', height: '50px'}}
+              onClick={() => window.location.href = '/deal/satis/1'}
+            >
+              만족도
+            </Button>
+          </div>
+        </div>    
       </div>
-
       
   
 
@@ -88,7 +128,7 @@ function Page() {
         <Button
           variant="contained"
           color="darkgray"
-          onClick={() => window.location.href = '/deal/write'}
+          onClick={() => window.location.href = '/deal/update/1'}
         >
           상품 수정
         </Button>
@@ -111,7 +151,11 @@ function Page() {
         </div>
       </div>
 
+
+
+
     </div>
+    </>
   );
 }
 
