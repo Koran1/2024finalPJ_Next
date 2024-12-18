@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from "next/link";
+import Link from "next/link";
 import { useState } from 'react';
 import './dealMain.css';
 
@@ -14,9 +15,31 @@ export default function ProductSearchPage() {
   const toggleCategory = (category) => {
     if (selectedCategories.includes(category)) {
       setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
+export default function ProductSearchPage() {
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
+  const [selectedCategories, setSelectedCategories] = useState([]); // 선택된 카테고리 상태
+  const [products, setProducts] = useState([]); // 검색 결과로 표시될 상품 리스트
+
+  // 카테고리 선택 토글 함수
+  const toggleCategory = (category) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
     } else {
       setSelectedCategories([...selectedCategories, category]);
+      setSelectedCategories([...selectedCategories, category]);
     }
+  };
+
+  // 검색 제출 핸들러
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault(); // 폼 제출 기본 동작 방지
+
+    // 검색 API 호출 (임시: 실제 API URL 및 로직 추가 필요)
+    const response = await fetch(`/api/products?search=${searchTerm}&categories=${selectedCategories.join(",")}`);
+    const data = await response.json();
+
+    setProducts(data); // 검색 결과 업데이트
+  };
   };
 
   // 검색 제출 핸들러
@@ -47,13 +70,30 @@ export default function ProductSearchPage() {
       {/* </div> */}
 
       {/* 나의 거래 버튼 */}
+
+      {/* 상품 등록 버튼 */}
+      {/* <div> */}
+        <Link href="/deal/write" className="btn1">상품등록</Link>
+      {/* </div> */}
+
+      {/* 나의 거래 버튼 */}
       <Link href="/deal/management" className="btn1">나의거래</Link>
 
       {/* 상품 개수 */}
       <div className="part">상품 {products.length || 0}개</div>
 
       {/* 카테고리 필터 */}
+
+      {/* 상품 개수 */}
+      <div className="part">상품 {products.length || 0}개</div>
+
+      {/* 카테고리 필터 */}
       <div className="categories">
+        {[
+          "전체", "텐트/타프", "테이블", "의자", "가방/스토리지", "취미/게임", "침구류",
+          "의류/신발", "휴대용품", "난방/화로", "반려동물용품", "취사도구", "디지털기기",
+          "안전보안", "기타 물품"
+        ].map((category) => (
         {[
           "전체", "텐트/타프", "테이블", "의자", "가방/스토리지", "취미/게임", "침구류",
           "의류/신발", "휴대용품", "난방/화로", "반려동물용품", "취사도구", "디지털기기",
@@ -69,6 +109,7 @@ export default function ProductSearchPage() {
         ))}
       </div>
 
+      {/* 상품 목록 */}
       {/* 상품 목록 */}
       <div className="product-grid">
         
@@ -92,6 +133,11 @@ export default function ProductSearchPage() {
           </div>
         ))}
       </div>
+
+        <br></br>
+      <div className="part">캠핑 후기</div>
+
+    </div>
 
         <br></br>
       <div className="part">캠핑 후기</div>
