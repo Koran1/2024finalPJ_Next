@@ -1,0 +1,105 @@
+.detail-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.product-main {
+    display: flex;
+}
+
+.product-image {
+    width: 350px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.product-info {
+    flex: 1;
+    margin-left: 20px;
+}
+
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.like-btn {
+    font-size: 1.5em;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.price {
+    color: #333;
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.seller-info {
+    color: #666;
+    font-size: 0.9em;
+    margin: 10px 0;
+}
+
+.seller-info span {
+    margin-right: 5px;
+}
+
+.action-buttons {
+    margin: 15px 0;
+}
+
+.action-buttons button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.reserve-btn {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.info-request-btn {
+    background-color: #f3f4f6;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.product-description {
+    margin-top: 20px;
+}
+
+.product-description h4 {
+    margin-bottom: 10px;
+}
+
+.product-description p {
+    line-height: 1.6;
+    color: #555;
+}
+
+.product-description a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.product-description a:hover {
+    text-decoration: underline;
+}

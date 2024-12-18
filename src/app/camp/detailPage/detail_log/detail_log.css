@@ -1,0 +1,39 @@
+.log-container {}
+
+.log-header {
+    margin: 0 auto;
+    width: 900px;
+    display: flex;
+    justify-content: space-between;
+    /* 양 끝으로 배치 */
+    align-items: center;
+    /* 세로축 중앙 정렬 */
+    border-bottom: 3px solid #000;
+    margin-bottom: 20px;
+    font-weight: bold;
+    padding: 10px 20px;
+    font-size: 1.1em;
+}
+
+.log-tab {
+    display: flex;
+    /* Flexbox 적용 */
+    gap: 20px;
+    /* 각 탭 사이 간격 */
+}
+
+/* 각 탭 스타일 */
+.log {
+    cursor: pointer;
+    /* 마우스 오버 시 포인터 */
+    color: #333;
+    font-weight: normal;
+    transition: color 0.2s ease-in-out;
+}
+
+/* 탭 활성화 상태 */
+.log.active {
+    color: #0070f3;
+    /* 활성화된 탭 색상 */
+    font-weight: bold;
+}
