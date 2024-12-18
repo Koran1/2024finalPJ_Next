@@ -13,6 +13,7 @@
   border-radius: 5px;
   display: inline-block;
   margin: 20px;
+  transition: all 0.3s ease;
 }
 
 .btn1:hover {
@@ -20,7 +21,7 @@
 }
 
 .btn1.active {
-  color: orange; 
+  color: orange; /* Active state color */
 }
 
 .part {
