@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from "next/link";
-import Link from "next/link";
 import { useState } from 'react';
 import './dealMain.css';
 
@@ -18,36 +17,38 @@ export default function ProductSearchPage() {
     }
 
 
-  // 검색 제출 핸들러
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault(); // 폼 제출 기본 동작 방지
+    // 검색 제출 핸들러
+    const handleSearchSubmit = async (e) => {
+      e.preventDefault(); // 폼 제출 기본 동작 방지
 
-    // 검색 API 호출 (임시: 실제 API URL 및 로직 추가 필요)
-    const response = await fetch(`/api/products?search=${searchTerm}&categories=${selectedCategories.join(",")}`);
-    const data = await response.json();
+      // 검색 API 호출 (임시: 실제 API URL 및 로직 추가 필요)
+      const response = await fetch(`/api/products?search=${searchTerm}&categories=${selectedCategories.join(",")}`);
+      const data = await response.json();
 
-    setProducts(data); // 검색 결과 업데이트
-  };
+      setProducts(data); // 검색 결과 업데이트
+    };
   };
 
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
-   
-      <form className="search-box" action="" method="get">
-        <input className="search-txt" type='text' name='' placeholder='상품검색'></input>
-        <button className="search-btn" type="submit">
-        <img src="../images/search_icon.png" alt="Search" className="icon" />
-        </button>
-      </form>
+      <div>
 
-      {/* 상품 등록 버튼 */}
-      {/* <div> */}
-        <Link href="/deal/write" className="btn1">상품등록</Link>
-      {/* </div> */}
+        <form className="search-box" action="" method="get">
+          <input className="search-txt" type='text' name='' placeholder='상품검색'></input>
+          <button className="search-btn" type="submit">
+            <img src="../images/search_icon.png" alt="Search" className="icon" />
+          </button>
+        </form>
 
-      {/* 나의 거래 버튼 */}
+        {/* 상품 등록 버튼 */}
+        {/* <div> */}
+        <Link href="/deal/write" className="btn1">상품 등록</Link>
+        {/* </div> */}
 
+        {/* 나의 거래 버튼 */}
+        <Link href="/deal/management" className="btn1">나의 거래</Link>
+      </div>
 
       {/* 상품 개수 */}
       <div className="part">상품 {products.length || 0}개</div>
@@ -71,10 +72,10 @@ export default function ProductSearchPage() {
 
       {/* 상품 목록 */}
       <div className="product-grid">
-        
+
         {/* 실제 상품 이미지 링크 시 삭제 */}
-      <Link href={`/deal/detail/1`}><img src={`../images/dealDetailImage01.png`} alt="상품 이미지" style={{width: "100px", height: "100px"}} /></Link>
-        
+        <Link href={`/deal/detail/1`}><img src={`../images/dealDetailImage01.png`} alt="상품 이미지" style={{ width: "100px", height: "100px" }} /></Link>
+
         {products.map((product) => (
           <div className="product-item" key={product.dealIdx}>
             <div className="product-image">
@@ -93,10 +94,10 @@ export default function ProductSearchPage() {
         ))}
       </div>
 
-        <br></br>
+      <br></br>
       <div className="part">캠핑 후기</div>
 
     </div>
-    
+
   );
 }

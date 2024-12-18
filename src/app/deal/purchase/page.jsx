@@ -35,12 +35,12 @@ function Page() {
     };
 
 
-// 구매 내역 페이지
+    // 구매 내역 페이지
 
     return (
         <div className="pd-reg-container">
             {/* 상단 네비게이션 */}
-            <div >
+            <div className="nav-links">
                 <Link href="/deal/management"
                     className={`btn1 ${getActiveClass('/deal/management')}`}
                     onClick={() => setActiveLink('/deal/management')}>
@@ -66,13 +66,16 @@ function Page() {
                     onClick={() => setActiveLink('/deal/message')}>
                     쪽지 목록
                 </Link>
-                <br />
-                <div className="part">구매 {products.length}개</div>
             </div>
 
-            {/* 상품 목록 테이블 */}
-            
+
+            {/* 구매 정보는 별도의 줄로 배치 */}
+            <hr />
+            <div className="purchase-info">
+                <div className="part">구매 {products.length}개</div>
+            </div>
         </div>
+
     );
 }
 
