@@ -218,7 +218,6 @@ function Page(props) {
                             : idHelper ? idHelper : "중복검사 중..."
                         } />
 
-
                     <TextField error={pwError} type='password' label='패스워드'
                         name='userPw' value={uvo.userPw} onChange={changeUvo}
                         placeholder='특수, 대소문자 1개씩 포함, 공백 불가, 6~15자'
@@ -253,13 +252,11 @@ function Page(props) {
                             sx={{ ml: 2 }} onClick={handleMailChk}>인증번호 확인</Button>
                     </Box>
 
-
                     <TextField error={uvo.userPhone && !phonePass || phoneError} type='text' label='전화번호'
                         name='userPhone' value={uvo.userPhone}
                         helperText={
                             !uvo.userPhone ? "" : phoneError ? "올바르지 못한 전화번호입니다"
                                 : phoneHelper ? phoneHelper : "중복검사 중..."} onChange={changeUvo} />
-
 
                     <Box>
                         <TextField type='text' label='주 소' name='userAddr'

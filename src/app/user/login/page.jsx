@@ -32,17 +32,17 @@ function Page() {
         // 주소창에 있는 파라미터 가져와서 로그인 처리하자
         const searchParams = new URLSearchParams(window.location.search);
         const token = searchParams.get('token');
-        const userId = searchParams.get('userId');
-        const email = searchParams.get('email');
+        const userIdx = searchParams.get('userIdx');
+        const nickname = searchParams.get('nickname');
 
-        if (token && m_id && email) {
-            login(token, m_id, email);
+        if (token && userIdx && nickname) {
             alert('로그인 성공');
             const user = {
-                userId: userId,
-                userPw: email
+                userIdx: userIdx,
+                nickname: nickname
             }
             login(user, token);     // zustand login 상태관리
+
             router.push('/');
         }
     }, [login, router]);
@@ -59,9 +59,13 @@ function Page() {
             .then(response => {
                 const data = response.data;
                 if (data.success) {
-                    console.log(data.data);
+                    console.log(data);
                     alert(data.message);
-                    login(data.data, data.token);
+                    const user = {
+                        userIdx: data.data.userIdx,
+                        nickname: data.data.userNickname
+                    }
+                    login(user, data.jwtToken);
                     router.push('/');       // 로그인 성공하면 home으로~
                 } else {
                     alert(data.message);
