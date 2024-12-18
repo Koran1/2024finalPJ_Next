@@ -5,8 +5,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // zustand store 호출
 import useAuthStore from '../../store/authStore';
-import { Avatar } from '@mui/material';
+import { Avatar, Badge, Button } from '@mui/material';
 import Link from 'next/link';
+import { MailOutline } from '@mui/icons-material';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
@@ -16,6 +17,10 @@ export default function RootLayout({ children }) {
     // zustand에 있는 함수 호출
     logout();
     alert("로그아웃 되었습니다");
+  }
+
+  const handelLogin = () => {
+    router
   }
 
   const jaro = {
@@ -74,10 +79,21 @@ export default function RootLayout({ children }) {
                     <Link className="nav-link active" href="/" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑로그</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/deal" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif" }} onClick={handleNavLinkClick}>캠핑마켓</Link>
+                    <Link className="nav-link active" href="/deal/dealMain" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif" }} onClick={handleNavLinkClick}>캠핑마켓</Link>
                   </li>
                 </ul>
-                  <Avatar src="/images/kitten-3.jpg" style={{ marginRight: '30px', width: '60px', height: '60px' }} />
+                {isAuthenticated ? (
+                  <>
+                    <Badge badgeContent={4} color="primary" >
+                      <Link href='/mypage'>
+                        <MailOutline style={{ color: 'white', width: '40px', height: '40px' }} />
+                      </Link>
+                    </Badge>
+                    <Avatar src="/images/kitten-3.jpg" style={{ marginLeft: '30px', marginRight: '30px', width: '50px', height: '50px' }} />
+                  </>
+                ) : (
+                  <Button variant='contained' href='/user/login' style={{ marginRight: '30px' }}>로그인 </Button>
+                )}
               </div>
             </div>
           </nav>
@@ -89,6 +105,6 @@ export default function RootLayout({ children }) {
           <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
         </footer>
       </body>
-    </html>
+    </html >
   );
 }
