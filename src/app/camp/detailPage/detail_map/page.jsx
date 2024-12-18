@@ -2,7 +2,7 @@
 import KakaoMap from './../map/page';
 
 
-function Page(props) {
+function Page({ item }) {
     return (
         <div className="map-container">
             {/* 상단 제목 */}
@@ -17,7 +17,7 @@ function Page(props) {
 
                 {/* 지도 이미지 */}
                 <div className="map-image">
-                    <KakaoMap />
+                    <KakaoMap item={item} />
                 </div>
             </div>
         </div>

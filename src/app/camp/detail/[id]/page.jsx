@@ -1,14 +1,18 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import './detail.css'
-import Map from './../../page/detail_map/page'
-import './../../page/detail_map/detail_map.css'
-import Info from './../../page/detail_info/page'
-import './../../page/detail_info/detail_info.css'
-import Etc from './../../page/detail_etc/page'
-import './../../page/detail_etc/detail_etc.css'
-import './../../page/detail_log/detail_log.css'
+import Map from './../../detailPage/detail_map/page'
+import './../../detailPage/detail_map/detail_map.css'
+import Info from './../../detailPage/detail_info/page'
+import './../../detailPage/detail_info/detail_info.css'
+import Etc from './../../detailPage/detail_etc/page'
+import './../../detailPage/detail_etc/detail_etc.css'
+import './../../detailPage/detail_log/detail_log.css'
 import axios from 'axios'
+import { FaLocationDot, FaPhoneFlip } from "react-icons/fa6";
+import { FaHome } from "react-icons/fa";
+import Log from './../../detailPage/detail_log/page'
+import './../../detailPage/detail_log/detail_log.css'
 
 function Page({ params }) {
     const CAMP_API_BASE_URL = "http://localhost:8080/api"
@@ -62,8 +66,12 @@ function Page({ params }) {
                 <div className="product-main">
                     {/* 캠핑장 이미지 */}
                     <img
-                        src={item.firstImageUrl}
-                        alt="캠핑장 이미지"
+                        src={item.firstImageUrl
+                            ? item.firstImageUrl
+                            : item.campImg2
+                                ? item.campImg2
+                                : "/images/campImageholder2.png"}
+                        alt="캠핑장 사진"
                         className="product-image"
                     />
 
@@ -87,13 +95,14 @@ function Page({ params }) {
 
                             {item.lineIntro && (<p>{item.lineIntro}</p>)}
                             {!item.lineIntro && item.featureNm && (<p>{extractFeatureNm(item.featureNm)}</p>)}
+                            {item.induty && (<p>{item.induty}</p>)}
 
                             <p>
-                                📍 위치: {item.addr1}
+                                <FaLocationDot color="#5F8FF0" /> 위치: {item.addr1}
                                 <br />
-                                🔗 홈페이지: <a href={item.homepage} target="_blank" rel="noopener noreferrer">{item.homepage}</a>
+                                <FaHome color="#5F8FF0" /> 홈페이지: <a href={item.homepage} target="_blank" rel="noopener noreferrer">{item.homepage}</a>
                                 <br />
-                                ☎️ 전화: {item.tel}
+                                <FaPhoneFlip color="#5F8FF0" /> 전화: {item.tel}
                             </p>
                         </div>
 
@@ -165,6 +174,7 @@ function Page({ params }) {
                         </div>
                     </div>
                 </div>
+                <Log posts={examplePosts} />
             </div>
 
             {/* 캠핑장 댓글 */}
