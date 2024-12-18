@@ -58,6 +58,11 @@
     border: none;
     border-radius: 5px;
   }
+
+  .icon {
+    width: 20px; /* 아이콘 크기 */
+    height: 20px;
+  }
   
     .btn1 {
       color: #767474;
@@ -78,4 +83,8 @@
     .part {
       font-size: 16px;
 
+    }
+
+    .product-grid {
+      margin-top: 30px;
     }

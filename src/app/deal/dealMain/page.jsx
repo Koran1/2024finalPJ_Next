@@ -37,7 +37,7 @@ export default function ProductSearchPage() {
       <form className="search-box" action="" method="get">
         <input className="search-txt" type='text' name='' placeholder='상품검색'></input>
         <button className="search-btn" type="submit">
-
+        <img src="../images/search_icon.png" alt="Search" className="icon" />
         </button>
       </form>
 
