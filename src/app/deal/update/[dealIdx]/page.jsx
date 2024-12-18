@@ -1,24 +1,93 @@
 'use client'
-import './pdReg.css';
-import React, { useState } from 'react';
+import './update.css';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 
 function Page() {
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
+    file: '',
     name: '',
-    place1: '',
+    description: '',
     price: '0',
-    count: 1,
-    description: ''
+    place: '',
+    count: 1
   });
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedState, setSelectedState] = useState('');
-  const [selectedPrice, setSelectedPrice] = useState('나눔');
+  const [selectedPrice, setSelectedPrice] = useState('');
   const [selectedPackage, setSelectedPackage] = useState('');
-  const [selectedDirect, setSelectedDirect] = useState('직거래 가능');
-  const [selectedFree, setSelectedFree] = useState('');
+  const [selectedDirect, setSelectedDirect] = useState('');
+
+
+  useEffect(() => {
+    // URL에서 dealIdx 파라미터 가져오기
+    const dealIdx = window.location.pathname.split('/').pop();
+    
+    // 기존 상품 정보 가져오기
+    const fetchDealData = async () => {
+      try {
+        const response = await fetch(`/api/deals/${dealIdx}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // 데이터 유효성 검사
+        if (!data) {
+          throw new Error('데이터가 없습니다');
+        }
+
+        // 상태 업데이트
+        setFormData({
+          file: data.file || '',
+          name: data.name || '',
+          category: data.category || '',
+          state: data.state || '',
+          description: data.description || '',
+          price: data.price || '0',
+          package: data.package || '',
+          direct: data.direct || '',
+          place: data.place || '',
+          count: data.count || 1
+        });
+
+        // 이미지 데이터가 있는 경우에만 설정
+        if (data.images && Array.isArray(data.images)) {
+          setImages(data.images);
+        }
+
+        setSelectedCategory(data.category || '');
+        setSelectedState(data.state || '');
+        setSelectedPrice(data.price === '0' ? '나눔' : '가격 입력');
+        setSelectedPackage(data.package || '');
+        setSelectedDirect(data.direct || '');
+        setSelectedFree(data.free || '');
+        setSelectedPlace(data.place || '');
+        setSelectedCount(data.count || 1);
+
+        // 초기 데이터 저장
+        setInitialData({
+          formData: {...data},
+          selectedCategory: data.category,
+          selectedState: data.state,
+          selectedPrice: data.price === '0' ? '나눔' : '가격 입력',
+          selectedPackage: data.package,
+          selectedDirect: data.direct,
+          images: data.images || []
+        });
+
+      } catch (error) {
+        console.error('데이터 로딩 실패:', error);
+        alert('상품 정보를 불러오는데 실패했습니다.');
+      }
+    };
+
+    fetchDealData();
+  }, []);
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -48,13 +117,41 @@ function Page() {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 등록 로직을 여기에 추가하세요
+    
+    const dealIdx = window.location.pathname.split('/').pop();
+    
+    try {
+      const response = await fetch(`/api/deals/${dealIdx}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          category: selectedCategory,
+          state: selectedState,
+          package: selectedPackage,
+          direct: selectedDirect,
+          images: images
+        })
+      });
+
+      if (response.ok) {
+        alert('상품이 성공적으로 수정되었습니다.');
+        window.location.href = '/deal/dealMain';
+      } else {
+        alert('상품 수정에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('수정 오류:', error);
+      alert('상품 수정 중 오류가 발생했습니다.');
+    }
   };
 
   const handleCancel = () => {
-    // 취소 로직을 여기에 추가하세요
+    window.location.href = '/deal/dealMain';
   };
 
   function insertImage(targetCellIndex, imageUrl) {
@@ -72,6 +169,20 @@ function Page() {
         }
     }
   }
+
+  const isModified = () => {
+    if (!initialData) return false;
+    
+    return (
+      JSON.stringify(formData) !== JSON.stringify(initialData.formData) ||
+      JSON.stringify(images) !== JSON.stringify(initialData.images) ||
+      selectedCategory !== initialData.selectedCategory ||
+      selectedState !== initialData.selectedState ||
+      selectedPrice !== initialData.selectedPrice ||
+      selectedPackage !== initialData.selectedPackage ||
+      selectedDirect !== initialData.selectedDirect
+    );
+  };
 
   return (
     <div className="pd-reg-container">
@@ -527,12 +638,12 @@ function Page() {
 
       <div className="button-group">
         <Button
-          className={`submit-btn ${isFormComplete() ? 'submit-btn-enabled' : 'submit-btn-disabled'}`}
+          className={`submit-btn ${isFormComplete() && isModified() ? 'submit-btn-enabled' : 'submit-btn-disabled'}`}
           variant="contained"
-          disabled={!isFormComplete()}
+          disabled={!isFormComplete() || !isModified()}
           onClick={handleSubmit}
         >
-          등록
+          수정
         </Button>
         &nbsp;&nbsp;&nbsp;
         <Button
