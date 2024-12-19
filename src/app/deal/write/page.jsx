@@ -1,7 +1,7 @@
 'use client'
 import './write.css';
 import React, { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
+import { Button, TextareaAutosize } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
 function Page() {
@@ -40,10 +40,60 @@ function Page() {
     checkFormValidity();
   }, [formData]);
 
+  const MAX_TOTAL_SIZE = 5 * 1024 * 1024; // 4MB
+  const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
+
   const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const imageUrls = files.map(file => URL.createObjectURL(file));
-    setImages(prev => [...prev, ...imageUrls].slice(0, 5)); // 최대 5개까지만 허용
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // 이미지 파일 유효성 검사
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    // 개별 파일 크기 제한 검사
+    if (file.size > MAX_FILE_SIZE) {
+      alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
+      return;
+    }
+
+    // 현재 이미지 크기 합계 계산
+    const currentTotalSize = images.reduce((total, img) => {
+      return total + (img ? img.file.size : 0);
+    }, 0);
+
+    // 새로운 파일 크기 합계 계산
+    const newTotalSize = currentTotalSize + file.size;
+
+    // 파일 크기 제한 검사
+    if (newTotalSize > MAX_TOTAL_SIZE) {
+      alert('이미지 파일 용량들의 합은 최대 5MB를 초과할 수 없습니다.');
+      return;
+    }
+
+    // 이미지 미리보기 URL 생성
+    const imageUrl = URL.createObjectURL(file);
+    
+    // input의 index 찾기
+    const index = parseInt(e.target.id.split('-')[2]);
+    
+    // 이미지 배열 업데이트
+    setImages(prev => {
+      const newImages = [...prev];
+      newImages[index] = {
+        file: file,
+        preview: imageUrl
+      };
+      return newImages;
+    });
+
+    // FormData 업데이트
+    setFormData(prev => ({
+      ...prev,
+      file: file
+    }));
   };
 
   const handleChange = (e) => {
@@ -64,43 +114,56 @@ function Page() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isFormComplete()) {
-      alert('모든 필수 항목을 입력해주세요.');
+      alert('모든 항목을 입력해주세요.');
       return;
     }
 
     const submitData = new FormData();
     
-    images.forEach((image, index) => {
-      submitData.append(`image${index}`, image);
-    });
+    // console.log(images);
 
-    Object.keys(formData).forEach(key => {
+    // // 이미지 경로들을 배열로 만들어서 전송
+    // const imagePaths = images
+    //   .filter(img => img !== null)
+    //   .map(img => img.path);
+    
+    // submitData.append('imagePaths', JSON.stringify(imagePaths));
+
+    // 나머지 폼 데이터 추가
+    Object.keys(formData).filter(key => key !== 'file').forEach(key => {
       submitData.append(key, formData[key]);
     });
 
-    try {
-      const response = await fetch(`${LOCAL_API_BASE_URL}/write`, {
-        method: 'POST',
-        headers: {
-          // 'Content-Type': 'application/json' 제거 (FormData 사용시)
-          // 'Authorization': `Bearer ${token}`
-        },
-        body: submitData
-      });
+    // 실제 파일들도 추가
+    // images.forEach((image, index) => {
+    //   if (image && image.file) {
+    //     submitData.append('file', image);
+    //   }
+    // });
+    // submitData.append('file', images);
 
-      if (response.ok) {
-        alert('상품이 성공적으로 등록되었습니다.');
-        router.push('/deal/dealMain');
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || '상품 등록에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert(error.message);
+    images.forEach((image) => {
+      console.log(image);
+      submitData.append('file', image.file);
+    });
+
+    console.log(submitData);
+    const response = await fetch(`${LOCAL_API_BASE_URL}/deal/write`, {
+      method: 'POST',
+      body: submitData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({
+        message: '서버 응답 오류'
+      }));
+      throw new Error(errorData.message || '상품 등록에 실패했습니다.');
     }
+
+    alert('상품이 성공적으로 등록되었습니다.');
+    router.push('/deal/dealMain');
   };
 
   const handleCancel = () => {
@@ -110,16 +173,16 @@ function Page() {
   function insertImage(targetCellIndex, imageUrl) {
     const table = document.getElementById('imageTable');
     const rows = table.getElementsByTagName('tr');
-    
+
     for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        if (targetCellIndex < cells.length) {
-            const cell = cells[targetCellIndex];
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.alt = 'Inserted Image';
-            cell.appendChild(img);
-        }
+      const cells = rows[i].getElementsByTagName('td');
+      if (targetCellIndex < cells.length) {
+        const cell = cells[targetCellIndex];
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = 'Inserted Image';
+        cell.appendChild(img);
+      }
     }
   }
 
@@ -160,8 +223,23 @@ function Page() {
     setFormData(prev => ({
       ...prev,
       dealDirect: value,
-      dealPlace: value === "직거래 불가" ? '' : formData.dealPlace
+      dealPlace: value === "직거래 불가" ? '' : prev.dealPlace
     }));
+  };
+
+  const handleImageDelete = (index) => {
+    // 해당 input의 value를 초기화
+    const inputElement = document.getElementById(`image-upload-${index}`);
+    if (inputElement) {
+      inputElement.value = '';
+    }
+    
+    // 이미지 상태 업데이트
+    setImages(prev => {
+      const newImages = [...prev];
+      newImages[index] = null;
+      return newImages;
+    });
   };
 
   return (
@@ -172,16 +250,56 @@ function Page() {
         <h4>상품 이미지</h4>
         <hr />
         <div className="image-preview-container">
-          {[...Array(5)].map((_, index) => (
-            <div key={index} className="image-preview-box">
-              {images[index] ? (
-                <img src={images[index]} alt={`상품 이미지 ${index + 1}`} />
-              ) : (
-                <label htmlFor={`image-upload-${index}`}>
-                  <input type="file" id={`image-upload-${index}`} accept="image/*" onChange={(e) => { handleImageUpload(e); }} style={{ display: 'none' }} />
+          {[...Array(5)].map((file, index) => (
+            <div 
+              key={index} 
+              className="image-preview-box"
+              style={{ cursor: 'pointer' }}
+            >
+              <div 
+                onClick={() => document.getElementById(`image-upload-${index}`).click()}
+                style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative'
+                }}
+              >
+                <input
+                  id={`image-upload-${index}`}
+                  type="file"
+                  name="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+                {images[index] ? (
+                  <>
+                    <img 
+                      src={images[index].preview}
+                      alt={`상품 이미지 ${index + 1}`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                    <button
+                      className="delete-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleImageDelete(index);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </>
+                ) : (
                   <div className="upload-placeholder">+</div>
-                </label>
-              )}
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -190,7 +308,15 @@ function Page() {
       <div className="form-group">
         <br />
         <h4>상품명</h4>
-        <input type="text" placeholder="상품명을 입력해 주세요" name="dealTitle" value={formData.dealTitle} onChange={handleChange} />
+        <input 
+          type="text" 
+          placeholder="상품명을 입력해 주세요" 
+          name="dealTitle" 
+          value={formData.dealTitle} 
+          onChange={handleChange}
+          onFocus={(e) => e.target.placeholder = ''}
+          onBlur={(e) => e.target.placeholder = '상품명을 입력해 주세요'}
+        />
       </div>
 
       <div className="category-section">
@@ -214,7 +340,7 @@ function Page() {
           </p>
           <p>
             <label>
-              <input type="radio" name="category" value="식료품/음료" onChange={e => setSelectedCategory(e.target.value)} checked={selectedCategory === "식품/음료"} />
+              <input type="radio" name="category" value="식품/음료" onChange={e => setSelectedCategory(e.target.value)} checked={selectedCategory === "식품/음료"} />
               식품/음료
             </label>
             <label>
@@ -264,8 +390,8 @@ function Page() {
               반려동물용품
             </label>
             <label>
-              <input type="radio" name="category" value="휴대용 가구" onChange={e => setSelectedCategory(e.target.value)} checked={selectedCategory === "휴대용 가구"} />
-              휴대용 가구
+              <input type="radio" name="category" value="테이블/의자" onChange={e => setSelectedCategory(e.target.value)} checked={selectedCategory === "테이블/의자"} />
+              테이블/의자
             </label>
           </p>
           <p>
@@ -292,7 +418,7 @@ function Page() {
           <p>
             <label>
               <input type="radio" name="state" value="사용감 없음" onChange={e => setSelectedState(e.target.value)} checked={selectedState === "사용감 없음"} />
-              사용감 없음 <span style={{ fontSize: '14px', color: 'gray' }}>사용은 했지만 사용한 흔적이나 얼룩 없음</span>
+              사용감 없음 <span style={{ fontSize: '14px', color: 'gray' }}>사용은 했지만 사용한 흔적이나 얼룩이 없음</span>
             </label>
           </p>
           <p>
@@ -319,7 +445,23 @@ function Page() {
 
       <div className="form-group">
         <h4>상품설명</h4>
-        <textarea className="description-textarea" placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.\n전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.\n욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.\n안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`} rows="5" name="dealDescription" value={formData.dealDescription} onChange={handleChange}></textarea>
+        <TextareaAutosize 
+          className="description-textarea" 
+          placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
+전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
+욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
+안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
+          minRows={5}
+          maxRows={5}
+          name="dealDescription"
+          value={formData.dealDescription}
+          onChange={handleChange}
+          onFocus={(e) => e.target.placeholder = ''}
+          onBlur={(e) => e.target.placeholder = `브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
+전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
+욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
+안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
+        />
       </div>
       <br />
 
@@ -328,27 +470,43 @@ function Page() {
         <hr />
         <div className="price-options">
           <label>
-            <input 
-              type="radio" 
-              name="dealprice" 
-              value="가격 입력" 
-              onChange={e => handlePriceChange(e.target.value)} 
-              checked={selectedPrice === "가격 입력"} 
+            <input
+              type="radio"
+              name="dealprice"
+              value="가격 입력"
+              onChange={e => handlePriceChange(e.target.value)}
+              checked={selectedPrice === "가격 입력"}
             />
             가격 입력
           </label>
           <div className="form-group">
-            <input 
-              type="number" 
-              placeholder="상품 가격을 입력해 주세요" 
-              name="dealPrice" 
-              value={formData.dealPrice} 
-              onChange={handleChange} 
-              disabled={selectedPrice === "나눔"} 
+            <input
+              type="number"
+              placeholder="상품 가격을 입력해 주세요"
+              name="dealPrice"
+              value={formData.dealPrice}
+              onChange={handleChange}
+              onFocus={(e) => {
+                if (e.target.value === '0') {
+                  setFormData(prev => ({
+                    ...prev,
+                    dealPrice: ''
+                  }));
+                }
+              }}
+              onBlur={(e) => {
+                if (e.target.value === '') {
+                  setFormData(prev => ({
+                    ...prev,
+                    dealPrice: '0'
+                  }));
+                }
+              }}
+              disabled={selectedPrice === "나눔"}
             />
           </div>
           <label>
-            <input type="radio" name="price" value="나눔" onChange={e => { setSelectedPrice(e.target.value); setFormData(prev => ({...prev, price: '0'})); }} checked={selectedPrice === "나눔"} />
+            <input type="radio" name="price" value="나눔" onChange={e => { setSelectedPrice(e.target.value); setFormData(prev => ({ ...prev, price: '0' })); }} checked={selectedPrice === "나눔"} />
             나눔
           </label>
           <br />
@@ -377,17 +535,35 @@ function Page() {
         <hr />
         <div className="direct-options">
           <label>
-            <input type="radio" name="direct" value="직거래 가능" onChange={e => { setSelectedDirect(e.target.value); if (e.target.value === "직거래 가능") { } else { setFormData(prev => ({...prev, place: ''})); } }} checked={selectedDirect === "직거래 가능"} />
+            <input 
+              type="radio" 
+              name="direct" 
+              value="직거래 가능" 
+              onChange={(e) => handleDirectChange(e.target.value)} 
+              checked={selectedDirect === "직거래 가능"} 
+            />
             직거래 가능
           </label>
           <div className="form-group">
-            <input type="text" placeholder="직거래 가능지역을 입력해 주세요" name="place" value={formData.place} onChange={handleChange} disabled={selectedDirect === "직거래 불가"} />
+            <input 
+              type="text" 
+              placeholder="직거래 가능지역을 입력해 주세요" 
+              name="dealPlace"
+              value={formData.dealPlace || ''}
+              onChange={handleChange} 
+              disabled={selectedDirect === "직거래 불가"} 
+            />
           </div>
           <label>
-            <input type="radio" name="direct" value="직거래 불가" onChange={e => { setSelectedDirect(e.target.value); setFormData(prev => ({...prev, place: ''})); }} checked={selectedDirect === "직거래 불가"} />
+            <input 
+              type="radio" 
+              name="direct" 
+              value="직거래 불가" 
+              onChange={(e) => handleDirectChange(e.target.value)} 
+              checked={selectedDirect === "직거래 불가"} 
+            />
             직거래 불가
           </label>
-          <br />
         </div>
       </div>
       <br /><br />
@@ -395,25 +571,41 @@ function Page() {
       <div className="form-group">
         <h4>수량</h4>
         <div className="input-wrapper">
-          <input 
-            type="number" 
-            name="dealCount" 
-            value={formData.dealCount} 
+          <input
+            type="number"
+            name="dealCount"
+            value={formData.dealCount}
             onChange={(e) => {
-              const value = parseInt(e.target.value); 
-              if (value < 1) { 
-                alert("1개 이상을 입력해주세요."); 
+              const value = parseInt(e.target.value);
+              if (value < 1) {
+                alert("1개 이상을 입력해주세요.");
                 setFormData(prev => ({
-                  ...prev, 
+                  ...prev,
                   dealCount: '1'
-                })); 
+                }));
               } else {
-                handleChange(e); 
-              } 
-            }} 
-            min="1" 
-            placeholder="수량을 입력해주세요" 
-            className="number-input" 
+                handleChange(e);
+              }
+            }}
+            onFocus={(e) => {
+              if (e.target.value === '1') {
+                setFormData(prev => ({
+                  ...prev,
+                  dealCount: ''
+                }));
+              }
+            }}
+            onBlur={(e) => {
+              if (e.target.value === '') {
+                setFormData(prev => ({
+                  ...prev,
+                  dealCount: '1'
+                }));
+              }
+            }}
+            min="1"
+            placeholder="수량을 입력해주세요"
+            className="number-input"
           />
         </div>
       </div>
