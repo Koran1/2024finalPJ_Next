@@ -31,7 +31,6 @@
 
 .part {
   font-size: 16px;
-  text-align: right; /* 텍스트를 오른쪽으로 정렬 */
   margin-top: 10px; /* 버튼과의 간격 */
 }
 

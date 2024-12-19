@@ -66,6 +66,7 @@ function Page() {
             <div className="purchase-info">
                 <div className="part">상품 {products.length}개</div>
             </div>
+            {products && products.length > 0 ? (
             <table className="product-table">
                 <thead>
                     <tr>
@@ -77,7 +78,7 @@ function Page() {
                     </tr>
                 </thead>
                 <tbody>
-                    {(products || []).map((product) => (
+                    { (products || []).map((product) => (
                         <tr key={product.id}>
                             <td>
                                 <Link href={`/product/${product.id}`}>
@@ -93,7 +94,24 @@ function Page() {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table>) : ((
+                <table className="product-table">
+                <thead>
+                    <tr>
+                        <th>사진</th>
+                        <th>판매상태</th>
+                        <th>상품명</th>
+                        <th>가격</th>
+                        <th>최근 수정일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colSpan="5">상품이 없습니다.</td>
+                    </tr>    
+                </tbody>
+            </table> 
+    ))}
         </div>
     );
 }

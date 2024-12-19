@@ -45,11 +45,12 @@ function Page() {
                     onClick={() => setActiveLink('/deal/message')}>
                     쪽지 목록
                 </Link>
-                <br />
-                <div className="part"> 평점 39개</div>
             </div>
 
-            
+            <hr />
+            <div className="purchase-info">
+                <div className="part">쪽지 개</div>
+            </div>
             
         </div>
     );
