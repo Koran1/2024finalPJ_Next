@@ -102,7 +102,9 @@ export default function RootLayout({ children }) {
         <hr />
         <footer className="container">
           <p className="float-end"><a href="#">Back to top</a></p>
-          <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+          <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="/add/notice">공지사항</a>
+            &middot; <a href="#">이용약관</a>
+            &middot; <a href="#">개인정보처리방침</a></p>
         </footer>
       </body>
     </html >
