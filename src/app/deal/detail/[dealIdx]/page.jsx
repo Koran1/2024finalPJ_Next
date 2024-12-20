@@ -1,11 +1,89 @@
 'use client'
-import { useState } from 'react';
 import './detail.css';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
+import useAuthStore from '../../../../../store/authStore';
+import { useParams, useRouter } from 'next/navigation';
 
-function Page() {
+function Page({ params }) {
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+  const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
+  const [item, setItem] = useState(null);                 // 데이터 상태
+  const [loading, setLoading] = useState(true);           // 로딩 상태
+  const [error, setError] = useState(null);               // 에러 상태
+  const { isAuthenticated, token, user } = useAuthStore();       // 로그인 상태
+  const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
+  const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
 
+// 상품 데이터 가져오기
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            
+            // dealIdx 직접 사용
+            const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
+            console.log('Fetching URL:', API_URL); // URL 확인용 로그
+            
+            const response = await axios.get(API_URL);
+            const data = response.data;
+            
+            console.log('Response data:', data); // 응답 데이터 확인용 로그
+            
+            if (data.success) {
+                setItem(data.data);
+            } else {
+                setError(data.message || '상품 정보를 불러올 수 없습니다.');
+            }
+        } catch (err) {
+            console.error("Error details:", err);
+            setError(err.response?.data?.message || err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (dealIdx) {
+        fetchData();
+    }
+}, [dealIdx, LOCAL_API_BASE_URL]);
+
+// item이 null일 경우 처리 추가
+if (!item) {
+    return (
+        <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+            <h2>상품 정보를 불러올 수 없습니다.</h2>
+        </div>
+    );
+}
+
+    // 수정 버튼 클릭 시
+    const handleUpdate = async () => {
+      // 수정페이지로 이동
+      router.push(`/deal/update/${item.dealIdx}`)
+  }
+
+  // 로딩 중
+  if (loading) {
+      return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
+  }
+
+  // 에러 발생 시
+  if (error) {
+      return (
+          <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+              <h2>Error:</h2>
+              <p>{error}</p>
+          </div>
+      );
+  }
+  // 글 작성자와 현재 로그인한 사용자 비교 
+  const isOwner = isAuthenticated && String(user.m_id) === String(item.gb_id);
+  // 로딩 완료 후
+
+// 좋아요 버튼 클릭 시 좋아요 상태 변경
   const handleLike = () => {
     setIsLiked(!isLiked);
   };
@@ -22,7 +100,7 @@ function Page() {
         
         <div className="product-info">
           <div className="product-header">
-            <h3>캠핑 접이식 불멍 화로대</h3>
+            <h3>{item.dealTitle}</h3>
             <button 
               className="like-btn"
               onClick={handleLike}
@@ -33,14 +111,14 @@ function Page() {
           </div>
           <hr />
 
-          <div className="price">137,000원</div>
+          <div className="price">{item.dealPrice}원</div>
 
           <div className="seller-info">
-            <span>판매자 파세코</span>
+            <span>판매자 {item.dealSellerNick}</span>
             <span className="rating">★★★★★</span>
             <span>4.8</span>
             <span>・</span>
-            <span>2024.02.03</span>
+            <span>{item.dealRegDate}</span>
           </div>
 
           <div className="action-buttons">
@@ -61,15 +139,19 @@ function Page() {
           <ul className="product-details">
             <li>
               <span>상품상태</span>
-              <span>새 상품</span>
+              <span> {item.dealStatus}</span>
             </li>
             <li>
               <span>배송비</span>
-              <span>일반 4,000원</span>
+              <span> {item.dealPackage}</span>
             </li>
             <li>
               <span>직거래</span>
-              <span>서울시 강남구 논현1동 1층 토영 자갈치 꼼장어 옆</span>
+              <span> {item.dealDirect === "직거래 불가" ? "직거래 불가" : item.dealDirectContent}</span>
+            </li>
+            <li>
+              <span>판매수량</span>
+              <span> {item.dealCount}</span>
             </li>
           </ul>
 
@@ -108,27 +190,21 @@ function Page() {
               만족도
             </Button>
           </div>
-        </div>    
+        </div>
       </div>
       
   
 
       <div className="product-description">
         <h5>상품 설명</h5>
-        <span>파세코 캠프 
-        2020년 가을 구매해서 2번째 캠핑에서 심지 태워먹어서 바로 정식 a/s 받아서 심지 교체하고 이후 2번 더 쓰고 이후는 그냥 쭉 보관했습니다.
-        (마지막 사용은 2021년 3월. 이후 텐트가 커지면서 팬히터로 갈아탔네요). 
-        오래 사용하지 않아서 오늘 테스트 한 사진이고 아무 이상 없습니다. 
-        (테스트 겸 고구마 구워 먹느라 2시간 이상 태워봤습니다.) 
-        사용감은 다소 있지만 크게 흠집이나 누른곳 없구요 다만 외부에 보관하다보니 가방은 색이 바랬습니다.
-        직거래 희망(논현1동 1층 토영 자갈치 꼼장어 옆) 평일은 20시 이후 가능합니다.</span>
+        <span>{item.dealDescription}</span>
       </div>
 
       <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
         <Button
           variant="contained"
           color="darkgray"
-          onClick={() => window.location.href = '/deal/update/1'}
+          onClick={(handleUpdate) => window.location.href = '/deal/update/1'}
         >
           상품 수정
         </Button>
@@ -147,13 +223,9 @@ function Page() {
         <hr />
 
         <div className="review-grid">
-          {/* 후기 컴포넌트들이 들어갈 자리 */}
+          {/* 후 컴포넌트들이 들어갈 자리 */}
         </div>
       </div>
-
-
-
-
     </div>
     </>
   );
