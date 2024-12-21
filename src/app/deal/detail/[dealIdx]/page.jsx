@@ -6,6 +6,7 @@ import { Button } from '@mui/material';
 import useAuthStore from '../../../../../store/authStore';
 import { useParams, useRouter } from 'next/navigation';
 import ForumIcon from '@mui/icons-material/Forum';
+import ReportIcon from '@mui/icons-material/Report';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -13,13 +14,12 @@ function Page({ params }) {
   const [item, setItem] = useState(null);                 // 데이터 상태
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
-  const { isAuthenticated, token, user } = useAuthStore();       // 로그인 상태
+  const { isAuthenticated, token, user } = useAuthStore(); // 로그인 상태
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
   const [mainImage, setMainImage] = useState('/images/dealDetailImage01.png'); // 메인 이미지 상태
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
-  const [smallImages, setSmallImages] = useState([]);
-  
+  const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
 
 // 상품 데이터 가져오기
   useEffect(() => {
@@ -45,20 +45,29 @@ function Page({ params }) {
                 // 파일이 존재하고 비어있지 않은 경우
                 if (files && files.length > 0) {
                   // fileOrder가 '0'인 메인 이미지 찾기
-                  const mainImgObj = files.find(file => file.fileOrder === '0');
-                  // 메인 이미지 URL 설정 (없으면 기본 이미지 사용)
-                  setMainImage(mainImgObj ? `${LOCAL_IMG_URL}/${mainImgObj.fileName}` : '/images/dealDetailImage01.png');
+                  const mainImgObj = files
+                    .find(file => parseInt(file.fileOrder) === 1);
+                  // 메인 이미지 URL 설정
+                  if (mainImgObj) {
+                    setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+                  } else {
+                    setError('메인 이미지가 누락되었습니다.');
+                    return;
+                  }
 
                   // 작은 이미지들 설정 (fileOrder 1~4)
                   const smallImgs = files
                     // fileOrder 1~4 사이이고 fileName이 있는 파일만 필터링
-                    .filter(file => parseInt(file.fileOrder) >= 0 && parseInt(file.fileOrder) < 5 && file.fileName)
+                    .filter(file => parseInt(file.fileOrder) >= 1 && parseInt(file.fileOrder) <= 4 && file.fileName)
                     // fileOrder 기준으로 정렬
                     .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
                     // 각 파일의 URL 생성
                     .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
                   // 작은 이미지 배열 상태 설정
                   setSmallImages(smallImgs);
+                } else {
+                  // 파일이 없을 경우 에러 설정
+                  setError('파일이 존재하지 않습니다.');
                 }
             } else {
                 // API 응답이 실패한 경우 에러 메시지 설정
@@ -77,7 +86,7 @@ function Page({ params }) {
     if (dealIdx) {
         fetchData();
     }
-  }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
+  }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]); // LOCAL_IMG_URL 의존성 추가
 
   // item이 null일 경우 처리 추가
   if (!item) {
@@ -108,7 +117,7 @@ function Page({ params }) {
             </div>
         );
     }
-    // 글 작성자와 현재 로그인한 사자 비교 
+    // 글 작성자와 현재 로그인한 사용자 비교 
     const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
     // 로딩 완료 후
 
@@ -171,15 +180,15 @@ function Page({ params }) {
               <span>4.8</span>
 
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <div className="action-buttons">
-              <ForumIcon
-                variant="contained"
-                className="message-btn"
-                onClick={() => router.push('/deal/note/1')}
-                style={{ cursor: 'pointer' }}
-                title="채팅내기"
-              >
-              </ForumIcon>
+              <div className="action-buttons">
+                <ForumIcon
+                  variant="contained"
+                  className="message-btn"
+                  onClick={() => router.push('/deal/note/1')}
+                  style={{ cursor: 'pointer' }}
+                  title="채팅내기"
+                >
+                </ForumIcon>
               </div>
             </div>
       
@@ -219,8 +228,8 @@ function Page({ params }) {
                 return diffTime === 0 ? "금일" : `${diffTime}일 전`;
               })()}
             </span>
-            &nbsp;&nbsp;&nbsp;
-            <Button variant="contained" color="error" className="report-btn" style={{marginRight: '10px', width: '150px', height: '50px'}}>신고하기</Button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <ReportIcon variant="contained" color="error" className="report-btn" style={{marginRight: '10px', width: '80px', height: '50px'}}>신고</ReportIcon>
 
             <div className="status-buttons" style={{ textAlign: 'center', marginTop: '30px', marginBottom: '30px' }}>
               <Button
