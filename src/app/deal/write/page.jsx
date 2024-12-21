@@ -100,6 +100,19 @@ function Page() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // 상품명 입력 길이 제한
+    if (name === "dealTitle" && value.length > 40) {
+      alert("상품명은 40자 이내로 입력 해주세요");
+      return;
+    }
+
+    // 상품 설명 입력 길이 제한
+    if (name === "dealDescription" && value.length > 200) {
+      alert("상품설명은 200자 이내로 입력 해주세요");
+      return;
+    }
+
     setFormData({
       ...formData,
       [name]: value
@@ -205,9 +218,17 @@ function Page() {
   };
   
   const handleDirectContentChange = (e) => {
+    const { value } = e.target;
+
+    // 직거래 가능지역 입력 길이 제한
+    if (value.length > 40) {
+      alert("직거래 가능지역은 40자 이내로 입력 해주세요");
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
-      dealDirectContent: e.target.value
+      dealDirectContent: value
     }));
   };
 
@@ -586,6 +607,7 @@ function Page() {
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
 안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
+          style={{ whiteSpace: 'pre-wrap' }}
         />
       </div>
       <br />
@@ -626,6 +648,11 @@ function Page() {
                     ...prev,
                     dealPrice: '0'
                   }));
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.target.blur();
                 }
               }}
               disabled={formData.priceOption === "나눔"}
@@ -695,6 +722,11 @@ function Page() {
               name="dealDirectContent"
               value={formData.dealDirectContent}
               onChange={handleDirectContentChange}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.target.blur();
+                }
+              }}
               disabled={formData.dealDirect === "직거래 불가"} 
             />
           </div>

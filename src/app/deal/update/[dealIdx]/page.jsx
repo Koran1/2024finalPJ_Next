@@ -11,6 +11,7 @@ function Page() {
     description: '',
     price: '0',
     place: '',
+    place1: '',
     count: 1
   });
 
@@ -19,7 +20,12 @@ function Page() {
   const [selectedPrice, setSelectedPrice] = useState('');
   const [selectedPackage, setSelectedPackage] = useState('');
   const [selectedDirect, setSelectedDirect] = useState('');
+  const [selectedFree, setSelectedFree] = useState('');
+  const [selectedPlace, setSelectedPlace] = useState('');
+  const [selectedCount, setSelectedCount] = useState(1);
 
+  // 초기 데이터 상태 추가
+  const [initialData, setInitialData] = useState(null);
 
   useEffect(() => {
     // URL에서 dealIdx 파라미터 가져오기
@@ -52,6 +58,7 @@ function Page() {
           package: data.package || '',
           direct: data.direct || '',
           place: data.place || '',
+          place1: data.place1 || '',
           count: data.count || 1
         });
 
@@ -71,7 +78,10 @@ function Page() {
 
         // 초기 데이터 저장
         setInitialData({
-          formData: {...data},
+          formData: { 
+            ...data, 
+            place1: data.place1 || '' 
+          },
           selectedCategory: data.category,
           selectedState: data.state,
           selectedPrice: data.price === '0' ? '나눔' : '가격 입력',
@@ -117,6 +127,20 @@ function Page() {
     );
   };
 
+  const isModified = () => {
+    if (!initialData) return false;
+    
+    return (
+      JSON.stringify(formData) !== JSON.stringify(initialData.formData) ||
+      JSON.stringify(images) !== JSON.stringify(initialData.images) ||
+      selectedCategory !== initialData.selectedCategory ||
+      selectedState !== initialData.selectedState ||
+      selectedPrice !== initialData.selectedPrice ||
+      selectedPackage !== initialData.selectedPackage ||
+      selectedDirect !== initialData.selectedDirect
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -152,36 +176,6 @@ function Page() {
 
   const handleCancel = () => {
     window.location.href = '/deal/dealMain';
-  };
-
-  function insertImage(targetCellIndex, imageUrl) {
-    const table = document.getElementById('imageTable');
-    const rows = table.getElementsByTagName('tr');
-    
-    for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        if (targetCellIndex < cells.length) {
-            const cell = cells[targetCellIndex];
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.alt = 'Inserted Image';
-            cell.appendChild(img);
-        }
-    }
-  }
-
-  const isModified = () => {
-    if (!initialData) return false;
-    
-    return (
-      JSON.stringify(formData) !== JSON.stringify(initialData.formData) ||
-      JSON.stringify(images) !== JSON.stringify(initialData.images) ||
-      selectedCategory !== initialData.selectedCategory ||
-      selectedState !== initialData.selectedState ||
-      selectedPrice !== initialData.selectedPrice ||
-      selectedPackage !== initialData.selectedPackage ||
-      selectedDirect !== initialData.selectedDirect
-    );
   };
 
   return (
@@ -498,7 +492,7 @@ function Page() {
               }}
               checked={selectedPrice === "가격 입력"}
             />
-            가격 입력
+            가��� 입력
           </label>
           <div className="form-group">
             <input

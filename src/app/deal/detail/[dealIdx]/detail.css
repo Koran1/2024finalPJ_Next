@@ -124,3 +124,24 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
+
+.icon-buttons {
+  display: flex;
+  gap: 10px;
+}
+.icon-buttons .wishlist-btn,
+.icon-buttons .report-btn {
+  width: 80px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.icon-buttons .message-btn {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.deal-description {
+  white-space: pre-wrap;
+}

@@ -7,6 +7,10 @@ import useAuthStore from '../../../../../store/authStore';
 import { useParams, useRouter } from 'next/navigation';
 import ForumIcon from '@mui/icons-material/Forum';
 import ReportIcon from '@mui/icons-material/Report';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -20,6 +24,7 @@ function Page({ params }) {
   const [mainImage, setMainImage] = useState('/images/dealDetailImage01.png'); // 메인 이미지 상태
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
   const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
+  const [dealStatus, setDealStatus] = useState('판매 중'); // 판매 상태
 
 // 상품 데이터 가져오기
   useEffect(() => {
@@ -58,7 +63,7 @@ function Page({ params }) {
                   // 작은 이미지들 설정 (fileOrder 1~4)
                   const smallImgs = files
                     // fileOrder 1~4 사이이고 fileName이 있는 파일만 필터링
-                    .filter(file => parseInt(file.fileOrder) >= 1 && parseInt(file.fileOrder) <= 4 && file.fileName)
+                    .filter(file => parseInt(file.fileOrder) >= 1 && parseInt(file.fileOrder) <= 5 && file.fileName)
                     // fileOrder 기준으로 정렬
                     .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
                     // 각 파일의 URL 생성
@@ -78,7 +83,7 @@ function Page({ params }) {
             console.error("Error details:", err);
             setError(err.response?.data?.message || err.message);
         } finally {
-            // 로딩 상태 해제
+            // 로딩 ��태 해제
             setLoading(false);
         }
     };
@@ -159,12 +164,14 @@ function Page({ params }) {
           <div className="product-info">
             <div className="product-header">
               <h3 style={{fontWeight: 'bold'}}>{item.dealTitle}</h3>
+              
               <button 
                 className="like-btn"
                 onClick={handleLike}
-                style={{ background: 'none', border: 'none', fontSize: '30px' }}
+                style={{ background: 'none', border: 'none' }}
               >
-                {isLiked ? '❤️' : '🤍'}
+                <span>찜하기</span>
+                {isLiked ? <BookmarkIcon style={{color: 'red', fontSize: '2rem'}} /> : <BookmarkBorderIcon style={{fontSize: '2rem'}} />}
               </button>
             </div>
             <hr />
@@ -181,12 +188,13 @@ function Page({ params }) {
 
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <div className="action-buttons">
+                <span>채팅</span>
                 <ForumIcon
                   variant="contained"
                   className="message-btn"
                   onClick={() => router.push('/deal/note/1')}
-                  style={{ cursor: 'pointer' }}
-                  title="채팅내기"
+                  style={{ cursor: 'pointer', fontSize: '2rem' }}
+                  title="채팅"
                 >
                 </ForumIcon>
               </div>
@@ -216,10 +224,16 @@ function Page({ params }) {
                 <span> {item.dealCount} 개(건)</span>
               </li>
             </ul>
-            <span>찜수</span>
+            <BookmarkIcon style={{fontSize: '1.5rem', color: '#808080'}} />
+            &nbsp;
+            <span>12</span>
             &nbsp;&nbsp;&nbsp;
-            <span>본수</span>
+            <VisibilityIcon style={{fontSize: '1.5rem', color: '#808080'}} />
+            &nbsp;
+            <span>35</span>
             &nbsp;&nbsp;&nbsp;
+            <AccessTimeFilledIcon style={{fontSize: '1.5rem', color: '#808080'}} />
+            &nbsp;
             <span>
               {(() => {
                 const today = new Date();
@@ -228,38 +242,54 @@ function Page({ params }) {
                 return diffTime === 0 ? "금일" : `${diffTime}일 전`;
               })()}
             </span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <ReportIcon variant="contained" color="error" className="report-btn" style={{marginRight: '10px', width: '80px', height: '50px'}}>신고</ReportIcon>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <ReportIcon 
+              variant="contained" 
+              className="report-btn" 
+              style={{
+                marginRight: '10px', 
+                fontSize: '2rem',
+                color: '#808080',
+                cursor: 'pointer'
+              }}
+              onClick={(e) => {
+                const currentColor = e.currentTarget.style.color;
+                if (currentColor === 'rgb(128, 128, 128)') {
+                  e.currentTarget.style.color = '#ff0000';
+                } else {
+                  e.currentTarget.style.color = '#808080';
+                }
+              }}
+            />
+            <span>신고</span>
 
-            <div className="status-buttons" style={{ textAlign: 'center', marginTop: '30px', marginBottom: '30px' }}>
+            <div className="status-buttons" style={{ textAlign: 'center', margin: '40px'}}>
               <Button
                 variant="contained"
-                color="primary" 
-                style={{marginRight: '10px', width: '150px', height: '50px'}}
+                color={dealStatus === '판매 중' ? 'primary' : 'default'}
+                style={{ marginRight: '10px', width: '150px', height: '50px', backgroundColor: dealStatus === '판매 중' ? '#1976d2' : '#808080' }}
                 onClick={() => {
-                  const button = document.querySelector('.status-buttons button');
-                  const isSelling = button.textContent === '판매 중';
+                  const isSelling = dealStatus === '판매 중';
                   
                   if (isSelling) {
-                    if (window.confirm("확인 시 판매완료 상태로 변경됩니다.")) {
-                      button.textContent = '판매완료';
-                      button.style.backgroundColor = '#808080';
+                    if (window.confirm("판매 완료 상태로 변경 됩니다.")) {
+                      setDealStatus('판매 완료');
                     }
                   } else {
-                    if (window.confirm("확인 시 판매 중 상태로 변경됩니다.")) {
-                      button.textContent = '판매 중';
-                      button.style.backgroundColor = '#1976d2';
+                    if (window.confirm("판매 중 상태로 변경됩니다.")) {
+                      setDealStatus('판매 중');
                     }
                   }
                 }}
               >
-                판매 중
+                {dealStatus}
               </Button>
               <Button
                 variant="contained"
                 color="success"
-                style={{marginRight: '10px', width: '150px', height: '50px'}}
+                style={{ marginLeft: '50px', width: '150px', height: '50px' }}
                 onClick={() => window.location.href = '/deal/satis/1'}
+                disabled={dealStatus === '판매 중'}
               >
                 만족도
               </Button>
@@ -268,7 +298,9 @@ function Page({ params }) {
         </div>
         <div className="product-description">
           <h5>상품 설명</h5>
-          <span>{item.dealDescription}</span>
+          <div className="deal-description">
+          {item.dealDescription}
+          </div>
         </div>
 
         <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
