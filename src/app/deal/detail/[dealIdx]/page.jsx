@@ -38,16 +38,17 @@ function Page({ params }) {
             if (data.success) {
                 setItem(data.data);
                 // 파일 목록 설정
-                const files = data.data.fileVoList;
-                if (files && files.length > 0) {
-                    const mainImg = files.find(file => file.fileOrder === 0)?.fileName || '/images/defaultMain.png';
-                    setMainImage(`${LOCAL_IMG_URL}/deal/${mainImg}`);
-                    
-                    const smallImgs = files
-                        .sort((a, b) => a.fileOrder - b.fileOrder)
-                        .map(file => `${LOCAL_IMG_URL}/deal/${file.fileName}`);
-                    setSmallImages(smallImgs);
-                }
+                // setMainImage(`${LOCAL_IMG_URL}/deal/${mainImg}`);
+                setMainImage('/images/dealDetailImage01.png'); // 메인 이미지 경로 고정
+
+                // setSmallImages(smallImgs);
+                setSmallImages([
+                  '/images/dealDetailImage01.png',
+                  '/images/reviewImage01.png',
+                  '/images/reviewImage02.png',
+                  '/images/reviewImage03.png',
+                  '/images/reviewImage01.png'
+                ]); // 작은 이미지 경로 고정
             } else {
                 setError(data.message || '상품 정보를 불러올 수 없습니다.');
             }
@@ -93,7 +94,7 @@ function Page({ params }) {
             </div>
         );
     }
-    // 글 작성자와 현재 로그인한 사��자 비교 
+    // 글 작성자와 현재 로그인한 사자 비교 
     const isOwner = isAuthenticated && String(user.m_id) === String(item.gb_id);
     // 로딩 완료 후
 
@@ -162,7 +163,7 @@ function Page({ params }) {
                 className="message-btn"
                 onClick={() => router.push('/deal/note/1')}
                 style={{ cursor: 'pointer' }}
-                title="채팅보내기"
+                title="채팅내기"
               >
               </ForumIcon>
               </div>
@@ -217,7 +218,7 @@ function Page({ params }) {
                   const isSelling = button.textContent === '판매 중';
                   
                   if (isSelling) {
-                    if (window.confirm("확인 시 판매완��� 상태로 변경됩니다.")) {
+                    if (window.confirm("확인 시 판매완료 상태로 변경됩니다.")) {
                       button.textContent = '판매완료';
                       button.style.backgroundColor = '#808080';
                     }
