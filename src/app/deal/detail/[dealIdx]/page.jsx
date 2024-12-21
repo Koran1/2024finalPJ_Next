@@ -19,6 +19,7 @@ function Page({ params }) {
   const [mainImage, setMainImage] = useState('/images/dealDetailImage01.png'); // 메인 이미지 상태
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
   const [smallImages, setSmallImages] = useState([]);
+  
 
 // 상품 데이터 가져오기
   useEffect(() => {
@@ -35,27 +36,40 @@ function Page({ params }) {
             
             console.log('Response data:', data);
             
+            // API 응답이 성공적인 경우
             if (data.success) {
-                setItem(data.data);
+                // 상품 정보를 상태에 저장
+                setItem(data.deal);
                 // 파일 목록 설정
-                // setMainImage(`${LOCAL_IMG_URL}/deal/${mainImg}`);
-                setMainImage('/images/dealDetailImage01.png'); // 메인 이미지 경로 고정
+                const files = data.files;
+                // 파일이 존재하고 비어있지 않은 경우
+                if (files && files.length > 0) {
+                  // fileOrder가 '0'인 메인 이미지 찾기
+                  const mainImgObj = files.find(file => file.fileOrder === '0');
+                  // 메인 이미지 URL 설정 (없으면 기본 이미지 사용)
+                  setMainImage(mainImgObj ? `${LOCAL_IMG_URL}/${mainImgObj.fileName}` : '/images/dealDetailImage01.png');
 
-                // setSmallImages(smallImgs);
-                setSmallImages([
-                  '/images/dealDetailImage01.png',
-                  '/images/reviewImage01.png',
-                  '/images/reviewImage02.png',
-                  '/images/reviewImage03.png',
-                  '/images/reviewImage01.png'
-                ]); // 작은 이미지 경로 고정
+                  // 작은 이미지들 설정 (fileOrder 1~4)
+                  const smallImgs = files
+                    // fileOrder 1~4 사이이고 fileName이 있는 파일만 필터링
+                    .filter(file => parseInt(file.fileOrder) >= 0 && parseInt(file.fileOrder) < 5 && file.fileName)
+                    // fileOrder 기준으로 정렬
+                    .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
+                    // 각 파일의 URL 생성
+                    .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
+                  // 작은 이미지 배열 상태 설정
+                  setSmallImages(smallImgs);
+                }
             } else {
+                // API 응답이 실패한 경우 에러 메시지 설정
                 setError(data.message || '상품 정보를 불러올 수 없습니다.');
             }
         } catch (err) {
+            // 에러 발생 시 콘솔에 출력하고 에러 상태 설정
             console.error("Error details:", err);
             setError(err.response?.data?.message || err.message);
         } finally {
+            // 로딩 상태 해제
             setLoading(false);
         }
     };
@@ -63,7 +77,7 @@ function Page({ params }) {
     if (dealIdx) {
         fetchData();
     }
-  }, [dealIdx, LOCAL_API_BASE_URL]);
+  }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
 
   // item이 null일 경우 처리 추가
   if (!item) {
@@ -95,7 +109,7 @@ function Page({ params }) {
         );
     }
     // 글 작성자와 현재 로그인한 사자 비교 
-    const isOwner = isAuthenticated && String(user.m_id) === String(item.gb_id);
+    const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
     // 로딩 완료 후
 
   // 좋아요 버튼 클릭 시 좋아요 상태 변경
