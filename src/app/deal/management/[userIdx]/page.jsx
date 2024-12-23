@@ -15,7 +15,7 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
 
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
-    const [item, setItem] = useState(null);                 // 데이터 상태
+    const [item, setItem] = useState([]);                 // 데이터 상태 
     const [loading, setLoading] = useState(true);           // 로딩 상태
     const [error, setError] = useState(null);               // 에러 상태
     // const { isAuthenticated, token, user } = useAuthStore();       // 로그인 상태
@@ -24,8 +24,6 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
         const fetchData = async () => {
             try {
                 setLoading(true); // 로딩 시작
-                console.log("Fetching data...");
-                console.log("params:", params);
 
                 const { userIdx } = await Promise.resolve(params);
                 const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${userIdx}`;
@@ -35,9 +33,8 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
                 // const data = response.data;
                 // console.log(response.data);
                 if (response.data.success) {
-                    setItem(response.data);
                     console.log("setItem: 이거 데이터.데이터", response.data.data);
-                    console.log("setItem: 이거 데이터", response.data);
+                    setItem(response.data.data);
                 } else {
                     setError("Failed to fetch product data.");
                 }
@@ -87,12 +84,11 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
             </div>
             <hr />
             <div className="purchase-info">
-                <div className="part">상품 {item.dealCount}개</div>
+                <div className="part">상품 {item.length}개</div>
             </div>
 
             <h1>상품 상세 정보</h1>
-
-            {item.dealCount > 0 ? (
+            {item.length > 0 ? (
             <table className="product-table">
                 <thead>
                     <tr>
@@ -104,21 +100,21 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
                     </tr>
                 </thead>
                 <tbody>
-                    { (item || []).map((product) => (
-                        <tr key={product.dealSellerUserIdx}>
+                     { item.map((k)=>{
+                       <tr key={k.dealSellerUserIdx}>
                             <td>
-                                <Link href={`/product/${product.dealIdx}`}>
+                                <Link href={`/product/${k.dealIdx}`}>
                                     {/* <img src={product.image} alt={product.dealTitle} width="50" height="50" /> */}
                                 </Link>
                             </td>
-                            <td>{product.dealTitle}</td>
+                            <td>{k.dealTitle}</td>
                             <td>
                                 {/* <Link href={`/detail/${product.dealIdx}`} style={{ textDecoration: "none" }}>{product.name}</Link> */}
                             </td>
-                            <td>{product.dealPrice}</td>
-                            <td>{product.dealRegDate.toLocaleDateString()}</td>
+                            <td>{k.dealPrice}</td>
+                            <td>{k.dealRegDate}</td>
                         </tr>
-                    ))}
+                    })}
                 </tbody>
             </table>) : ((
                 <table className="product-table">
