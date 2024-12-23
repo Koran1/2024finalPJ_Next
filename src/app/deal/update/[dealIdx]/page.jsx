@@ -31,52 +31,84 @@ function Page() {
   useEffect(() => {
     const fetchDealData = async () => {
       try {
-        const response = await fetch(`/api/deals/${dealIdx}`);
+        const response = await fetch(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
         
+        if (response.status === 302 || response.status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const data = await response.json();
-        if (data.success) {
-          setFormData({
-            dealTitle: data.deal.dealTitle,
-            dealCategory: data.deal.dealCategory,
-            dealStatus: data.deal.dealStatus,
-            dealDescription: data.deal.dealDescription,
-            dealPrice: data.deal.dealPrice.toString(),
-            dealPackage: data.deal.dealPackage,
-            dealDirect: data.deal.dealDirect,
-            dealDirectContent: data.deal.dealDirectContent,
-            dealCount: data.deal.dealCount.toString(),
-            dealRegDate: data.deal.dealRegDate,
-            priceOption: data.deal.priceOption
-          });
-          // 초기 폼 데이터 설정
-          setInitialFormData({
-            dealTitle: data.deal.dealTitle,
-            dealCategory: data.deal.dealCategory,
-            dealStatus: data.deal.dealStatus,
-            dealDescription: data.deal.dealDescription,
-            dealPrice: data.deal.dealPrice.toString(),
-            dealPackage: data.deal.dealPackage,
-            dealDirect: data.deal.dealDirect,
-            dealDirectContent: data.deal.dealDirectContent,
-            dealCount: data.deal.dealCount.toString(),
-            dealRegDate: data.deal.dealRegDate,
-            priceOption: data.deal.priceOption
-          });
-          // 이미지 설정
-          setImages(data.files.slice(0, 5).map(file => ({
-            file: null, // 기존 이미지는 업로드할 파일이 아니므로 null로 설정
-            preview: `${LOCAL_IMG_URL}/${file.fileName}`
+        let data;
+        try {
+          data = await response.json();
+          console.log('서버 응답 데이터:', data);
+        } catch (error) {
+          console.error('JSON 파싱 에러:', error);
+          console.log('서버 응답:', await response.text());
+          throw new Error('서버 응답을 처리할 수 없습니다.');
+        }
+
+        if (!data || !data.success) {
+          throw new Error('서버에서 데이터를 받지 못했습니다.');
+        }
+
+        // data.data.deal이 존재하는지 확인
+        const dealData = data.data?.deal || {};
+        
+        setFormData({
+          dealTitle: dealData.dealTitle || '',
+          dealCategory: dealData.dealCategory || '기타 물품',
+          dealStatus: dealData.dealStatus || '미개봉(미사용)',
+          dealDescription: dealData.dealDescription || '',
+          dealPrice: (dealData.dealPrice || 0).toString(),
+          dealPackage: dealData.dealPackage || '배송비 포함',
+          dealDirect: dealData.dealDirect || '직거래 불가',
+          dealDirectContent: dealData.dealDirectContent || '',
+          dealCount: (dealData.dealCount || 1).toString(),
+          dealRegDate: dealData.dealRegDate || new Date().toISOString(),
+          priceOption: dealData.priceOption || '나눔'
+        });
+
+        // 초기 폼 데이터도 같은 방식으로 설정
+        setInitialFormData({
+          dealTitle: dealData.dealTitle || '',
+          dealCategory: dealData.dealCategory || '기타 물품',
+          dealStatus: dealData.dealStatus || '미개봉(미사용)',
+          dealDescription: dealData.dealDescription || '',
+          dealPrice: (dealData.dealPrice || 0).toString(),
+          dealPackage: dealData.dealPackage || '배송비 포함',
+          dealDirect: dealData.dealDirect || '직거래 불가',
+          dealDirectContent: dealData.dealDirectContent || '',
+          dealCount: (dealData.dealCount || 1).toString(),
+          dealRegDate: dealData.dealRegDate || new Date().toISOString(),
+          priceOption: dealData.priceOption || '나눔'
+        });
+
+        // 이미지 설정
+        if (data.data?.files && Array.isArray(data.data.files)) {
+          setImages(data.data.files.slice(0, 5).map(file => ({
+            file: null,
+            preview: file.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : null
           })));
-        } else {
-          alert('상품 정보를 불러오는 중 오류가 발생했습니다.');
         }
       } catch (error) {
-        console.error(error);
-        alert('상품 정보를 불러오는 중 오류가 발생했습니다.');
+        console.error('상품 정보 불러오기 실패:', error);
+        if (error.message.includes('Failed to fetch')) {
+          alert('서버 연결에 실패했습니다. 로그인 상태를 확인해주세요.');
+        } else {
+          alert(error.message || '상품 정보를 불러오는 중 오류가 발생했습니다.');
+        }
       }
     };
     
@@ -213,8 +245,14 @@ function Page() {
     try {
       const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
         method: 'PUT',
+        credentials: 'include', // 쿠키를 포함한 인증 정보 전송
         body: submitData,
       });
+
+      if (response.status === 302 || response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({
