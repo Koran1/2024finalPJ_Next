@@ -1,12 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Link from "next/link";
 import "./purchase.css";
 
 // 구매 내역 페이지
 
-function Page() {
+function Page({ params }) {
+    const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+    const [item, setItem] = useState(null);                 // 데이터 상태
+    const [loading, setLoading] = useState(true);           // 로딩 상태
+    const [error, setError] = useState(null);               // 에러 상태
+
+
     const [products, setProducts] = useState([
         {
             id: 1,
@@ -25,6 +32,37 @@ function Page() {
             lastModified: new Date(),
         },
     ]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true); // 로딩 시작
+                console.log("Fetching data...");
+                console.log("params:", params);
+
+                const { userIdx } = await Promise.resolve(params);
+                const API_URL = `${LOCAL_API_BASE_URL}/deal/purchase/${userIdx}`;
+
+                // 데이터 가져오기
+                const response = await axios.get(API_URL);
+                // const data = response.data;
+                console.log(response);
+                if (response.data.success) {
+                    setItem(response.data.data);
+                    console.log("setItem: ", response.data.data);
+                } else {
+                    setError("Failed to fetch product data.");
+                }
+            } catch (err) {
+                console.error("Error fetching product data:", err);
+                setError("Failed to fetch product data.");
+            } finally {
+                setLoading(false); // 로딩 종료
+            }
+        };
+
+        fetchData();
+    }, [params, LOCAL_API_BASE_URL]);
 
     // State to track active link
     const [activeLink, setActiveLink] = useState('/deal/purchase');
@@ -74,6 +112,8 @@ function Page() {
             <div className="purchase-info">
                 <div className="part">구매 {products.length}개</div>
             </div>
+
+            
         </div>
 
     );

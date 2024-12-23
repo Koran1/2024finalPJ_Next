@@ -47,7 +47,7 @@ export default function ProductSearchPage() {
         {/* </div> */}
 
         {/* 나의 거래 버튼 */}
-        <Link href="/deal/management" className="btn1">나의 거래</Link>
+        <Link href="/deal/management/" className="btn1">나의 거래</Link>
       </div>
 
     {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
