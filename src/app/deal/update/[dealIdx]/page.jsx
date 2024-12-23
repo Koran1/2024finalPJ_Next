@@ -31,7 +31,12 @@ function Page() {
   useEffect(() => {
     const fetchDealData = async () => {
       try {
-        const response = await fetch(`${LOCAL_API_BASE_URL}/detail/${dealIdx}`);
+        const response = await fetch(`/api/deals/${dealIdx}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         if (data.success) {
           setFormData({
