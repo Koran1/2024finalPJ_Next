@@ -1,0 +1,310 @@
+/* 헤더 이미지 스타일 */
+.camp-header {
+    margin: 0 auto;
+}
+
+.camp-header-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+/* 메인 컨테이너 */
+.camp-main-container {
+    display: flex;
+    max-width: 1300px;
+    margin: 0 auto;
+    gap: 20px; /* 왼쪽 지도와 오른쪽 컨텐츠 간격 */
+}
+
+/* 왼쪽 지도 영역 */
+.camp-map-container {
+    flex: 0.3; /* 왼쪽 너비 30% */
+    height: 600px; /* 고정 높이 */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* 오른쪽 영역 */
+.camp-right-container {
+    flex: 0.7; /* 오른쪽 너비 70% */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 검색 영역 */
+.camp-search-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    /* background-color: #f9f9f9; */
+}
+
+.camp-doNm-select select,
+.camp-search-input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.camp-search-btn {
+    padding: 8px 15px;
+    background-color: #5F8FF0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.camp-search-btn:hover {
+    background-color: #3a6db3;
+}
+
+/* 키워드 검색 스타일 */
+.camp-search-keyword {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.camp-search-keyword .MuiTextField-root {
+    flex: 1;
+}
+
+.camp-search-keyword .MuiButton-root {
+    padding: 8px 15px;
+    min-width: 100px;
+}
+
+.camp-search-result {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.camp-total-count {
+    border: 1px solid rgba(25, 118, 210, 0.5); 
+    border-radius: 4px; 
+    padding: 6px 16px; 
+    font-size: 14px; 
+    font-weight: 500; 
+    text-align: center; 
+    color: #3d3d3d; 
+    font-weight: bold;
+    cursor: pointer; 
+}
+
+.camp-total-count:hover {
+    background-color: rgba(25, 118, 210, 0.04);
+    border-color: #1976d2;
+}
+
+
+/* 정렬 옵션 스타일 */
+.camp-sort-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #777;
+}
+
+.camp-sort-container span {
+    padding: 5px 10px;
+    transition: color 0.2s, font-weight 0.2s;
+}
+
+.camp-sort-container span:hover,
+.camp-sort-container span.active {
+    color: #5F8FF0;
+    font-weight: bold;
+}
+
+/* 캠핑장 리스트 */
+.camp-faclNmList-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.camp-item {
+    display: flex;
+    padding: 15px 10px;
+    border-bottom: 1px solid #ddd; /* 리스트 사이 가로줄 */
+    transition: background-color 0.2s;
+}
+
+.camp-item:hover {
+    background-color: #f9f9f9; /* 호버 시 색상 변경 */
+}
+
+.camp-item img {
+    width: 265px;
+    height: 185px;
+    object-fit: cover;
+    background-color: #f0f0f0;
+    margin-right: 20px; /* 이미지와 텍스트 사이 여백 */
+}
+
+/* 오버레이 추가 */
+.camp-img-container {
+    position: relative;
+    display: inline-block;
+}
+
+.camp-overlay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white; 
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.camp-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.camp-text h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.camp-text h3 a {
+    color: #3D3C42;
+    text-decoration: none;
+}
+
+.camp-text h3 a:hover {
+    color: #4D88FF;
+    text-decoration: underline;
+}
+
+.camp-text p.camp-lineIntro {
+    font-size: 16px;
+    color: #333;
+    margin: 5px 0;
+}
+
+.camp-text p.camp-intro {
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
+}
+
+.totalViews {
+    color: #0E1885;
+    font-weight: bold;
+}
+
+.totalLogs {
+    color: #1976D2;
+    font-weight: bold;
+}
+
+.totalLikes {
+    color: #FF0000;
+    font-weight: bold;
+}
+
+.totalNumber {
+    color: #000000;
+}
+
+.camp-text p {
+    margin: 2px 0;
+}
+
+.camp-item .camp-intro {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
+}
+
+
+/* 시도 및 시군구 드롭다운 */
+.camp-doNm-select {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.camp-doNm-select select {
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* 키워드 검색 스타일 */
+.camp-search-container .camp-search-input .camp-search-keyword {
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+}
+
+/* 로딩 및 에러 스타일*/
+.loading-message {
+    text-align: center;
+    font-size: 16px;
+    color: #5F8FF0;
+}
+
+.error-message {
+    text-align: center;
+    font-size: 16px;
+    color: red;
+}
+
+/* 스크롤 관련 */
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #5F8FF0;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    /* box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.scroll-to-top:hover {
+    background-color: #3a6db3;
+    transform: scale(1.1);
+}
