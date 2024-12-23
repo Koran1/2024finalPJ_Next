@@ -1,0 +1,48 @@
+/* 메인 컨테이너 */
+.camplog-main-container {
+    display: flex;
+    flex-direction: column; /* 세로 방향 정렬 */
+    justify-content: flex-start; /* 위에서 아래로 정렬 */
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px 0;
+    gap: 20px; /* 자식 요소 간 간격 */
+}
+
+/* 검색 영역 */
+.camplog-result-sort-container {
+    display: flex;
+    justify-content: flex-start; /* 기본적으로 왼쪽 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    width: 100%;
+    margin-top: 10px;
+    position: relative; /* 정렬 옵션을 절대 위치로 조정하기 위해 추가 */
+}
+
+.search-result-blue {
+    color: #4D88FF;
+    font-weight: bold;
+}
+
+/* 정렬 옵션을 오른쪽 끝으로 배치 */
+.camplog-sort-container {
+    position: absolute;
+    right: 0; /* 부모 컨테이너의 오른쪽 끝으로 배치 */
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #777;
+}
+
+.camplog-sort-container span {
+    padding: 5px 10px;
+    transition: color 0.2s, font-weight 0.2s;
+}
+
+.camplog-sort-container span:hover,
+.camplog-sort-container span:active {
+    color: #5F8FF0;
+    font-weight: bold;
+}
+

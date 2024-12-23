@@ -1,8 +1,9 @@
-.log-container {}
-
-.log-header {
+.log-container {
     margin: 0 auto;
     width: 900px;
+}
+
+.log-header {
     display: flex;
     justify-content: space-between;
     /* 양 끝으로 배치 */
