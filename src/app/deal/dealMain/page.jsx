@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from "next/link";
 import { useState, useEffect } from 'react';
+
 import './dealMain.css';
 import axios from 'axios';
 
@@ -95,6 +96,7 @@ if (loading) return <div>Loading...</div>;
           </button>
         </form>
 
+
         {/* 상품 등록 버튼 */}
         {/* <div> */}
         <Link href="/deal/write" className="btn1">상품 등록</Link>
@@ -132,6 +134,7 @@ if (loading) return <div>Loading...</div>;
         <Link href={`/deal/detail/1`}><img src={`../images/dealDetailImage01.png`} alt="상품 이미지" style={{ width: "100px", height: "100px" }} /></Link>
 
         {products.map((product) => (         
+
           <div className="product-item" key={product.dealIdx}>
             <div className="product-image">
               <Link href={`/deal/detail/${product.dealIdx}`}>

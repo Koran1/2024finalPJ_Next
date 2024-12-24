@@ -8,20 +8,42 @@ import useAuthStore from '../../store/authStore';
 import { Avatar, Badge, Button } from '@mui/material';
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
   // zustand 상태 가져오기
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, logout, isExpired } = useAuthStore();
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // useEffect(() => {
+
+  //   const protectedRoutes = ["/add/notice", "/deal/dealMain"];
+  //   const isProtectedRoute = protectedRoutes.includes(pathname);
+  //   console.log(pathname);
+  //   console.log('isProtectedRoute', isProtectedRoute);
+  //   console.log('!isAuthenticated', !isAuthenticated);
+  //   console.log(isExpired());
+
+  //   if (isProtectedRoute) {
+  //     if (isExpired()) {
+  //       alert("로그인이 필요한 서비스입니다.");
+  //       logout();
+  //       router.push("/user/login");
+  //     }
+  //   }
+
+  // }, [isAuthenticated, router]);
+
   const handleLogout = () => {
     // zustand에 있는 함수 호출
     logout();
     alert("로그아웃 되었습니다");
   }
 
-  const handelLogin = () => {
-    router
-  }
 
   const jaro = {
     fontFamily: "'Jaro', sans-serif",
@@ -102,7 +124,9 @@ export default function RootLayout({ children }) {
         <hr />
         <footer className="container">
           <p className="float-end"><a href="#">Back to top</a></p>
-          <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+          <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="/add/notice">공지사항</a>
+            &middot; <a href="#">이용약관</a>
+            &middot; <a href="#">개인정보처리방침</a></p>
         </footer>
       </body>
     </html >
