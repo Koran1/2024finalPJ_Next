@@ -149,6 +149,7 @@ function Page() {
     // 디버깅을 위해 FormData 내용 확인
     console.log('Submit Data:', Object.fromEntries(submitData));
 
+    // 상품 등록 API 호출
     const response = await fetch(`${LOCAL_API_BASE_URL}/deal/write`, {
       method: 'POST',
       body: submitData,
@@ -170,8 +171,12 @@ function Page() {
       return;
     }
 
-    alert('상품이 성공적으로 등록되었습니다.');
-    router.push(`/deal/detail/${dealIdx}`); // 등록된 상품의 상세 페이지로 이동
+    if (responseData.success) {
+        alert('상품이 성공적으로 등록되었습니다.');
+        router.push(`/deal/detail/${dealIdx}`); // 상대 경로로 수정
+    } else {
+        alert('상품 등록에 실패했습니다.');
+    }
   };
 
   const handleCancel = () => {

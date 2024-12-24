@@ -32,7 +32,6 @@ function Page({ params }) {
         try {
             setLoading(true);
             
-            // 수정된 API 엔드포인트 사용
             const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
             console.log('Fetching URL:', API_URL);
             
@@ -58,32 +57,33 @@ function Page({ params }) {
                   } else {
                     setError('메인 이미지가 누락되었습니다.');
                     return;
-                  }
+                }
+                
+                setItem(data.deal);  
+                
+                // files 배열이 존재하고 비어있지 않은지 확인
+                const files = data.files || [];
+                if (files.length > 0) {
+                    const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
+                    if (mainImgObj) {
+                        setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+                    }
 
-                  // 작은 이미지들 설정 (fileOrder 1~4)
-                  const smallImgs = files
-                    // fileOrder 1~4 사이이고 fileName이 있는 파일만 필터링
-                    .filter(file => parseInt(file.fileOrder) >= 1 && parseInt(file.fileOrder) <= 5 && file.fileName)
-                    // fileOrder 기준으로 정렬
-                    .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
-                    // 각 파일의 URL 생성
-                    .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
-                  // 작은 이미지 배열 상태 설정
-                  setSmallImages(smallImgs);
-                } else {
-                  // 파일이 없을 경우 에러 설정
-                  setError('파일이 존재하지 않습니다.');
+                    const smallImgs = files
+                        .filter(file => parseInt(file.fileOrder) >= 1 && 
+                                      parseInt(file.fileOrder) <= 5 && 
+                                      file.fileName)
+                        .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
+                        .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
+                    setSmallImages(smallImgs);
                 }
             } else {
-                // API 응답이 실패한 경우 에러 메시지 설정
                 setError(data.message || '상품 정보를 불러올 수 없습니다.');
             }
         } catch (err) {
-            // 에러 발생 시 콘솔에 출력하고 에러 상태 설정
             console.error("Error details:", err);
-            setError(err.response?.data?.message || err.message);
+            setError('상품 정보를 가져오는 중 오류가 발생했습니다.');
         } finally {
-            // 로딩 ��태 해제
             setLoading(false);
         }
     };
@@ -91,7 +91,7 @@ function Page({ params }) {
     if (dealIdx) {
         fetchData();
     }
-  }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]); // LOCAL_IMG_URL 의존성 추가
+  }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
 
   // item이 null일 경우 처리 추가
   if (!item) {
@@ -105,7 +105,7 @@ function Page({ params }) {
       // 수정 버튼 클릭 시
       const handleUpdate = async () => {
         // 수정페이지로 이동
-        router.push(`${LOCAL_API_BASE_URL}/deal/update/${item.dealIdx}`)
+        router.push(`/deal/update/${item.dealIdx}`)
     }
 
     // 로딩 중
@@ -309,7 +309,7 @@ function Page({ params }) {
             color="darkgray"
             onClick={handleUpdate}
           >
-            상품 수정
+            수정하기
           </Button>
         </div>
 
