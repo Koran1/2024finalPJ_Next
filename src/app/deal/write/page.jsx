@@ -132,16 +132,22 @@ function Page() {
     }
 
     const submitData = new FormData();
+    // formData에서 file 속성 제외하고 나머지 데이터만 추가
     Object.keys(formData).forEach(key => {
-      submitData.append(key, formData[key]);
+      if (key !== 'file') {  // file 속성 제외
+        submitData.append(key, formData[key]);
+      }
+    });
+
+    // 이미지 파일들만 따로 추가
+    images.forEach((image) => {
+      if (image && image.file) {  // null 체크 추가
+        submitData.append('file', image.file);
+      }
     });
 
     // 디버깅을 위해 FormData 내용 확인
     console.log('Submit Data:', Object.fromEntries(submitData));
-
-    images.forEach((image) => {
-      submitData.append('file', image.file);
-    });
 
     const response = await fetch(`${LOCAL_API_BASE_URL}/deal/write`, {
       method: 'POST',

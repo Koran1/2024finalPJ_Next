@@ -21,7 +21,7 @@ function Page({ params }) {
   const { isAuthenticated, token, user } = useAuthStore(); // 로그인 상태
   const router = useRouter();
   const [isLiked, setIsLiked] = useState(false);
-  const [mainImage, setMainImage] = useState('/images/dealDetailImage01.png'); // 메인 이미지 상태
+  const [mainImage, setMainImage] = useState(null); // 메인 이미지 상태
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
   const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
   const [dealStatus, setDealStatus] = useState('판매 중'); // 판매 상태
@@ -105,7 +105,7 @@ function Page({ params }) {
       // 수정 버튼 클릭 시
       const handleUpdate = async () => {
         // 수정페이지로 이동
-        router.push(`/deal/update/${item.dealIdx}`)
+        router.push(`${LOCAL_API_BASE_URL}/deal/update/${item.dealIdx}`)
     }
 
     // 로딩 중
@@ -192,7 +192,7 @@ function Page({ params }) {
                 <ForumIcon
                   variant="contained"
                   className="message-btn"
-                  onClick={() => router.push('/deal/note/1')}
+                  onClick={() => router.push(`${LOCAL_API_BASE_URL}/deal/note/1`)}
                   style={{ cursor: 'pointer', fontSize: '2rem' }}
                   title="채팅"
                 >
@@ -288,7 +288,7 @@ function Page({ params }) {
                 variant="contained"
                 color="success"
                 style={{ marginLeft: '50px', width: '150px', height: '50px' }}
-                onClick={() => window.location.href = '/deal/satis/1'}
+                onClick={() => window.location.href = `${LOCAL_API_BASE_URL}/deal/satis/1`}
                 disabled={dealStatus === '판매 중'}
               >
                 만족도
