@@ -49,22 +49,15 @@ function Page() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        let data;
-        try {
-          data = await response.json();
-          console.log('서버 응답 데이터:', data);
-        } catch (error) {
-          console.error('JSON 파싱 에러:', error);
-          console.log('서버 응답:', await response.text());
-          throw new Error('서버 응답을 처리할 수 없습니다.');
-        }
+        // JSON 파싱 간소화
+        const data = await response.json();
 
         if (!data || !data.success) {
           throw new Error('서버에서 데이터를 받지 못했습니다.');
         }
 
-        // data.data.deal이 존재하는지 확인
-        const dealData = data.data?.deal || {};
+        // 데이터 경로 수정
+        const dealData = data.deal || {};
         
         setFormData({
           dealTitle: dealData.dealTitle || '',
@@ -80,7 +73,6 @@ function Page() {
           priceOption: dealData.priceOption || '나눔'
         });
 
-        // 초기 폼 데이터도 같은 방식으로 설정
         setInitialFormData({
           dealTitle: dealData.dealTitle || '',
           dealCategory: dealData.dealCategory || '기타 물품',
@@ -96,8 +88,8 @@ function Page() {
         });
 
         // 이미지 설정
-        if (data.data?.files && Array.isArray(data.data.files)) {
-          setImages(data.data.files.slice(0, 5).map(file => ({
+        if (data.files && Array.isArray(data.files)) {
+          setImages(data.files.slice(0, 5).map(file => ({
             file: null,
             preview: file.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : null
           })));
