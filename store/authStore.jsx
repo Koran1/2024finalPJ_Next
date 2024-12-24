@@ -26,8 +26,9 @@ const useAuthStore = create(
 
             // 토큰 만료 여부 확인
             isExpired: () => {
-                const { isAuthenticated, expiresAt } = get();
-                if (isAuthenticated || expiresAt && Date.now() > expiresAt) {
+                const { logout, expiresAt } = get();
+                if (expiresAt && Date.now() > expiresAt) {
+                    logout();
                     return true;
                 } else {
                     return false;

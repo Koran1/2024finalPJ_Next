@@ -25,7 +25,7 @@ function Page() {
         axios.get(`${LOCAL_API_BASE_URL}/add/notice/getNotice?currentPage=${currentPage}&searchKeyword=${searchKeyword}`)
             .then(res => {
                 if (res.data.success) {
-                    console.log(res.data.data)
+                    console.log(res.data)
                     setNotices(res.data.data.noticeList)
                     setNoticesLv1(res.data.data.noticeListLv1)
                     setTotalNoticeCount(res.data.data.totalNoticeCount)

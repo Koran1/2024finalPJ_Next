@@ -14,17 +14,29 @@ import { Avatar } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useAuthStore from "../../../store/authStore";
+import { useRouter } from "next/navigation";
 
 
 const ChatBox = ({ room }) => {
 
   const socketRef = useRef();
-  const { user, token } = useAuthStore();
+  const router = useRouter();
+  const { user, token, isExpired, isAuthenticated } = useAuthStore();
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user || !token) {
       console.warn("User or token is not available yet.");
       return;
+    }
+
+    setLoading(true);
+
+    if (isExpired() || !isAuthenticated) {
+      alert("로그인이 필요한 서비스입니다.");
+      router.push("/user/login");
     }
 
     const userIdx = user.userIdx;
@@ -36,15 +48,18 @@ const ChatBox = ({ room }) => {
     socketRef.current.on("receive_message", (data) => {
       console.log(data);
       setChat((prevChat) => [...prevChat, data]);
+      setLoading(false)
     });
 
     socketRef.current.on('chatList', (chatList) => {
       console.log(chatList)
       setChat(chatList);
+      setLoading(false)
     });
 
     return () => {
       socketRef.current.disconnect();
+
     };
   }, [room, user, token]);
 
@@ -54,8 +69,16 @@ const ChatBox = ({ room }) => {
 
   const sendMessage = () => {
     const input = { chatRoom: room, chatSenderIdx: user.userIdx, chatMessage: message };
-    socketRef.current.emit("send_message", input);
+    if (chat.length === 0) {
+      socketRef.current.emit("first_message", input);
+    } else {
+      socketRef.current.emit("send_message", input);
+    }
     setMessage("");
+  }
+
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
   }
 
   return (
@@ -66,8 +89,6 @@ const ChatBox = ({ room }) => {
         height: "60vh",
         border: "1px solid black",
         borderRadius: "14px",
-
-
       }}
       className="for-dark-chat-box"
     >
