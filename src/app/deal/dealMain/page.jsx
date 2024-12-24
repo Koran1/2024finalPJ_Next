@@ -2,13 +2,67 @@
 
 import React from 'react';
 import Link from "next/link";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './dealMain.css';
+import axios from 'axios';
 
 export default function ProductSearchPage() {
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
   const [selectedCategories, setSelectedCategories] = useState([]); // 선택된 카테고리 상태
-  const [products, setProducts] = useState([]); // 검색 결과로 표시될 상품 리스트
+ // const [products, setProducts] = useState([]); // 검색 결과로 표시될 상품 리스트
+
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+  const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
+  const [products, setProducts] = useState([]);                 // 데이터 상태 
+  const [loading, setLoading] = useState(true);           // 로딩 상태
+  const [error, setError] = useState(null);               // 에러 상태
+
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            setLoading(true); // 로딩 시작
+            const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMain`;
+
+            // 데이터 가져오기
+            const response = await axios.get(API_URL);
+
+            if (response.data.success) {
+                console.log("setProducts: ", response.data.data);
+            
+                const list = response.data.data.list;
+                const file_list = response.data.data.file_list;
+            
+                // Map over the list to create a new array with the updated structure
+                const resultProducts = list.map((k) => {
+                    // Find the matching file from file_list
+                    const matchingFile = file_list.find(file => file.fileTableIdx === k.dealIdx);
+                    
+                    // Return a new object with the additional field
+                    return {
+                        ...k,  // Spread the original `k` object
+                        deal01: matchingFile ? matchingFile.fileName : null // Add the `deal01` field
+                    };
+                });
+            
+                console.log(resultProducts);
+                setProducts(resultProducts);
+            } else {
+                setError("Failed to fetch product data.");
+            }
+        } catch (err) {
+            console.error("Error fetching product data:", err);
+            setError("Failed to fetch product data.");
+        } finally {
+            setLoading(false); // 로딩 종료
+        }
+    };
+
+    fetchData();
+}, [ LOCAL_API_BASE_URL]);
+
+if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+
 
   // 카테고리 선택 토글 함수
   const toggleCategory = (category) => {
@@ -77,12 +131,12 @@ export default function ProductSearchPage() {
         {/* 실제 상품 이미지 링크 시 삭제 */}
         <Link href={`/deal/detail/1`}><img src={`../images/dealDetailImage01.png`} alt="상품 이미지" style={{ width: "100px", height: "100px" }} /></Link>
 
-        {products.map((product) => (
+        {products.map((product) => (         
           <div className="product-item" key={product.dealIdx}>
             <div className="product-image">
               <Link href={`/deal/detail/${product.dealIdx}`}>
                 <img
-                  src={product.imageUrl || "../images/defaultImage.png"}
+                  src={product.deal01 || "../images/defaultImage.png"}
                   alt={product.title}
                   style={{ width: "200px", height: "200px" }}
                 />
@@ -92,6 +146,7 @@ export default function ProductSearchPage() {
               </Link>
             </div>
           </div>
+          
         ))}
       </div>
 
