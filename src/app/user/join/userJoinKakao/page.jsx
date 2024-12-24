@@ -17,10 +17,12 @@ function Page() {
         const socialIdx = searchParams.get('socialIdx');
         axios.get(`${LOCAL_API_BASE_URL}/user/getSocials?socialIdx=${socialIdx}`)
             .then(res => {
+                console.log(res);
                 if (res.data.success) {
+
                     setSocialData(res.data.data)
                 } else {
-                    alert(res.data.message)
+                    alert("어쩌구..")
                     router.push('/user/login')
                 }
             })

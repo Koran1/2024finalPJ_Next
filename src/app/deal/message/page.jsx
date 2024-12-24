@@ -89,10 +89,7 @@ function Page() {
                     onClick={() => setActiveLink('/deal/message')}>
                     쪽지 목록
                 </Link>
-                <br />
-                <div className="part"> 평점 39개</div>
             </div>
-
 
             {/* 채팅 화면 */}
             <Tabs className="chat-tabs">
