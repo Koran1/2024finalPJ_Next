@@ -1,11 +1,11 @@
 "use client";
 import './globals.css';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // zustand store 호출
 import useAuthStore from '../../store/authStore';
-import { Avatar, Badge, Button } from '@mui/material';
+import { Avatar, Menu, MenuItem, Badge, Button } from '@mui/material';
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
 
@@ -59,6 +59,13 @@ export default function RootLayout({ children }) {
       bsCollapseRef.current.hide();
     }
   };
+  const [photo, setPhoto] = useState(null);
+  const [isShow, setIsShow] = useState(false);
+
+  const handlePhotoClick = (e) => {
+    setIsShow(!isShow);
+    isShow ? setPhoto(null) : setPhoto(e.currentTarget);
+  }
 
   return (
     <html lang="en">
@@ -76,12 +83,13 @@ export default function RootLayout({ children }) {
                     <Link className="nav-link active" href="/camp" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑장소</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑로그</Link>
+                    <Link className="nav-link active" href="/camplog/list" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑로그</Link>
                   </li>
                   <li className="nav-item">
                     <Link className="nav-link active" href="/deal/dealMain" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif" }} onClick={handleNavLinkClick}>캠핑마켓</Link>
                   </li>
                 </ul>
+
                 {isAuthenticated ? (
                   <>
                     <Badge badgeContent={4} color="primary" >
@@ -89,12 +97,24 @@ export default function RootLayout({ children }) {
                         <MailOutline style={{ color: 'white', width: '40px', height: '40px' }} />
                       </Link>
                     </Badge>
-                    <Avatar src="/images/kitten-3.jpg" style={{ marginLeft: '30px', marginRight: '30px', width: '50px', height: '50px' }} />
+                    <Avatar onClick={handlePhotoClick} src="/images/kitten-3.jpg" style={{ marginRight: '30px', width: '60px', height: '60px', }} />
+                <Menu
+                  anchorEl={photo}
+                  anchorOrigin={{ vertical: "bottom", horizontal: 'center' }}
+                  transformOrigin={{ vertical: "top", horizontal: "center" }}
+                  open={Boolean(photo)}
+                  onClose={() => setPhoto(null)}
+                >
+                  <MenuItem><Link href={"/mycamp/plan "}>나의캠핑</Link></MenuItem>
+                  <MenuItem >마이페이지</MenuItem>
+                  <MenuItem >로그아웃</MenuItem>
+                </Menu> 
                   </>
                 ) : (
                   <Button variant='contained' href='/user/login' style={{ marginRight: '30px' }}>로그인 </Button>
                 )}
               </div>
+
             </div>
           </nav>
         </header>
