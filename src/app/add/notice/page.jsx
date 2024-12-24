@@ -44,6 +44,7 @@ function Page() {
 
     if (loading) {
         return <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
+
     }
 
     if (error) {
@@ -54,9 +55,9 @@ function Page() {
             </div>
         )
     }
-
     return (
         <Box display="flex">
+
             <AddSideBar />
             <Box flexGrow={1} p={2}>
                 <Box>

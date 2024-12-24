@@ -13,31 +13,47 @@ import SendIcon from "@mui/icons-material/Send";
 import { Avatar } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import useAuthStore from "../../../store/authStore";
 
 
 const ChatBox = ({ room }) => {
 
   const socketRef = useRef();
+  const { user, token } = useAuthStore();
 
   useEffect(() => {
-    socketRef.current = io(`http://localhost:8081?room=${room}`);
+    if (!user || !token) {
+      console.warn("User or token is not available yet.");
+      return;
+    }
+
+    const userIdx = user.userIdx;
+    socketRef.current = socketRef.current = io(`http://localhost:8081`, {
+      query: { room, token, userIdx },
+    })
+
     socketRef.current.connect();
     socketRef.current.on("receive_message", (data) => {
       console.log(data);
       setChat((prevChat) => [...prevChat, data]);
     });
 
+    socketRef.current.on('chatList', (chatList) => {
+      console.log(chatList)
+      setChat(chatList);
+    });
+
     return () => {
       socketRef.current.disconnect();
     };
-  }, [room]);
+  }, [room, user, token]);
 
   // 채팅 파트
   const [chat, setChat] = useState([]);
   const [message, setMessage] = useState("");
 
   const sendMessage = () => {
-    const input = { message: message, room: room };
+    const input = { chatRoom: room, chatSenderIdx: user.userIdx, chatMessage: message };
     socketRef.current.emit("send_message", input);
     setMessage("");
   }
@@ -106,131 +122,142 @@ const ChatBox = ({ room }) => {
         }}
         className="chat-list-box"
       >
-        {/* Left Chat */}
-        <Box
-          sx={{
-            display: "flex",
-            maxWidth: "730px",
-            mb: "20px",
-          }}
-        >
-          <Avatar src="/images/tree-2.jpg" />
-          <Box
-            sx={{
-              display: "flex",
-              ml: "10px",
-            }}
-            className="ml-1"
-          >
-            <Box>
-              <Typography
+        {chat.slice().reverse().map((chat) => {
+          if (chat.chatSenderIdx === user.userIdx) {
+            // Right Chat
+            return (
+              <Box
                 sx={{
-                  background: "#F5F6FA",
-                  borderRadius: "0px 15px 15px 15px",
-                  p: "14px 20px",
-                  mb: "10px",
+                  display: "flex",
+                  justifyContent: "end",
+                  maxWidth: "730px",
+                  mb: "20px",
                 }}
-                className="dark-BG-101010"
+                className="ml-auto"
+                key={chat.chatTime}
               >
-                Chatting Contents from Left Side
-              </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                  }}
+                  className="ml-1"
+                >
+                  {/* Replay Dropdown */}
+                  <Box>
+                    <div className="left-replay-box">
+                      <IconButton size="small">
+                        <MoreVertIcon fontSize="small" />
+                      </IconButton>
 
-              <Typography fontSize="12px">19:10  more recent timeline1</Typography>
-            </Box>
+                      <div className="hover-caption">
+                        <List sx={{ display: "inline" }}>
+                          <ListItem disablePadding>
+                            <ListItemButton sx={{ padding: "1px 15px" }}>
+                              <DeleteOutlineIcon
+                                fontSize="small"
+                                sx={{ mt: "-4px" }}
+                                className="mr-5px"
+                              />
+                              <ListItemText
+                                primary="Delete"
+                                primaryTypographyProps={{ fontSize: "12px" }}
+                              />
+                            </ListItemButton>
+                          </ListItem>
+                        </List>
+                      </div>
+                    </div>
+                  </Box>
 
-            {/* Replay Dropdown */}
-            <Box className="ml-1">
-              <div className="right-replay-box">
-                <IconButton size="small">
-                  <MoreVertIcon fontSize="small" />
-                </IconButton>
+                  <Box className="mr-1" style={{ marginRight: "10px" }}>
+                    <Typography
+                      sx={{
+                        background: "#757FEF",
+                        color: "#fff !important",
+                        borderRadius: "15px 0 15px 15px",
+                        p: "14px 20px",
+                        mb: "10px",
+                      }}
+                    >
+                      {chat.chatMessage}
+                    </Typography>
 
-                <div className="hover-caption">
-                  <List sx={{ display: "inline" }}>
-                    <ListItem disablePadding>
-                      <ListItemButton sx={{ padding: "1px 15px" }}>
-                        <DeleteOutlineIcon
-                          fontSize="small"
-                          sx={{ mt: "-4px" }}
-                          className="mr-5px"
-                        />
-                        <ListItemText
-                          primary="Delete"
-                          primaryTypographyProps={{ fontSize: "12px" }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  </List>
-                </div>
-              </div>
-            </Box>
-          </Box>
-        </Box>
-
-        {/* Right Chat */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "end",
-            maxWidth: "730px",
-            mb: "20px",
-          }}
-          className="ml-auto"
-        >
-          <Box
-            sx={{
-              display: "flex",
-            }}
-            className="ml-1"
-          >
-            {/* Replay Dropdown */}
-            <Box>
-              <div className="left-replay-box">
-                <IconButton size="small">
-                  <MoreVertIcon fontSize="small" />
-                </IconButton>
-
-                <div className="hover-caption">
-                  <List sx={{ display: "inline" }}>
-                    <ListItem disablePadding>
-                      <ListItemButton sx={{ padding: "1px 15px" }}>
-                        <DeleteOutlineIcon
-                          fontSize="small"
-                          sx={{ mt: "-4px" }}
-                          className="mr-5px"
-                        />
-                        <ListItemText
-                          primary="Delete"
-                          primaryTypographyProps={{ fontSize: "12px" }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  </List>
-                </div>
-              </div>
-            </Box>
-
-            <Box className="mr-1" style={{ marginRight: "10px" }}>
-              <Typography
+                    <Typography fontSize="12px" textAlign="end">
+                      {chat.chatTime}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Avatar src="/images/tree-4.jpg" />
+              </Box>
+            );
+          } else {
+            // Left Chat
+            return (
+              <Box
                 sx={{
-                  background: "#757FEF",
-                  color: "#fff !important",
-                  borderRadius: "15px 0 15px 15px",
-                  p: "14px 20px",
-                  mb: "10px",
+                  display: "flex",
+                  maxWidth: "730px",
+                  mb: "20px",
                 }}
+                key={chat.chatTime}
               >
-                Chatting Contents from Right Side
-              </Typography>
+                <Avatar src="/images/tree-2.jpg" />
+                <Box
+                  sx={{
+                    display: "flex",
+                    ml: "10px",
+                  }}
+                  className="ml-1"
+                >
+                  <Box>
+                    <Typography
+                      sx={{
+                        background: "#F5F6FA",
+                        borderRadius: "0px 15px 15px 15px",
+                        p: "14px 20px",
+                        mb: "10px",
+                      }}
+                      className="dark-BG-101010"
+                    >
+                      {chat.chatMessage}
+                    </Typography>
 
-              <Typography fontSize="12px" textAlign="end">
-                19:04 timeline2
-              </Typography>
-            </Box>
-          </Box>
-          <Avatar src="/images/tree-4.jpg" />
-        </Box>
+                    <Typography fontSize="12px">{chat.chatTime}</Typography>
+                  </Box>
+
+                  {/* Replay Dropdown */}
+                  <Box className="ml-1">
+                    <div className="right-replay-box">
+                      <IconButton size="small">
+                        <MoreVertIcon fontSize="small" />
+                      </IconButton>
+
+                      <div className="hover-caption">
+                        <List sx={{ display: "inline" }}>
+                          <ListItem disablePadding>
+                            <ListItemButton sx={{ padding: "1px 15px" }}>
+                              <DeleteOutlineIcon
+                                fontSize="small"
+                                sx={{ mt: "-4px" }}
+                                className="mr-5px"
+                              />
+                              <ListItemText
+                                primary="Delete"
+                                primaryTypographyProps={{ fontSize: "12px" }}
+                              />
+                            </ListItemButton>
+                          </ListItem>
+                        </List>
+                      </div>
+                    </div>
+                  </Box>
+                </Box>
+              </Box>
+            );
+          }
+        })}
       </Box>
+
 
       {/* Footer */}
       <Box
@@ -285,7 +312,7 @@ const ChatBox = ({ room }) => {
           </Button>
         </Box>
       </Box>
-    </Box>
+    </Box >
   );
 };
 
