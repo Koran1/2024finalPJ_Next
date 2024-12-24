@@ -29,6 +29,8 @@ function Page() {
     const userIdx = user?.userIdx;
     const [isLiked, setIsLiked] = useState(false); // 좋아요 상태
     const router = useRouter(); // useRouter 초기화
+    const [activeTab, setActiveTab] = useState('guide');
+    const [logAlign, setLogAlign] = useState('rec');
     useEffect(() => {
 
         const fetchData = async () => {
@@ -39,7 +41,9 @@ function Page() {
                 // 데이터 가져오기
                 const response = await axios.get(API_URL);
                 const data = response.data;
-                const response2 = await axios.get(API_URL2);
+                const response2 = await axios.get(API_URL2, {
+                    params: { logAlign: logAlign, },
+                });
                 const data2 = response2.data;
                 if (data.success) {
                     setItem(data.data);
@@ -58,7 +62,7 @@ function Page() {
 
         fetchData();
 
-    }, [campIdx, CAMP_API_BASE_URL]);
+    }, [campIdx, CAMP_API_BASE_URL, logAlign]);
 
     // 좋아요 상태를 가져오는 useEffect
     useEffect(() => {
@@ -108,8 +112,7 @@ function Page() {
 
     };
 
-    const [activeTab, setActiveTab] = useState('guide');
-    const [logAlign, setLogAlign] = useState('rec');
+
 
     const extractFeatureNm = (featureNm) => {
         if (!featureNm) return ""; // null이나 undefined 체크
@@ -161,7 +164,7 @@ function Page() {
                                 <br />
                                 <HomeIcon sx={{ color: "#5F8FF0" }} /> 홈페이지: <a href={item.homepage} target="_blank" rel="noopener noreferrer">{item.homepage}</a>
                                 <br />
-                                <PhoneIcon sx={{ color: "#5F8FF0" }} /> 전화: {item.tel}
+                                {item.tel && <><PhoneIcon sx={{ color: "#5F8FF0" }} /> 전화: {item.tel}</>}
                             </p>
                         </div>
 
@@ -179,7 +182,7 @@ function Page() {
             </div>
 
             {/* 지도 */}
-            <Map />
+            <Map item={item} />
 
             {/* 이용안내/기타 주요시설 */}
             <div className="usage-guide-container">
