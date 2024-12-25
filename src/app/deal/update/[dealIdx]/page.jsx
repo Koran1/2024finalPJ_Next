@@ -57,7 +57,7 @@ function Page() {
         }
 
         // 데이터 경로 수정
-        const dealData = data.deal || {};
+        const dealData = data.data.deal || {};
         
         setFormData({
           dealTitle: dealData.dealTitle || '',
@@ -88,10 +88,10 @@ function Page() {
         });
 
         // 이미지 설정
-        if (data.files && Array.isArray(data.files)) {
-          setImages(data.files.slice(0, 5).map(file => ({
+        if (data.data.files && Array.isArray(data.data.files)) {
+          setImages(data.data.files.slice(0, 5).map(file => ({
             file: null,
-            preview: file.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : null
+            preview: `${LOCAL_IMG_URL}/${file.fileName}`
           })));
         }
       } catch (error) {
@@ -233,11 +233,10 @@ function Page() {
       }
     });
     
-    // 상품 수정
     try {
       const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
         method: 'PUT',
-        credentials: 'include', // 쿠키를 포함한 인증 정보 전송
+        credentials: 'include',
         body: submitData,
       });
 
@@ -258,13 +257,13 @@ function Page() {
 
       if (responseData.success) {
         alert('상품이 성공적으로 수정되었습니다.');
-        router.push(`/deal/update/${dealIdx}`); // 수정된 경로로 이동
+        router.push(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`); // Next.js router를 사용하여 페이지 이동
       } else {
         alert('상품 수정에 실패했습니다.');
       }
     } catch (error) {
       console.error(error);
-      alert('상품 등록 중 오류가 발생했습니다.');
+      alert('상품 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -888,7 +887,7 @@ function Page() {
 
       <br />
       <h6 className={`form-completion-message ${isFormComplete() ? 'complete' : 'incomplete'}`}>
-        {isFormComplete() ? "이제 수정사항을 등록 해보세요." : "수정 사항이 입력되면 수정이 가능합니다"}
+        {isFormComplete() ? "이제 수정사항을 수정 해보세요." : "수정 사항이 입력되면 수정이 가능합니다"}
       </h6>
 
       <div className="button-group">

@@ -40,33 +40,17 @@ function Page({ params }) {
             
             console.log('Response data:', data);
             
-            // API 응답이 성공적인 경우
             if (data.success) {
-                // 상품 정보를 상태에 저장
                 setItem(data.data.deal);
-                // 파일 목록 설정
                 const files = data.data.files;
-                // 파일이 존재하고 비어있지 않은 경우
+                
                 if (files && files.length > 0) {
-                  // fileOrder가 '0'인 메인 이미지 찾기
-                  const mainImgObj = files
-                    .find(file => parseInt(file.fileOrder) === 0);
-                  // 메인 이미지 URL 설정
-                  if (mainImgObj) {
-                    setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
-                  } else {
-                    setError('메인 이미지가 누락되었습니다.');
-                    return;
-                }
-                
-                setItem(data.deal);  
-                
-                // files 배열이 존재하고 비어있지 않은지 확인
-                const files = data.files || [];
-                if (files.length > 0) {
                     const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
                     if (mainImgObj) {
                         setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+                    } else {
+                        setError('메인 이미지가 누락되었습니다.');
+                        return;
                     }
 
                     const smallImgs = files
