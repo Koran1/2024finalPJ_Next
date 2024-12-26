@@ -158,7 +158,7 @@ function Page() {
 
     // 현재 이미지 크기 합계 계산
     const currentTotalSize = images.reduce((total, img) => {
-      return total + (img ? img.file.size : 0);
+      return total + (img && img.file ? img.file.size : 0);
     }, 0);
 
     // 새로운 파일 크기 합계 계산
@@ -702,7 +702,7 @@ function Page() {
           onBlur={(e) => e.target.placeholder = `브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
-안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바���니다.`}
+안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
           style={{ whiteSpace: 'pre-wrap' }}
         />
       </div>

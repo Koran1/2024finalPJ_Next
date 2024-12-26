@@ -125,19 +125,26 @@ if (loading) return <div>Loading...</div>;
 
           <div className="product-item" key={product.dealIdx}>
             <div className="product-image">
-              <Link href={`/deal/detail/${product.dealIdx}`}>
+              <Link href={`/deal/detail/${product.dealIdx}`} style={{ textDecoration: 'none' }}>
                 <img
                   src={product.deal01 ? `${LOCAL_IMG_URL}/${product.deal01}` : "../images/defaultImage.png"}
                   alt={product.dealTitle}
-                  style={{ 
-                    width: "200px", 
-                    height: "200px",
-                    objectFit: "cover"  // 이미지 비율 유지
-                  }}
                 />
                 <div className="product-title">
-                  <h6>{product.dealTitle}</h6>
-                  <p>{product.dealPrice}원</p>
+                  <h6 style={{ 
+                    fontSize: '24px',
+                    color: 'black',
+                    margin: '0',
+                    paddingLeft: '5px'
+                  }}>{product.dealTitle}</h6>
+                  <p style={{ 
+                    fontSize: '24px',
+                    color: product.dealPrice === 0 ? '#8B00FF' : 'black',
+                    margin: '0',
+                    paddingLeft: '5px'
+                  }}>
+                    {product.dealPrice === 0 ? '나눔상품' : `${product.dealPrice}원`}
+                  </p>
                 </div>
               </Link>
             </div>
