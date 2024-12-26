@@ -141,19 +141,20 @@ function Page() {
 
     // 이미지 파일 유효성 검사
     if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드 가능합니다.');
-      return;
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
     }
 
     // 개별 파일 크기 제한 검사
     if (file.size > MAX_FILE_SIZE) {
-      alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
-      return;
+        alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
+        return;
     }
 
-    // 현재 이미지 크기 합계 계산
+    // 현재 이미지 크기 합계 계산 - 수정된 부분
     const currentTotalSize = images.reduce((total, img) => {
-      return total + (img ? img.file.size : 0);
+        if (!img || !img.file) return total;
+        return total + img.file.size;
     }, 0);
 
     // 새로운 파일 크기 합계 계산
@@ -161,8 +162,8 @@ function Page() {
 
     // 파일 크기 제한 검사
     if (newTotalSize > MAX_TOTAL_SIZE) {
-      alert('이미지 파일 용량들의 합은 최대 5MB를 초과할 수 없습니다.');
-      return;
+        alert('이미지 파일 용량들의 합은 최대 5MB를 초과할 수 없습니다.');
+        return;
     }
 
     // 이미지 미리보기 URL 생성
@@ -173,18 +174,18 @@ function Page() {
     
     // 이미지 배열 업데이트
     setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = {
-        file: file,
-        preview: imageUrl
-      };
-      return newImages;
+        const newImages = [...prev];
+        newImages[index] = {
+            file: file,
+            preview: imageUrl
+        };
+        return newImages;
     });
 
     // FormData 업데이트
     setFormData(prev => ({
-      ...prev,
-      file: file
+        ...prev,
+        file: file
     }));
   };
 
@@ -217,54 +218,40 @@ function Page() {
     e.preventDefault();
 
     if (!isFormComplete()) {
-      alert('모든 항목을 입력해주세요.');
-      return;
+        alert('모든 항목을 입력해주세요.');
+        return;
     }
 
     const submitData = new FormData();
     Object.keys(formData).forEach(key => {
-      submitData.append(key, formData[key]);
+        submitData.append(key, formData[key]);
     });
 
     // 이미지 파일 추가
     images.forEach((image) => {
-      if (image && image.file) {
-        submitData.append('file', image.file);
-      }
+        if (image && image.file) {
+            submitData.append('file', image.file);
+        }
     });
     
-    // 상품 수정
     try {
-      const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
-        method: 'PUT',
-        credentials: 'include', // 쿠키를 포함한 인증 정보 전송
-        body: submitData,
-      });
+        const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
+            method: 'PUT',
+            body: submitData
+        });
 
-      if (response.status === 302 || response.status === 401) {
-        window.location.href = '/login';
-        return;
-      }
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({
-          message: '서버 응답 오류'
-        }));
-        alert(`상품 수정을 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
-        return;
-      }
-
-      const responseData = await response.json();
-
-      if (responseData.success) {
-        alert('상품이 성공적으로 수정되었습니다.');
-        router.push(`/deal/update/${dealIdx}`); // 수정된 경로로 이동
-      } else {
-        alert('상품 수정에 실패했습니다.');
-      }
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(data.message);
+            // detail 페이지로 이동
+            router.push(`/deal/detail/${dealIdx}`);
+        } else {
+            alert(data.message || '상품 수정에 실패했습니다.');
+        }
     } catch (error) {
-      console.error(error);
-      alert('상품 등록 중 오류가 발생했습니다.');
+        console.error('상품 수정 중 오류 발생:', error);
+        alert('상품 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -682,7 +669,7 @@ function Page() {
                 onChange={e => handleStateChange(e.target.value)} 
                 checked={formData.dealStatus === "고장/파손 있음"} 
               />
-              수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 손상이 있으나 수리/수선하면 쓸 수 있음</span>
+              수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 ���상이 있으나 수리/수선하면 쓸 수 있음</span>
             </label>
           </p>
         </div>

@@ -59,8 +59,8 @@ function Page({ params }) {
                     }
 
                     const smallImgs = files
-                        .filter(file => parseInt(file.fileOrder) >= 1 && 
-                                      parseInt(file.fileOrder) <= 5 && 
+                        .filter(file => parseInt(file.fileOrder) >= 0 && 
+                                      parseInt(file.fileOrder) <= 4 && 
                                       file.fileName)
                         .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
                         .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
