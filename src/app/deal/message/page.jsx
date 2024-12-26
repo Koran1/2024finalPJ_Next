@@ -8,49 +8,13 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import SearchIcon from "@mui/icons-material/Search";
 import ChatBox from "../../../../components/deal/Chat/ChatBox";
 import useAuthStore from "../../../../store/authStore";
+import { useSearchParams } from "next/navigation";
+import axios from "axios";
 
-// Search field style
-const Search = styled("div")(({ theme }) => ({
-    position: "relative",
-    borderRadius: 100,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    "&:hover": {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: 0,
-    marginLeft: 0,
-    marginBottom: 20,
-    width: "100%",
-    [theme.breakpoints.up("xs")]: {
-        marginRight: theme.spacing(1),
-        width: "auto",
-    },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-    color: "#757FEF",
-    padding: theme.spacing(0, 2),
-    height: "100%",
-    position: "absolute",
-    right: "0",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: "5",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: "inherit",
-    width: "100%",
-    "& .MuiInputBase-input": {
-        backgroundColor: "#F5F7FA",
-        borderRadius: "30px",
-        padding: theme.spacing(1.4, 0, 1.4, 2),
-    },
-}));
 
 function Page() {
+    const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+
     // State to track active link
     const [activeLink, setActiveLink] = useState('/deal/message');
 
@@ -59,12 +23,33 @@ function Page() {
         return activeLink === link ? 'active' : '';
     };
 
+    const { user } = useAuthStore();
+    // 판매자 정보(idx) 가져오기
+    const otherUser = useSearchParams().get('seller');
+
+    const [chatList, setChatList] = useState([]);
+
+    // 전체 채팅 정보 가져오기
+    useEffect(() => {
+        if (user == null) return;
+        console.log('otherUserIdx : ' + otherUser);
+        axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}`)
+            .then((res) => {
+                console.log(res.data.data)
+                setChatList(res.data.data);
+            })
+            .catch((err) => console.log(err))
+
+    }, [user]);
+
+
 
 
     return (
-        <div className="pd-reg-container">
+        <div >
             {/* 상단 네비게이션 */}
-            <div>
+            <div className="pd-reg-container" >
+
                 <Link href="/deal/management"
                     className={`btn1 ${getActiveClass('/deal/management')}`}
                     onClick={() => setActiveLink('/deal/management')}>
@@ -92,13 +77,15 @@ function Page() {
             </div>
 
             {/* 채팅 화면 */}
-            <Tabs className="chat-tabs">
+            <Tabs className="chat-tabs" >
                 <Grid2
                     container
                     rowSpacing={1}
                     columnSpacing={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 2 }}
                 >
-                    <Grid2 xs={12} sm={12} md={4} lg={4} xl={3}>
+                    <Grid2 xs={4} sm={4} md={4} lg={4} xl={4}
+                        width="30%"
+                    >
                         <Card
                             sx={{
                                 boxShadow: "none",
@@ -112,145 +99,87 @@ function Page() {
                             </Typography>
 
                             <TabList >
-
-                                {/* Tab 1 */}
-                                <Tab style={{
-                                    border: "1px solid #E8E8F7",
-                                    borderRadius: "10px",
-                                    padding: "10px 15px",
-                                }}
-                                >
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "space-between",
+                                {
+                                    chatList.map((chat) => {
+                                        return (
+                                            <Tab style={{
+                                                border: "1px solid #E8E8F7",
+                                                borderRadius: "10px",
+                                                padding: "10px 15px",
                                             }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    position: "relative",
-                                                }}
+                                                key={chat.chatRoom}
                                             >
-                                                <Avatar src="/images/tree-2.jpg" />
-                                                <span className="active-status successBgColor"></span>
-                                            </Box>
-
-                                            <Box className="ml-1">
-                                                <Typography
-                                                    as="h4"
-                                                    fontSize="13px"
-                                                    fontWeight="500"
-                                                    mb="5px"
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "space-between",
+                                                    }}
                                                 >
-                                                    Laurent Perrier
-                                                    {/* // 여기에 보낸 사람 이름 */}
-                                                </Typography>
-                                                <Typography fontSize="12px">Typing...</Typography>
-                                                {/* // 여기에 메세지 가장 최근 내용 */}
-                                            </Box>
-                                        </Box>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "space-between",
+                                                        }}
+                                                    >
+                                                        <Box
+                                                            sx={{
+                                                                position: "relative",
+                                                            }}
+                                                        >
+                                                            <Avatar src="/images/tree-2.jpg" />
+                                                            <span className="active-status successBgColor"></span>
+                                                        </Box>
 
-                                        <Box textAlign="right">
-                                            <Typography
-                                                sx={{
-                                                    color: "#A9A9C8",
-                                                    fontSize: "11px",
-                                                }}
-                                            >
-                                                4:30 PM
-                                                {/* // 여기에 메세지 시간 */}
-                                            </Typography>
+                                                        <Box className="ml-1">
+                                                            <Typography
+                                                                as="h4"
+                                                                fontSize="13px"
+                                                                fontWeight="500"
+                                                                mb="5px"
+                                                            >
+                                                                Laurent Perrier
+                                                                {/* // 여기에 보낸 사람 이름 */}
+                                                            </Typography>
+                                                            <Typography fontSize="12px">Typing...</Typography>
+                                                            {/* // 여기에 메세지 가장 최근 내용 */}
+                                                        </Box>
+                                                    </Box>
 
-                                            <Box className="mr-10px">
-                                                <Badge
-                                                    badgeContent={2} // 여기에 메세지 개수
-                                                    color="primary"
-                                                    className="for-dark-text-white"
-                                                ></Badge>
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                </Tab>
+                                                    <Box textAlign="right">
+                                                        <Typography
+                                                            sx={{
+                                                                color: "#A9A9C8",
+                                                                fontSize: "11px",
+                                                            }}
+                                                        >
+                                                            4:30 PM
+                                                            {/* // 여기에 메세지 시간 */}
+                                                        </Typography>
 
-                                <Tab style={{
-                                    border: "1px solid #E8E8F7",
-                                    borderRadius: "10px",
-                                    padding: "10px 15px",
-                                }}
+                                                        <Box className="mr-10px">
+                                                            <Badge
+                                                                badgeContent={2} // 여기에 메세지 개수
+                                                                color="primary"
+                                                                className="for-dark-text-white"
+                                                            ></Badge>
+                                                        </Box>
+                                                    </Box>
+                                                </Box>
+                                            </Tab>
 
-                                >
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "space-between",
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
-                                                    position: "relative",
-                                                }}
-                                            >
-                                                <Avatar src="/images/tree-2.jpg" />
-                                                <span className="active-status successBgColor"></span>
-                                            </Box>
+                                        )
+                                    })
+                                }
 
-                                            <Box className="ml-1">
-                                                <Typography
-                                                    as="h4"
-                                                    fontSize="13px"
-                                                    fontWeight="500"
-                                                    mb="5px"
-                                                >
-                                                    Laurent Perrier22
-                                                    {/* // 여기에 보낸 사람 이름 */}
-                                                </Typography>
-                                                <Typography fontSize="12px">Typing22...</Typography>
-                                                {/* // 여기에 메세지 가장 최근 내용 */}
-                                            </Box>
-                                        </Box>
-
-                                        <Box textAlign="right">
-                                            <Typography
-                                                sx={{
-                                                    color: "#A9A9C8",
-                                                    fontSize: "11px",
-                                                }}
-                                            >
-                                                4:30 PM
-                                                {/* // 여기에 메세지 시간 */}
-                                            </Typography>
-
-                                            <Box className="mr-10px">
-                                                <Badge
-                                                    badgeContent={2} // 여기에 메세지 개수
-                                                    color="primary"
-                                                    className="for-dark-text-white"
-                                                ></Badge>
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                </Tab>
 
                             </TabList>
                         </Card>
                     </Grid2>
-                    <Grid2 xs={12} sm={12} md={8} lg={8} xl={9}>
+
+                    <Grid2 xs={8} sm={8} md={8} lg={8} xl={8}
+                        width="60%" paddingLeft="5%" paddingRight="5%">
                         <Card
                             sx={{
                                 boxShadow: "none",
@@ -259,14 +188,16 @@ function Page() {
                                 borderRadius: "10px",
                             }}
                         >
-                            <TabPanel>
-                                {/* ChatBox */}
-                                <ChatBox room={1} />
-                            </TabPanel>
-                            <TabPanel>
-                                {/* ChatBox */}
-                                <ChatBox room={2} />
-                            </TabPanel>
+                            {
+                                chatList.map((chat) => {
+                                    return (
+                                        <TabPanel key={chat.chatRoom}>
+                                            {/* ChatBox */}
+                                            <ChatBox room={chat.chatRoom} sender={chat.userIdx} />
+                                        </TabPanel>
+                                    )
+                                })
+                            }
 
 
                         </Card>

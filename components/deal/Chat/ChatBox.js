@@ -34,10 +34,10 @@ const ChatBox = ({ room }) => {
 
     setLoading(true);
 
-    if (isExpired() || !isAuthenticated) {
-      alert("로그인이 필요한 서비스입니다.");
-      router.push("/user/login");
-    }
+    // if (isExpired() || !isAuthenticated) {
+    //   alert("로그인이 필요한 서비스입니다.");
+    //   router.push("/user/login");
+    // }
 
     const userIdx = user.userIdx;
     socketRef.current = socketRef.current = io(`http://localhost:8081`, {
@@ -86,8 +86,8 @@ const ChatBox = ({ room }) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "60vh",
         border: "1px solid black",
+        height: "80vh",
         borderRadius: "14px",
       }}
       className="for-dark-chat-box"
@@ -99,7 +99,7 @@ const ChatBox = ({ room }) => {
           alignItems: "center",
           justifyContent: "space-between",
           borderBottom: "1px solid black",
-          p: "15px",
+          p: "15px"
         }}
         className="for-dark-chat-header"
       >
@@ -116,7 +116,7 @@ const ChatBox = ({ room }) => {
               User Name
             </Typography>
             <Typography fontSize="12px" position="relative">
-              <span className="active-status2 successBgColor"></span> Active Status
+              <span className="active-status2 successBgColor"></span> Maybe 평점
             </Typography>
           </Box>
         </Box>
@@ -133,10 +133,11 @@ const ChatBox = ({ room }) => {
       </Box>
 
       {/* Chat List */}
+
       <Box
         sx={{
           flex: "1",
-          overflowY: "auto",
+          overflowY: "scroll",
           padding: "15px",
           display: "flex",
           flexDirection: "column-reverse",
@@ -150,9 +151,11 @@ const ChatBox = ({ room }) => {
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "end",
+                  justifyContent: "flex-end",
                   maxWidth: "730px",
                   mb: "20px",
+                  boxSizing: "border-box",
+                  marginLeft: "auto"
                 }}
                 className="ml-auto"
                 key={chat.chatTime}
@@ -217,6 +220,7 @@ const ChatBox = ({ room }) => {
               <Box
                 sx={{
                   display: "flex",
+                  justifyContent: 'flex-start',
                   maxWidth: "730px",
                   mb: "20px",
                 }}
@@ -294,7 +298,7 @@ const ChatBox = ({ room }) => {
       >
         <Box
           sx={{
-            flex: "auto",
+            flex: "auto"
           }}
           className="pr-60px"
         >
@@ -304,7 +308,7 @@ const ChatBox = ({ room }) => {
             name="message"
             style={{
               background: "#fff",
-              width: "80%",
+              width: "90%",
               marginRight: "7%",
             }}
             value={message}
@@ -324,7 +328,8 @@ const ChatBox = ({ room }) => {
               minHeight: "44px",
               position: "absolute",
               top: "22px",
-              color: "#fff !important"
+              right: "2%",
+              color: "#fff !important",
             }}
             className="right-20px"
             onClick={sendMessage}

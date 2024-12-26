@@ -29,8 +29,8 @@ function Page({ params }) {
   // 상품 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            setLoading(true);
+      try {
+        setLoading(true);
 
         const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
         console.log('Fetching URL:', API_URL);
@@ -123,12 +123,17 @@ function Page({ params }) {
     );
   }
   // 글 작성자와 현재 로그인한 사용자 비교 
-  const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
+  const isOwner = isAuthenticated && String(user.userIdx) === String(item.dealSellerUserIdx);
   // 로딩 완료 후
 
   // 좋아요 버튼 클릭 시 좋아요 상태 변경
   const handleLike = () => {
     setIsLiked(!isLiked);
+  };
+
+  // 채팅 버튼 클릭 시
+  const handleChat = () => {
+    router.push(`/deal/message?seller=${item.dealSellerUserIdx}`);
   };
 
   return (
@@ -192,7 +197,7 @@ function Page({ params }) {
                 <ForumIcon
                   variant="contained"
                   className="message-btn"
-                  onClick={() => router.push('/deal/message')}
+                  onClick={handleChat}
                   // 여기에 상대방 userIdx 담아서...?
 
                   style={{ cursor: 'pointer', fontSize: '2rem' }}
