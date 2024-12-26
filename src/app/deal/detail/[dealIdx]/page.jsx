@@ -50,32 +50,23 @@ function Page({ params }) {
 
           // 파일이 존재하고 비어있지 않은 경우
           if (files && files.length > 0) {
-            // fileOrder가 '0'인 메인 이미지 찾기
-            const mainImgObj = files
-              .find(file => parseInt(file.fileOrder) === 0);
-            // 메인 이미지 URL 설정
+            // 메인 이미지 (fileOrder가 0인 이미지)
+            const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
             if (mainImgObj) {
-              setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+                setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
             } else {
-              setError('메인 이미지가 누락되었습니다.');
-              return;
+                setError('메인 이미지가 누락되었습니다.');
+                return;
             }
 
-            // files 배열이 존재하고 비어있지 않은지 확인
-            if (files.length > 0) {
-              const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
-              if (mainImgObj) {
-                setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
-              }
-
-              const smallImgs = files
-                .filter(file => parseInt(file.fileOrder) >= 1 &&
-                  parseInt(file.fileOrder) <= 5 &&
-                  file.fileName)
+            // 모든 이미지를 순서대로 정렬하여 작은 이미지 목록에 추가
+            const smallImgs = files
                 .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
                 .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
-              setSmallImages(smallImgs);
-            }
+            setSmallImages(smallImgs);
+          } else {
+            setError('상품 이미지가 없습니다.');
+            return;
           }
         } else {
           setError(data.message || '상품 정보를 불러올 수 없습니다.');

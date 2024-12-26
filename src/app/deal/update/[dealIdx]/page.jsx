@@ -220,56 +220,53 @@ function Page() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!isFormComplete()) {
-      alert('모든 항목을 입력해주세요.');
-      return;
-    }
-
-    const submitData = new FormData();
-    Object.keys(formData).forEach(key => {
-      submitData.append(key, formData[key]);
-    });
-
-    // 이미지 파일 추가
-    images.forEach((image) => {
-      if (image && image.file) {
-        submitData.append('file', image.file);
-      }
-    });
     
-    // 상품 수정
     try {
-      const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
-        method: 'PUT',
-        credentials: 'include', // 쿠키를 포함한 인증 정보 전송
-        body: submitData,
-      });
+        const formDataToSend = new FormData();
+        
+        // 기본 폼 데이터 추가
+        Object.keys(formData).forEach(key => {
+            formDataToSend.append(key, formData[key]);
+        });
 
-      if (response.status === 302 || response.status === 401) {
-        window.location.href = '/login';
-        return;
-      }
+        // 새로운 이미지 파일 추가
+        if (images.length > 0) {
+            images.forEach((image, index) => {
+                if (image.file) {
+                    formDataToSend.append('file', image.file);
+                }
+            });
+        }
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({
-          message: '서버 응답 오류'
+        // 삭제된 파일 정보 추가
+        const deletedFiles = initialImages.filter(img => 
+            !images.some(current => current.fileName === img.fileName)
+        ).map(img => ({
+            fileName: img.fileName,
+            fileOrder: img.fileOrder
         }));
-        alert(`상품 수정을 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
-        return;
-      }
 
-      const responseData = await response.json();
+        // 삭제된 파일이 있는 경우에만 추가
+        if (deletedFiles.length > 0) {
+            formDataToSend.append('deletedFiles', JSON.stringify(deletedFiles));
+        }
 
-      if (responseData.success) {
-        alert('상품이 성공적으로 수정되었습니다.');
-        router.push(`/deal/update/${dealIdx}`); // 수정된 경로로 이동
-      } else {
-        alert('상품 수정에 실패했습니다.');
-      }
+        const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
+            method: 'PUT',
+            body: formDataToSend,
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('상품이 성공적으로 수정되었습니다.');
+            router.push(`/deal/detail/${dealIdx}`);
+        } else {
+            alert(data.message || '상품 수정에 실패했습니다.');
+        }
     } catch (error) {
-      console.error(error);
-      alert('상품 등록 중 오류가 발생했습니다.');
+        console.error('Error updating product:', error);
+        alert('상품 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -337,43 +334,13 @@ function Page() {
     }));
   };
 
-  const handleImageDelete = async (index) => {
-    try {
-        // 해당 input의 value를 초기화
-        const inputElement = document.getElementById(`image-upload-${index}`);
-        if (inputElement) {
-            inputElement.value = '';
-        }
-        
-        // 이미지 상태 업데이트
-        setImages(prev => {
-            const newImages = [...prev];
-            // 기존 이미지가 있었다면 DB 업데이트
-            if (newImages[index] && newImages[index].preview) {
-                const fileVo = {
-                    fileTableType: "2",
-                    fileTableIdx: dealIdx,
-                    fileName: null,  // null로 설정하여 fileActive를 0으로 만듦
-                    fileOrder: index
-                };
-                
-                // 서버에 업데이트 요청
-                fetch(`${LOCAL_API_BASE_URL}/deal/updateFile`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(fileVo)
-                }).catch(error => {
-                    console.error('파일 업데이트 중 오류 발생:', error);
-                });
-            }
-            newImages[index] = null;
-            return newImages;
-        });
-    } catch (error) {
-        console.error('이미지 삭제 중 오류 발생:', error);
-    }
+  const handleImageDelete = (index) => {
+    setImages(prev => {
+        const newImages = [...prev];
+        newImages.splice(index, 1);
+        return newImages;
+    });
+    setIsModified(true); // 수정 상태 업데이트
   };
 
   const handlePriceOptionChange = (value) => {
@@ -735,7 +702,7 @@ function Page() {
           onBlur={(e) => e.target.placeholder = `브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
-안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
+안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바���니다.`}
           style={{ whiteSpace: 'pre-wrap' }}
         />
       </div>

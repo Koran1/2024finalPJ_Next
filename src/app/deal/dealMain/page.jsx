@@ -21,45 +21,36 @@ export default function ProductSearchPage() {
   useEffect(() => {
     const fetchData = async () => {
         try {
-            setLoading(true); // 로딩 시작
+            setLoading(true);
             const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMain`;
-
-            // 데이터 가져오기
             const response = await axios.get(API_URL);
 
             if (response.data.success) {
-                console.log("setProducts: ", response.data.data);
-            
                 const list = response.data.data.list;
                 const file_list = response.data.data.file_list;
             
-                // Map over the list to create a new array with the updated structure
                 const resultProducts = list.map((k) => {
-                    // Find the matching file from file_list
                     const matchingFile = file_list.find(file => file.fileTableIdx === k.dealIdx);
-                    
-                    // Return a new object with the additional field
                     return {
-                        ...k,  // Spread the original `k` object
-                        deal01: matchingFile ? matchingFile.fileName : null // Add the `deal01` field
+                        ...k,
+                        deal01: matchingFile ? matchingFile.fileName : null
                     };
                 });
             
-                console.log(resultProducts);
                 setProducts(resultProducts);
             } else {
-                setError("Failed to fetch product data.");
+                setError("상품 데이터를 가져오는데 실패했습니다.");
             }
         } catch (err) {
             console.error("Error fetching product data:", err);
-            setError("Failed to fetch product data.");
+            setError("상품 데이터를 가져오는데 실패했습니다.");
         } finally {
-            setLoading(false); // 로딩 종료
+            setLoading(false);
         }
     };
 
     fetchData();
-}, [ LOCAL_API_BASE_URL]);
+}, [LOCAL_API_BASE_URL]);
 
 if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -130,21 +121,23 @@ if (loading) return <div>Loading...</div>;
       {/* 상품 목록 */}
       <div className="product-grid">
 
-        {/* 실제 상품 이미지 링크 시 삭제 */}
-        <Link href={`/deal/detail/1`}><img src={`../images/dealDetailImage01.png`} alt="상품 이미지" style={{ width: "100px", height: "100px" }} /></Link>
-
         {products.map((product) => (         
 
           <div className="product-item" key={product.dealIdx}>
             <div className="product-image">
               <Link href={`/deal/detail/${product.dealIdx}`}>
                 <img
-                  src={product.deal01 || "../images/defaultImage.png"}
-                  alt={product.title}
-                  style={{ width: "200px", height: "200px" }}
+                  src={product.deal01 ? `${LOCAL_IMG_URL}/${product.deal01}` : "../images/defaultImage.png"}
+                  alt={product.dealTitle}
+                  style={{ 
+                    width: "200px", 
+                    height: "200px",
+                    objectFit: "cover"  // 이미지 비율 유지
+                  }}
                 />
                 <div className="product-title">
-                  <h6>{product.title}</h6>
+                  <h6>{product.dealTitle}</h6>
+                  <p>{product.dealPrice}원</p>
                 </div>
               </Link>
             </div>
