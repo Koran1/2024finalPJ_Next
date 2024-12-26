@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import ProductList from "./ProductList";
 import "./interest.css";
 
 // 관심 목록 페이지
@@ -48,12 +49,18 @@ function Page() {
             </div>
 
             <hr />
-            <div className="purchase-info">
+            {/* <div className="purchase-info">
                 <div className="part"> 평점 {}개</div>
+            </div> */}
+            <div>
+                {/* <h2>관심 상품 목록</h2> */}
+                <ProductList /> {/* 관심 상품 리스트 표시 */}
             </div>
-            
+
         </div>
     );
 }
 
 export default Page;
+
+
