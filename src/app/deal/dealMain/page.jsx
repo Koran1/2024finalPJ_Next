@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 
 import './dealMain.css';
 import axios from 'axios';
+import useAuthStore from '../../../../store/authStore';
+import { useRouter } from 'next/navigation';
 
 export default function ProductSearchPage() {
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
@@ -17,6 +19,10 @@ export default function ProductSearchPage() {
   const [products, setProducts] = useState([]);                 // 데이터 상태 
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
+  
+  // store - authStore 에 있는 정보를 사용한다.
+  const { user } = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -84,6 +90,10 @@ if (loading) return <div>Loading...</div>;
     };
   };
 
+  const handlemanage = () => {
+    router.push(`/deal/management/${user.userIdx}`);
+  }
+
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
@@ -103,7 +113,7 @@ if (loading) return <div>Loading...</div>;
         {/* </div> */}
 
         {/* 나의 거래 버튼 */}
-        <Link href="/deal/management/" className="btn1">나의 거래</Link>
+        <p className="btn1" onClick={handlemanage}> 나의 거래</p>
       </div>
 
     {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}

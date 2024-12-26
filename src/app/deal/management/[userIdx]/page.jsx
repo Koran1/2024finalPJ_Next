@@ -5,6 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import useAuthStore from "../../../../../store/authStore";
 import "./management.css";
+import Navigation from "../../../../../components/deal/Navigation";
 
 function Page({ params }) {
 // 선택된 네비게이션 바 표시
@@ -18,6 +19,7 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
     const [item, setItem] = useState([]);                 // 데이터 상태 
     const [loading, setLoading] = useState(true);           // 로딩 상태
     const [error, setError] = useState(null);               // 에러 상태
+    const { user } = useAuthStore();
     // const { isAuthenticated, token, user } = useAuthStore();       // 로그인 상태
 
     useEffect(() => {
@@ -61,33 +63,13 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
     return (
             <>
         <div className="pd-reg-container">
-       
-            <div>
-                <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>상품 관리</Link>
-                <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>구매 내역</Link>
-                <Link href="/deal/interest"
-                    className={`btn1 ${getActiveClass('/deal/interest')}`}
-                    onClick={() => setActiveLink('/deal/interest')}>
-                    관심 목록
-                </Link>
-                <Link href="/deal/rating"
-                    className={`btn1 ${getActiveClass('/deal/rating')}`}
-                    onClick={() => setActiveLink('/deal/rating')}>
-                    나의 평점
-                </Link>
-                <Link href="/deal/message"
-                    className={`btn1 ${getActiveClass('/deal/message')}`}
-                    onClick={() => setActiveLink('/deal/message')}>
-                    쪽지 목록
-                </Link>
-                {/* ... 다른 링크들 */}
-            </div>
+            <Navigation />
             <hr />
             <div className="purchase-info">
                 <div className="part">상품 {item.length}개</div>
             </div>
 
-            <h1>상품 상세 정보</h1>
+            {/* <h1>상품 상세 정보</h1> */}
             {item.length > 0 ? (
             <table className="product-table">
                 <thead>

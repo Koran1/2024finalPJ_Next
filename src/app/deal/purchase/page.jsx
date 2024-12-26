@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import "./purchase.css";
+import Navigation from "../../../../components/deal/Navigation";
 
 // 구매 내역 페이지
 
@@ -78,33 +79,7 @@ function Page({ params }) {
     return (
         <div className="pd-reg-container">
             {/* 상단 네비게이션 */}
-            <div className="nav-links">
-                <Link href="/deal/management"
-                    className={`btn1 ${getActiveClass('/deal/management')}`}
-                    onClick={() => setActiveLink('/deal/management')}>
-                    상품 관리
-                </Link>
-                <Link href="/deal/purchase"
-                    className={`btn1 ${getActiveClass('/deal/purchase')}`}
-                    onClick={() => setActiveLink('/deal/purchase')}>
-                    구매 내역
-                </Link>
-                <Link href="/deal/interest"
-                    className={`btn1 ${getActiveClass('/deal/interest')}`}
-                    onClick={() => setActiveLink('/deal/interest')}>
-                    관심 목록
-                </Link>
-                <Link href="/deal/rating"
-                    className={`btn1 ${getActiveClass('/deal/rating')}`}
-                    onClick={() => setActiveLink('/deal/rating')}>
-                    나의 평점
-                </Link>
-                <Link href="/deal/message"
-                    className={`btn1 ${getActiveClass('/deal/message')}`}
-                    onClick={() => setActiveLink('/deal/message')}>
-                    쪽지 목록
-                </Link>
-            </div>
+            <Navigation />
 
 
             {/* 구매 정보는 별도의 줄로 배치 */}
