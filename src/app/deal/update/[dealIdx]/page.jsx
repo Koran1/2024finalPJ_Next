@@ -10,9 +10,10 @@ function Page() {
   const { dealIdx } = useParams();
   const router = useRouter();
   const [images, setImages] = useState([]);
+  const [initialImages, setInitialImages] = useState([]);
   const [formData, setFormData] = useState({
     dealTitle: '',
-    dealCategory: '기타 물품', //
+    dealCategory: '기타 물품',
     dealStatus: '미개봉(미사용)',
     dealDescription: '',
     dealPrice: '0',
@@ -21,7 +22,7 @@ function Page() {
     dealDirectContent: '',
     dealCount: '1',
     dealRegDate: new Date().toISOString(),
-    priceOption: '나눔'
+    priceOption: '가격 입력'
   });
   const [isFormValid, setIsFormValid] = useState(false);
   const [initialFormData, setInitialFormData] = useState(null);
@@ -41,7 +42,7 @@ function Page() {
         });
         
         if (response.status === 302 || response.status === 401) {
-          window.location.href = '/login';
+          window.location.href = '/user/login';
           return;
         }
 
@@ -51,13 +52,13 @@ function Page() {
         
         // JSON 파싱 간소화
         const data = await response.json();
-
+        console.log('Response data:', data);
         if (!data || !data.success) {
           throw new Error('서버에서 데이터를 받지 못했습니다.');
         }
 
         // 데이터 경로 수정
-        const dealData = data.deal || {};
+        const dealData = data.data.deal || {};
         
         setFormData({
           dealTitle: dealData.dealTitle || '',
@@ -70,7 +71,7 @@ function Page() {
           dealDirectContent: dealData.dealDirectContent || '',
           dealCount: (dealData.dealCount || 1).toString(),
           dealRegDate: dealData.dealRegDate || new Date().toISOString(),
-          priceOption: dealData.priceOption || '나눔'
+          priceOption: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
         });
 
         setInitialFormData({
@@ -84,15 +85,17 @@ function Page() {
           dealDirectContent: dealData.dealDirectContent || '',
           dealCount: (dealData.dealCount || 1).toString(),
           dealRegDate: dealData.dealRegDate || new Date().toISOString(),
-          priceOption: dealData.priceOption || '나눔'
+          priceOption: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
         });
 
         // 이미지 설정
-        if (data.files && Array.isArray(data.files)) {
-          setImages(data.files.slice(0, 5).map(file => ({
+        if (data.data.files && Array.isArray(data.data.files)) {
+          const initialImgs = data.data.files.slice(0, 5).map(file => ({
             file: null,
             preview: file.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : null
-          })));
+          }));
+          setImages(initialImgs);
+          setInitialImages(initialImgs);
         }
       } catch (error) {
         console.error('상품 정보 불러오기 실패:', error);
@@ -110,10 +113,12 @@ function Page() {
   }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
 
   useEffect(() => {
-    if (initialFormData) {
-      setIsModified(JSON.stringify(formData) !== JSON.stringify(initialFormData));
+    if (initialFormData && initialImages) {
+        const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+        const isImagesChanged = JSON.stringify(images) !== JSON.stringify(initialImages);
+        setIsModified(isFormChanged || isImagesChanged);
     }
-  }, [formData, initialFormData]);
+  }, [formData, initialFormData, images, initialImages]);
 
   useEffect(() => {
     const checkFormValidity = () => {
@@ -332,19 +337,43 @@ function Page() {
     }));
   };
 
-  const handleImageDelete = (index) => {
-    // 해당 input의 value를 초기화
-    const inputElement = document.getElementById(`image-upload-${index}`);
-    if (inputElement) {
-      inputElement.value = '';
+  const handleImageDelete = async (index) => {
+    try {
+        // 해당 input의 value를 초기화
+        const inputElement = document.getElementById(`image-upload-${index}`);
+        if (inputElement) {
+            inputElement.value = '';
+        }
+        
+        // 이미지 상태 업데이트
+        setImages(prev => {
+            const newImages = [...prev];
+            // 기존 이미지가 있었다면 DB 업데이트
+            if (newImages[index] && newImages[index].preview) {
+                const fileVo = {
+                    fileTableType: "2",
+                    fileTableIdx: dealIdx,
+                    fileName: null,  // null로 설정하여 fileActive를 0으로 만듦
+                    fileOrder: index
+                };
+                
+                // 서버에 업데이트 요청
+                fetch(`${LOCAL_API_BASE_URL}/deal/updateFile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(fileVo)
+                }).catch(error => {
+                    console.error('파일 업데이트 중 오류 발생:', error);
+                });
+            }
+            newImages[index] = null;
+            return newImages;
+        });
+    } catch (error) {
+        console.error('이미지 삭제 중 오류 발생:', error);
     }
-    
-    // 이미지 상태 업데이트
-    setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = null;
-      return newImages;
-    });
   };
 
   const handlePriceOptionChange = (value) => {
@@ -682,7 +711,7 @@ function Page() {
                 onChange={e => handleStateChange(e.target.value)} 
                 checked={formData.dealStatus === "고장/파손 있음"} 
               />
-              수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 손상이 있으나 수리/수선하면 쓸 수 있음</span>
+              수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 상이 있으나 수리/수선하면 쓸 수 있음</span>
             </label>
           </p>
         </div>

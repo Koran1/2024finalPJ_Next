@@ -29,8 +29,34 @@ function Page({ params }) {
   // 상품 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        setLoading(true);
+        try {
+            setLoading(true);
+            
+            const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
+            console.log('Fetching URL:', API_URL);
+            
+            const response = await axios.get(API_URL);
+            const data = response.data;
+            
+            console.log('Response data:', data);
+            
+            // API 응답이 성공적인 경우
+            if (data.success) {
+                // deal 객체가 존재하는지 확인
+                if (!data.data.deal) {
+                    setError('상품 정보가 없습니다.');
+                    return;
+                }
+                
+                setItem(data.data.deal);  
+                
+                // files 배열이 존재하고 비어있지 않은지 확인
+                const files = data.data.files || [];
+                if (files.length > 0) {
+                    const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
+                    if (mainImgObj) {
+                        setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+                    }
 
         const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
         console.log('Fetching URL:', API_URL);
