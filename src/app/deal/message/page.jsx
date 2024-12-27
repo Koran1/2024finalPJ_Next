@@ -28,6 +28,8 @@ function Page() {
     const otherUser = useSearchParams().get('seller');
 
     const [chatList, setChatList] = useState([]);
+    const [userList, setUserList] = useState([]);
+    const [recentChat, setRecentChat] = useState([]);
 
     // 전체 채팅 정보 가져오기
     useEffect(() => {
@@ -36,12 +38,13 @@ function Page() {
         axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}`)
             .then((res) => {
                 console.log(res.data.data)
-                setChatList(res.data.data);
+                setChatList(res.data.data.chatList);
+                setUserList(res.data.data.userList);
+                setRecentChat(res.data.data.recentChat);
             })
             .catch((err) => console.log(err))
 
     }, [user]);
-
 
 
 
@@ -139,11 +142,27 @@ function Page() {
                                                                 fontWeight="500"
                                                                 mb="5px"
                                                             >
-                                                                Laurent Perrier
                                                                 {/* // 여기에 보낸 사람 이름 */}
+                                                                {userList.map((user) => {
+                                                                    if (chat.userIdx === user.userIdx) {
+                                                                        return user.userNickname
+                                                                    }
+                                                                })}
                                                             </Typography>
-                                                            <Typography fontSize="12px">Typing...</Typography>
+
                                                             {/* // 여기에 메세지 가장 최근 내용 */}
+                                                            <Typography fontSize="12px">
+                                                                {recentChat.map((rec) => {
+                                                                    if (rec.chatRoom === chat.chatRoom) {
+                                                                        const msg = rec.chatMessage;
+                                                                        if (msg) {
+                                                                            return msg.length > 15 ? msg.substring(0, 15) + '...' : msg;
+                                                                        } else {
+                                                                            return '첫 대화를 시작해보세요!'
+                                                                        }
+                                                                    }
+                                                                })}
+                                                            </Typography>
                                                         </Box>
                                                     </Box>
 
@@ -154,13 +173,23 @@ function Page() {
                                                                 fontSize: "11px",
                                                             }}
                                                         >
-                                                            4:30 PM
                                                             {/* // 여기에 메세지 시간 */}
+                                                            {recentChat.map((rec) => {
+                                                                if (rec.chatRoom === chat.chatRoom) {
+                                                                    const msg = rec.chatTime;
+                                                                    if (msg) {
+                                                                        const ampm = msg.substring(11, 13) > 11 ? 'PM' : 'AM';
+                                                                        return msg.substring(11, 16) + ' ' + ampm;
+                                                                    } else {
+                                                                        return ''
+                                                                    }
+                                                                }
+                                                            })}
                                                         </Typography>
 
                                                         <Box className="mr-10px">
                                                             <Badge
-                                                                badgeContent={2} // 여기에 메세지 개수
+                                                                badgeContent={chat.unReadCount} // 여기에 메세지 개수
                                                                 color="primary"
                                                                 className="for-dark-text-white"
                                                             ></Badge>
@@ -193,7 +222,18 @@ function Page() {
                                     return (
                                         <TabPanel key={chat.chatRoom}>
                                             {/* ChatBox */}
-                                            <ChatBox room={chat.chatRoom} sender={chat.userIdx} />
+                                            <ChatBox room={chat.chatRoom} senderIdx={chat.userIdx}
+                                                senderNick={userList.map((user) => {
+                                                    if (chat.userIdx === user.userIdx) {
+                                                        return user.userNickname
+                                                    }
+                                                })}
+                                                senderSatisScore={userList.map((user) => {
+                                                    if (chat.userIdx === user.userIdx) {
+                                                        return user.dealSatisSellerScore
+                                                    }
+                                                })}
+                                            />
                                         </TabPanel>
                                     )
                                 })

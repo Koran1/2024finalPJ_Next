@@ -17,7 +17,7 @@ import useAuthStore from "../../../store/authStore";
 import { useRouter } from "next/navigation";
 
 
-const ChatBox = ({ room }) => {
+const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
 
   const socketRef = useRef();
   const router = useRouter();
@@ -113,10 +113,11 @@ const ChatBox = ({ room }) => {
           <Avatar src="/images/tree-2.jpg" />
           <Box className="ml-1" style={{ marginLeft: "10px" }}>
             <Typography as="h5" fontWeight="500">
-              User Name
+              {senderNick}
             </Typography>
             <Typography fontSize="12px" position="relative">
-              <span className="active-status2 successBgColor"></span> Maybe 평점
+              <span className="active-status2 successBgColor"></span>
+              ★★★★★ ({senderSatisScore}) - 작업중
             </Typography>
           </Box>
         </Box>
