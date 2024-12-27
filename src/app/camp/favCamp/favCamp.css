@@ -1,0 +1,34 @@
+.mylog-main-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px;
+    font-size: 130%;
+}
+
+.btn1 {
+    color: #767474;
+    font-size: 17px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn1:hover {
+    color: #3DBDFD;
+}
+
+.btn1.active {
+    color: orange;
+}
+
+.mylog-list-header-container {
+    margin: 0 auto;
+    margin-top: 20px;
+    /* 헤더 상단 간격 */
+    margin-bottom: 30px;
+    /* 헤더 하단 간격 */
+    max-width: 950px;
+}
