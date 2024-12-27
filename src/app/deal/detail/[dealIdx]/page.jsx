@@ -11,6 +11,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import Favorite from './favorite';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -20,9 +21,8 @@ function Page({ params }) {
   const [error, setError] = useState(null);               // 에러 상태
   const { isAuthenticated, token, user } = useAuthStore(); // 로그인 상태
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
-  const [mainImage, setMainImage] = useState(null); // 메인 이미지 상태
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
+  const [mainImage, setMainImage] = useState('');
   const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
   const [dealStatus, setDealStatus] = useState('판매 중'); // 판매 상태
 
@@ -117,11 +117,6 @@ function Page({ params }) {
   const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
   // 로딩 완료 후
 
-  // 좋아요 버튼 클릭 시 좋아요 상태 변경
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-  };
-
   return (
     <>
       <div className="detail-container">
@@ -155,15 +150,10 @@ function Page({ params }) {
           <div className="product-info">
             <div className="product-header">
               <h3 style={{ fontWeight: 'bold' }}>{item.dealTitle}</h3>
-
-              <button
-                className="like-btn"
-                onClick={handleLike}
-                style={{ background: 'none', border: 'none' }}
-              >
+              <div className="like-container">
                 <span>찜하기</span>
-                {isLiked ? <BookmarkIcon style={{ color: 'red', fontSize: '2rem' }} /> : <BookmarkBorderIcon style={{ fontSize: '2rem' }} />}
-              </button>
+                <Favorite />
+              </div>
             </div>
             <hr />
 

@@ -98,11 +98,11 @@ function Page() {
           setInitialImages(initialImgs);
         }
       } catch (error) {
-        console.error('상품 정보 불러오기 실패:', error);
+        console.error('상품 수정 불러오기 실패:', error);
         if (error.message.includes('Failed to fetch')) {
           alert('서버 연결에 실패했습니다. 로그인 상태를 확인해주세요.');
         } else {
-          alert(error.message || '상품 정보를 불러오는 중 오류가 발생했습니다.');
+          alert(error.message || '상품 수정 불러오는 중 오류가 발생했습니다.');
         }
       }
     };
@@ -140,57 +140,51 @@ function Page() {
   const MAX_TOTAL_SIZE = 5 * 1024 * 1024; // 4MB
   const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // 이미지 파일 유효성 검사
     if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드 가능합니다.');
-      return;
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
     }
 
-    // 개별 파일 크기 제한 검사
     if (file.size > MAX_FILE_SIZE) {
-      alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
-      return;
+        alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
+        return;
     }
 
-    // 현재 이미지 크기 합계 계산
-    const currentTotalSize = images.reduce((total, img) => {
-      return total + (img && img.file ? img.file.size : 0);
-    }, 0);
-
-    // 새로운 파일 크기 합계 계산
-    const newTotalSize = currentTotalSize + file.size;
-
-    // 파일 크기 제한 검사
-    if (newTotalSize > MAX_TOTAL_SIZE) {
-      alert('이미지 파일 용량들의 합은 최대 5MB를 초과할 수 없습니다.');
-      return;
-    }
-
-    // 이미지 미리보기 URL 생성
-    const imageUrl = URL.createObjectURL(file);
-    
-    // input의 index 찾기
     const index = parseInt(e.target.id.split('-')[2]);
     
-    // 이미지 배열 업데이트
-    setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = {
-        file: file,
-        preview: imageUrl
-      };
-      return newImages;
-    });
+    try {
+        // 기존 이미지가 있는 경우 삭제
+        if (images[index] && images[index].preview) {
+            const fileName = images[index].preview.split('/').pop();
+            await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file?fileName=${fileName}`, {
+                method: 'DELETE'
+            });
+        }
 
-    // FormData 업데이트
-    setFormData(prev => ({
-      ...prev,
-      file: file
-    }));
+        // 새 이미지로 업데이트
+        const imageUrl = URL.createObjectURL(file);
+        setImages(prev => {
+            const newImages = [...prev];
+            newImages[index] = {
+                file: file,
+                preview: imageUrl
+            };
+            return newImages;
+        });
+
+        // 파일 순서 재정렬
+        await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/reorder`, {
+            method: 'PUT'
+        });
+
+        setIsModified(true);
+    } catch (error) {
+        console.error('이미지 업로드/삭제 중 오류:', error);
+    }
   };
 
   const handleChange = (e) => {
@@ -338,6 +332,15 @@ function Page() {
   };
 
   const handleImageDelete = async (index) => {
+    // 현재 이미지 개수 확인
+    const currentImageCount = images.filter(img => img !== null).length;
+    
+    // 마지막 남은 이미지를 삭제하려는 경우
+    if (currentImageCount === 1 && images[index] !== null) {
+        alert("이미지 첨부는 필수 항목입니다");
+        return;
+    }
+
     try {
         // 기존 이미지인 경우 서버에서도 삭제
         if (images[index] && images[index].preview) {
@@ -380,7 +383,7 @@ function Page() {
 
   return (
     <div className="pd-reg-container">
-      <h2 className="title">상품정보</h2>
+      <h2 className="title">상품정보 수정</h2>
       <br />
       <div className="image-upload-section">
         <h4>상품 이미지</h4>
@@ -674,7 +677,7 @@ function Page() {
                 onChange={e => handleStateChange(e.target.value)} 
                 checked={formData.dealStatus === "사용감 적음"} 
               />
-              사용감 적음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 약간 있음</span>
+              사용감 적음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 약 있음</span>
             </label>
           </p>
           <p>
@@ -799,7 +802,7 @@ function Page() {
               name="package" 
               value="배송비 포함" 
               onChange={e => handlePackageChange(e.target.value)} 
-              checked={formData.dealPackage === "배���비 포함" || !formData.dealPackage} 
+              checked={formData.dealPackage === "배송비 포함" || !formData.dealPackage} 
             />
             배송비 포함
           </label>
