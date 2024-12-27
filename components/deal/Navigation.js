@@ -53,6 +53,8 @@ const Navigation = (params) => {
   const links = [
     { href: `/deal/management/${user.userIdx}`, label: '상품 관리' },
     { href: `/deal/purchase/`, label: '구매 내역' },
+
+    // user.userIdx 넣으면 안되는 이유..
     { href: `/deal/interest/${user.userIdx}`, label: '관심 목록' },
     { href: `/deal/rating/`, label: '나의 평점' },
     { href: `/deal/message/`, label: '쪽지 목록' }
