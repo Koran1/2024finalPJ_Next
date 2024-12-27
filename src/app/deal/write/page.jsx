@@ -658,7 +658,11 @@ function Page() {
               placeholder="상품 가격을 입력해 주세요"
               name="dealPrice"
               value={formData.dealPrice}
-              onChange={e => handlePriceChange(e.target.value)}
+              onChange={e => {
+                // 소수점 제거 및 음수 입력 방지
+                const value = Math.max(0, Math.floor(Number(e.target.value)));
+                handlePriceChange(value.toString());
+              }}
               onFocus={(e) => {
                 if (e.target.value === '0') {
                   setFormData(prev => ({
@@ -681,6 +685,9 @@ function Page() {
                   e.target.blur();
                 }
               }}
+              onWheel={(e) => e.target.blur()}
+              min="0"
+              step="1" // 정수 단위로만 입력 가능하도록 설정
               disabled={formData.priceOption === "나눔"}
             />
           </div>

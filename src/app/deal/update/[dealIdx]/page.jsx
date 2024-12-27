@@ -221,43 +221,46 @@ function Page() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    const formDataToSend = new FormData();
+    
+    // 기본 데이터 추가
+    Object.keys(formData).forEach(key => {
+      if (key !== 'file') formDataToSend.append(key, formData[key]);
+    });
+
+    // 파일 액션 정보 생성
+    const fileOrders = {
+        deleted: [], // 삭제된 파일들
+    };
+
+    console.log('initialImages : ', initialImages);
+    // 삭제된 파일 확인
+    initialImages.forEach(img => {
+      console.log('img : ', img);
+      console.log('images : ', images);
+        if (!images.some(current => current && current.preview === img.preview)) {
+          fileOrders.deleted.push(img.preview);
+          console.log('fileOrders.deleted : ', img.preview);
+        }
+    });
+
+
+    // 새로운 파일 또는 수정된 파일 추가
+    images.forEach((image, index) => {
+        if (image && image.file) {
+            formDataToSend.append('file', image.file);
+        }
+    });
+    
+    formDataToSend.append('fileOrders', fileOrders.deleted);
+
     try {
-        const formDataToSend = new FormData();
-        
-        // 기본 폼 데이터 추가
-        Object.keys(formData).forEach(key => {
-            formDataToSend.append(key, formData[key]);
-        });
-
-        // 새로운 이미지 파일 추가
-        if (images.length > 0) {
-            images.forEach((image, index) => {
-                if (image.file) {
-                    formDataToSend.append('file', image.file);
-                }
-            });
-        }
-
-        // 삭제된 파일 정보 추가
-        const deletedFiles = initialImages.filter(img => 
-            !images.some(current => current.fileName === img.fileName)
-        ).map(img => ({
-            fileName: img.fileName,
-            fileOrder: img.fileOrder
-        }));
-
-        // 삭제된 파일이 있는 경우에만 추가
-        if (deletedFiles.length > 0) {
-            formDataToSend.append('deletedFiles', JSON.stringify(deletedFiles));
-        }
-
         const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
             method: 'PUT',
             body: formDataToSend,
         });
 
         const data = await response.json();
-
         if (data.success) {
             alert('상품이 성공적으로 수정되었습니다.');
             router.push(`/deal/detail/${dealIdx}`);
@@ -265,7 +268,7 @@ function Page() {
             alert(data.message || '상품 수정에 실패했습니다.');
         }
     } catch (error) {
-        console.error('Error updating product:', error);
+        console.error('상품 수정 중 오류 발생:', error);
         alert('상품 수정 중 오류가 발생했습니다.');
     }
   };
@@ -334,13 +337,30 @@ function Page() {
     }));
   };
 
-  const handleImageDelete = (index) => {
-    setImages(prev => {
-        const newImages = [...prev];
-        newImages.splice(index, 1);
-        return newImages;
-    });
-    setIsModified(true); // 수정 상태 업데이트
+  const handleImageDelete = async (index) => {
+    try {
+        // 기존 이미지인 경우 서버에서도 삭제
+        if (images[index] && images[index].preview) {
+            const fileName = images[index].preview.split('/').pop();
+            const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file?fileName=${fileName}`, {
+                method: 'DELETE',
+            });
+            
+            const data = await response.json();
+            if (!data.success) {
+                console.error('파일 삭제 실패:', data.message);
+                return;
+            }
+        }
+
+        // UI에서 이미지 제거
+        const newImages = [...images];
+        newImages[index] = null;
+        setImages(newImages);
+        
+    } catch (error) {
+        console.error('이미지 삭제 중 오류:', error);
+    }
   };
 
   const handlePriceOptionChange = (value) => {
@@ -779,7 +799,7 @@ function Page() {
               name="package" 
               value="배송비 포함" 
               onChange={e => handlePackageChange(e.target.value)} 
-              checked={formData.dealPackage === "배송비 포함" || !formData.dealPackage} 
+              checked={formData.dealPackage === "배���비 포함" || !formData.dealPackage} 
             />
             배송비 포함
           </label>
