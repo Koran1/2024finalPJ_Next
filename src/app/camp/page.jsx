@@ -75,7 +75,7 @@ function Page() {
 
     const getCampList = async () => {
         try {
-            setLoading(true);
+            setLoading(false);
             console.log("Fetching data with params:", { region, selectedSigungu, page, size, sortOption });
             const response = await axios.get(`http://localhost:8080/api/camp/list`, {
                 params: {
