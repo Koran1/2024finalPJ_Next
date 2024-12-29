@@ -110,7 +110,7 @@ function Page(props) {
     return (
         <>
 
-            <div className="mylog-main-container">
+            <div className="mylog-favcamp-main-container">
                 <div className="mylog-navmenu-container">
                     {/* 상단 네비게이션바 */}
                     <Link href="/mylog/plan"
@@ -141,7 +141,7 @@ function Page(props) {
 
                 <div style={{ padding: '20px' }}>
                     {/* 헤더 제목 영역 */}
-                    <div className="mylog-list-header-container">
+                    <div className="mylog-favcamp-header-container">
                         <p style={{ fontSize: "35px", fontWeight: "bold" }}>위시리스트</p>
 
                         <div style={{ marginBottom: '20px' }}>

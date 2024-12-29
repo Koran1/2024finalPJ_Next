@@ -1,4 +1,4 @@
-.mylog-main-container {
+.mylog-favcamp-main-container {
     max-width: 1300px;
     margin: 0 auto;
     padding: 20px;
@@ -24,7 +24,7 @@
     color: orange;
 }
 
-.mylog-list-header-container {
+.mylog-favcamp-header-container {
     margin: 0 auto;
     margin-top: 20px;
     /* 헤더 상단 간격 */

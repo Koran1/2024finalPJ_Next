@@ -67,7 +67,7 @@ function Page() {
     }
 
     return (
-        <div className="mylog-main-container">
+        <div className="mylog-list-main-container">
             <div className="mylog-navmenu-container">
                 {/* 상단 네비게이션바 */}
                 <Link href="/mycamp/plan"
@@ -88,7 +88,7 @@ function Page() {
                     >
                         나의 캠핑로그
                     </Link>
-                    <Link href="/mycamp/favcamp"
+                    <Link href="/camp/favCamp"
                         className={`btn1 ${getActiveClass('/mylog/favcamp')}`}
                         onClick={() => setNavMenu('/mylog/favcamp')}
                     >
