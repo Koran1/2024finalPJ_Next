@@ -4,12 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextareaAutosize } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import useAuthStore from '../../../../store/authStore';
 
 function Page() {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-  // const { isAuthenticated, token } = useAuthStore();
-  // const router = useRouter();
   const router = useRouter();
+  const { isAuthenticated, token, user } = useAuthStore();
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
     dealTitle: '',
@@ -25,6 +25,15 @@ function Page() {
     priceOption: '나눔'
   });
   const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 로그인 상태 확인
+    if (!isAuthenticated || !token) {
+      alert('로그인이 필요합니다.');
+      router.push('/user/login');
+      return;
+    }
+  }, [isAuthenticated, token, router]);
 
   useEffect(() => {
     const checkFormValidity = () => {
@@ -127,70 +136,82 @@ function Page() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!isAuthenticated || !token) {
+      alert('로그인이 필요합니다.');
+      router.push('/user/login');
+      return;
+    }
+
     if (!isFormComplete()) {
-        alert('모든 항목을 입력해주세요.');
-        return;
+      alert('모든 항목을 입력해주세요.');
+      return;
     }
 
     const submitData = new FormData();
 
     // 기본 데이터 추가
     Object.keys(formData).forEach(key => {
-        if (key !== 'file' && key !== 'priceOption') {  // priceOption 제외
-            submitData.append(key, formData[key]);
-        }
+      if (key !== 'file' && key !== 'priceOption') {
+        submitData.append(key, formData[key]);
+      }
     });
 
     // 이미지 파일 추가
     let hasFiles = false;
     images.forEach((image, index) => {
-        if (image && image.file) {
-            submitData.append('file', image.file);
-            hasFiles = true;
-        }
+      if (image && image.file) {
+        submitData.append('file', image.file);
+        hasFiles = true;
+      }
     });
 
     if (!hasFiles) {
-        alert('최소 1개 이상의 상품 이미지를 등록해주세요.');
-        return;
+      alert('최소 1개 이상의 상품 이미지를 등록해주세요.');
+      return;
     }
 
     try {
-        const response = await axios.post(
-            `${LOCAL_API_BASE_URL}/deal/write`,
-            submitData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                withCredentials: true
-            }
-        );
-
-        console.log('서버 응답:', response.data);  // 응답 데이터 확인
-
-        if (response.data.success) {
-            const dealIdx = response.data.data;
-            if (dealIdx) {
-                alert('상품이 성공적으로 등록되었습니다.');
-                router.push(`/deal/detail/${dealIdx}`);
-            } else {
-                alert('상품 등록은 완료되었으나, 상세 페이지로 이동할 수 없습니다.');
-                router.push('/deal/dealMain');
-            }
-        } else {
-            alert(response.data.message || '상품 등록에 실패했습니다.');
+      const response = await axios.post(
+        `${LOCAL_API_BASE_URL}/deal/write`,
+        submitData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+          }
         }
+      );
+
+      console.log('서버 응답:', response.data);  // 응답 데이터 확인
+
+      if (response.data.success) {
+        const dealIdx = response.data.data;
+        if (dealIdx) {
+          alert('상품이 성공적으로 등록되었습니다.');
+          router.push(`/deal/detail/${dealIdx}`);
+        } else {
+          alert('상품 등록은 완료되었으나, 상세 페이지로 이동할 수 없습니다.');
+          router.push('/deal/dealMain');
+        }
+      } else {
+        alert(response.data.message || '상품 등록에 실패했습니다.');
+      }
     } catch (error) {
-        console.error('상품 등록 중 오류 발생:', error);
-        if (error.response) {
-            console.log('에러 응답:', error.response.data);  // 에러 응답 데이터 확인
-            alert(`상품 등록 실패: ${error.response.data.message || '서버 오류가 발생했습니다.'}`);
-        } else if (error.request) {
-            alert('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');
-        } else {
-            alert('요청 중 오류가 발생했습니다.');
+      console.error('상품 등록 중 오류 발생:', error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          useAuthStore.getState().logout();  // 401 에러 시 로그아웃 처리
+          alert('로그인이 필요하거나 세션이 만료되었습니다.');
+          router.push('/user/login');
+          return;
         }
+        console.log('에러 응답:', error.response.data);
+        alert(`상품 등록 실패: ${error.response.data.message || '서버 오류가 발생했습니다.'}`);
+      } else if (error.request) {
+        alert('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');
+      } else {
+        alert('요청 중 오류가 발생했습니다.');
+      }
     }
   };
 

@@ -33,33 +33,34 @@ export default function ProductSearchPage() {
         const response = await axios.get(API_URL);
 
         if (response.data.success) {
-          console.log("setProducts: ", response.data.data);
-
+          console.log("Response data:", response.data.data); // 데이터 확인용 로그
+          
           const list = response.data.data.list;
           const file_list = response.data.data.file_list;
 
-          // Map over the list to create a new array with the updated structure
-          const resultProducts = list.map((k) => {
-            // Find the matching file from file_list
-            const matchingFile = file_list.find(file => file.fileTableIdx === k.dealIdx);
-
-            // Return a new object with the additional field
+          // 각 상품에 대해 첫 번째 이미지만 매칭
+          const resultProducts = list.map((product) => {
+            // 해당 상품의 모든 이미지 찾기
+            const productFiles = file_list.filter(file => file.fileTableIdx === product.dealIdx);
+            // fileOrder가 0인 메인 이미지 찾기
+            const mainImage = productFiles.find(file => file.fileOrder === 0);
+            
             return {
-              ...k,  // Spread the original `k` object
-              deal01: matchingFile ? matchingFile.fileName : null // Add the `deal01` field
+              ...product,
+              deal01: mainImage ? mainImage.fileName : null
             };
           });
 
-          console.log(resultProducts);
+          console.log("Processed products:", resultProducts); // 처리된 데이터 확인
           setProducts(resultProducts);
         } else {
-          setError("Failed to fetch product data.");
+          setError("데이터를 불러오는데 실패했습니다.");
         }
       } catch (err) {
-        console.error("Error fetching product data:", err);
-        setError("Failed to fetch product data.");
+        console.error("상품 데이터 조회 오류:", err);
+        setError("데이터를 불러오는데 실패했습니다.");
       } finally {
-        setLoading(false); // 로딩 종료
+        setLoading(false);
       }
     };
 
@@ -137,28 +138,35 @@ export default function ProductSearchPage() {
       </div>
 
       {/* 상품 목록 */}
-      <div className="product-grid">
-
-        {products.map((product) => (
-
-          <div className="product-item" key={product.dealIdx}>
+      <div className="product-grid-wrapper">
+        <div className="product-grid">
+          {products.map((product) => (
+            <div className="product-item" key={product.dealIdx}>
               <Link href={`/deal/detail/${product.dealIdx}`}>
-                <img className="product-image"
-                  src={product.deal01 || "../images/defaultImage.png"}
-                  alt={product.title}
+                <img 
+                  className="dealMain-image"
+                  src={product.deal01 
+                    ? `${LOCAL_IMG_URL}/${product.deal01}`
+                    : "/images/defaultImage.png"}
+                  alt={product.dealTitle}
                   style={{ width: "180px", height: "200px" }}
-                  />
+                  onError={(e) => {
+                    console.log("Image load error:", e);
+                    e.target.src = "/images/defaultImage.png";
+                  }}
+                />
                 <div className="product-content">
                   <div className="nick">{product.dealSellerNick}</div>
-                  <div className="title"> title : {product.dealTitle}</div>
-                  <div className='price'>{product.dealPrice} 원 </div>
-                  {/* vo 이름 다름 */}
-                  <div className='favor'> 찜 {product.dealFavorCount} </div>
+                  <div className="title">{product.dealTitle}</div>
+                  <div className='price'>
+                    {product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+                  </div>
+                  <div className='favor'>찜 {product.dealFavorCount}</div>
                 </div>
               </Link>
-          </div>
-
-        ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       <br></br>

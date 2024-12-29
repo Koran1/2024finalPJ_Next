@@ -3,6 +3,7 @@ import './update.css';
 import React, { useState, useEffect } from 'react';
 import { Button, TextareaAutosize } from '@mui/material';
 import { useRouter, useParams } from 'next/navigation';
+import axios from 'axios';
 
 function Page() {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -160,8 +161,8 @@ function Page() {
         // 기존 이미지가 있는 경우 삭제
         if (images[index] && images[index].preview) {
             const fileName = images[index].preview.split('/').pop();
-            await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file?fileName=${fileName}`, {
-                method: 'DELETE'
+            await axios.delete(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file`, {
+                params: { fileName }
             });
         }
 
@@ -177,13 +178,23 @@ function Page() {
         });
 
         // 파일 순서 재정렬
-        await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/reorder`, {
-            method: 'PUT'
-        });
+        try {
+            await axios.put(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/reorder`);
+            console.log("파일 순서 재정렬 성공");
+        } catch (error) {
+            console.error("파일 순서 재정렬 실패:", error);
+            if (error.response) {
+                console.error("서버 응답:", error.response.data);
+            }
+        }
 
         setIsModified(true);
     } catch (error) {
         console.error('이미지 업로드/삭제 중 오류:', error);
+        if (error.response) {
+            console.error("서버 응답:", error.response.data);
+        }
+        alert('이미지 처리 중 오류가 발생했습니다.');
     }
   };
 
@@ -332,37 +343,36 @@ function Page() {
   };
 
   const handleImageDelete = async (index) => {
-    // 현재 이미지 개수 확인
     const currentImageCount = images.filter(img => img !== null).length;
     
-    // 마지막 남은 이미지를 삭제하려는 경우
     if (currentImageCount === 1 && images[index] !== null) {
         alert("이미지 첨부는 필수 항목입니다");
         return;
     }
 
     try {
-        // 기존 이미지인 경우 서버에서도 삭제
         if (images[index] && images[index].preview) {
             const fileName = images[index].preview.split('/').pop();
-            const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file?fileName=${fileName}`, {
-                method: 'DELETE',
+            const response = await axios.delete(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file`, {
+                params: { fileName }
             });
             
-            const data = await response.json();
-            if (!data.success) {
-                console.error('파일 삭제 실패:', data.message);
+            if (!response.data.success) {
+                console.error('파일 삭제 실패:', response.data.message);
                 return;
             }
         }
 
-        // UI에서 이미지 제거
         const newImages = [...images];
         newImages[index] = null;
         setImages(newImages);
         
     } catch (error) {
         console.error('이미지 삭제 중 오류:', error);
+        if (error.response) {
+            console.error("서버 응답:", error.response.data);
+        }
+        alert('이미지 삭제 중 오류가 발생했습니다.');
     }
   };
 

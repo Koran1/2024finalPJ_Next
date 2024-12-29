@@ -1,10 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import useAuthStore from './../../../../../store/authStore'
+import useAuthStore from '../../../../../../store/authStore'
 import { useParams, useRouter } from 'next/navigation'
 
-function Favorite() {
+function Page({ onFavoriteChange }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const [isLiked, setIsLiked] = useState(false);
   const { isAuthenticated, user } = useAuthStore();
@@ -37,6 +37,10 @@ function Favorite() {
               params: { userIdx, dealIdx, isLiked }
           });
           setIsLiked(!isLiked);
+          
+          if (onFavoriteChange) {
+              onFavoriteChange();
+          }
       } catch (error) {
           console.error("Failed to toggle like:", error);
       }
@@ -58,4 +62,4 @@ function Favorite() {
   );
 }
 
-export default Favorite;
+export default Page;
