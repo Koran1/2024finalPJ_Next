@@ -11,138 +11,114 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import Favorite from './favorite';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
-  const [item, setItem] = useState(null);                 // 데이터 상태
+  const [item, setItem] = useState([]);                 // 데이터 상태
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
   const { isAuthenticated, token, user } = useAuthStore(); // 로그인 상태
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
-  const [mainImage, setMainImage] = useState(null); // 메인 이미지 상태
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
+  const [mainImage, setMainImage] = useState('');
   const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
   const [dealStatus, setDealStatus] = useState('판매 중'); // 판매 상태
-  const [favoriteCount, setFavoriteCount] = useState(0); // 찜하기 카운트 상태 추가
 
-  // 찜하기 카운트를 가져오는 함수
-  const fetchFavoriteCount = async () => {
-    try {
-      console.log('Fetching favorite count for dealIdx:', dealIdx);
-      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/likeCount/${dealIdx}`);
-      console.log('Favorite count response:', response.data);
-      
-      // 성공 여부와 관계없이 data 값을 사용 (실패시 0이 반환됨)
-      setFavoriteCount(response.data.data);
-    } catch (error) {
-      console.error('찜하기 카운트 조회 실패:', error);
-      setFavoriteCount(0);  // 에러 시 기본값 설정
-    }
-  };
-
-// 상품 데이터 가져오기
+  // 상품 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            
-            const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
-            console.log('Fetching URL:', API_URL);
-            
-            const response = await axios.get(API_URL);
-            const data = response.data;
-            
-            console.log('Response data:', data);
-            
-            if (data.success) {
-                setItem(data.data.deal);
-                const files = data.data.files;
-                
-                if (files && files.length > 0) {
-                    const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
-                    if (mainImgObj) {
-                        setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
-                    } else {
-                        setError('메인 이미지가 누락되었습니다.');
-                        return;
-                    }
 
-                    const smallImgs = files
-                        .filter(file => parseInt(file.fileOrder) >= 1 && 
-                                      parseInt(file.fileOrder) <= 5 && 
-                                      file.fileName)
-                        .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
-                        .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
-                    setSmallImages(smallImgs);
-                }
+        const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
+        console.log('Fetching URL:', API_URL);
+
+        const response = await axios.get(API_URL);
+        const data = response.data;
+
+        console.log('Response data:', data);
+
+        // API 응답이 성공적인 경우
+        if (data.success) {
+          // 상품 정보를 상태에 저장
+          setItem(data.data.deal);
+
+          // 파일 목록 설정
+          const files = data.data.files;
+
+          // 파일이 존재하고 비어있지 않은 경우
+          if (files && files.length > 0) {
+            // 메인 이미지 (fileOrder가 0인 이미지)
+            const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
+            if (mainImgObj) {
+                setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
             } else {
-                setError(data.message || '상품 정보를 불러올 수 없습니다.');
+                setError('메인 이미지가 누락되었습니다.');
+                return;
             }
-        } catch (err) {
-            console.error("Error details:", err);
-            setError('상품 정보를 가져오는 중 오류가 발생했습니다.');
-        } finally {
-            setLoading(false);
+
+            // 모든 이미지를 순서대로 정렬하여 작은 이미지 목록에 추가
+            const smallImgs = files
+                .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
+                .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
+            setSmallImages(smallImgs);
+          } else {
+            setError('상품 이미지가 없습니다.');
+            return;
+          }
+        } else {
+          setError(data.message || '상품 정보를 불러올 수 없습니다.');
         }
-<<<<<<< Updated upstream
-=======
-        await fetchFavoriteCount(); // 찜하기 카운트 조회 추가
       } catch (err) {
         console.error("Error details:", err);
         setError('상품 정보를 가져오는 중 오류가 발생했습니다.');
       } finally {
         setLoading(false);
       }
->>>>>>> Stashed changes
     };
 
     if (dealIdx) {
-        fetchData();
+      fetchData();
     }
   }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
 
   // item이 null일 경우 처리 추가
   if (!item) {
-      return (
-          <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
-              <h2>상품 정보를 불러올 수 없습니다.</h2>
-          </div>
-      );
+    return (
+      <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+        <h2>상품 정보를 불러올 수 없습니다.</h2>
+      </div>
+    );
   }
 
-      // 수정 버튼 클릭 시
-      const handleUpdate = async () => {
-        // 수정페이지로 이동
-        router.push(`/deal/update/${item.dealIdx}`)
-    }
+  // 수정 버튼 클릭 시
+  const handleUpdate = async () => {
+    // 수정페이지로 이동
+    router.push(`/deal/update/${item.dealIdx}`)
+  }
 
-    // 로딩 중
-    if (loading) {
-        return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
-    }
+  // 로딩 중
+  if (loading) {
+    return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
+  }
 
-    // 에러 발생 시
-    if (error) {
-        return (
-            <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
-                <h2>Error:</h2>
-                <p>{error}</p>
-            </div>
-        );
-    }
-    // 글 작성자와 현재 로그인한 사용자 비교 
-    const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
-    // 로딩 완료 후
-
-  // 좋아요 버튼 클릭 시 좋아요 상태 변경
-    const handleLike = () => {
-      setIsLiked(!isLiked);
-    };
-
+  // 에러 발생 시
+  if (error) {
     return (
-      <>
+      <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
+        <h2>Error:</h2>
+        <p>{error}</p>
+      </div>
+    );
+  }
+  // 글 작성자와 현재 로그인한 사용자 비교 
+  const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
+  // 로딩 완료 후
+
+  return (
+    <>
       <div className="detail-container">
         <div className="product-main">
           {/* 이미지 컨테이너 */}
@@ -150,7 +126,7 @@ function Page({ params }) {
             {/* 작은 이미지 컨테이너 */}
             <div className="small-images">
               {smallImages.map((src, index) => (
-                <img 
+                <img
                   key={index}
                   src={src}
                   alt={`작은 이미지 ${index + 1}`}
@@ -160,29 +136,24 @@ function Page({ params }) {
                 />
               ))}
             </div>
-            
+
             {/* 메인 이미지 컨테이너 */}
             <div className="main-image-container">
-              <img 
+              <img
                 src={mainImage} // 상태에 따른 메인 이미지
-                alt="상품 이미지" 
+                alt="상품 이미지"
                 className="product-image"
               />
             </div>
           </div>
-          
+
           <div className="product-info">
             <div className="product-header">
-              <h3 style={{fontWeight: 'bold'}}>{item.dealTitle}</h3>
-              
-              <button 
-                className="like-btn"
-                onClick={handleLike}
-                style={{ background: 'none', border: 'none' }}
-              >
+              <h3 style={{ fontWeight: 'bold' }}>{item.dealTitle}</h3>
+              <div className="like-container">
                 <span>찜하기</span>
-                {isLiked ? <BookmarkIcon style={{color: 'red', fontSize: '2rem'}} /> : <BookmarkBorderIcon style={{fontSize: '2rem'}} />}
-              </button>
+                <Favorite />
+              </div>
             </div>
             <hr />
 
@@ -202,14 +173,16 @@ function Page({ params }) {
                 <ForumIcon
                   variant="contained"
                   className="message-btn"
-                  onClick={() => router.push(`${LOCAL_API_BASE_URL}/deal/note/1`)}
+                  onClick={() => router.push('/deal/message')}
+                  // 여기에 상대방 userIdx 담아서...?
+
                   style={{ cursor: 'pointer', fontSize: '2rem' }}
                   title="채팅"
                 >
                 </ForumIcon>
               </div>
             </div>
-      
+
             <hr />
 
             <ul className="product-details">
@@ -234,19 +207,15 @@ function Page({ params }) {
                 <span> {item.dealCount} 개(건)</span>
               </li>
             </ul>
-<<<<<<< Updated upstream
-            <BookmarkIcon style={{fontSize: '1.5rem', color: '#808080'}} />
-=======
-            <span style={{ fontSize: '1.5rem', color: '#808080' }}>❤️</span>
->>>>>>> Stashed changes
+            <BookmarkIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
             &nbsp;
-            <span>{favoriteCount}</span>
+            <span>12</span>
             &nbsp;&nbsp;&nbsp;
-            <VisibilityIcon style={{fontSize: '1.5rem', color: '#808080'}} />
+            <VisibilityIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
             &nbsp;
             <span>35</span>
             &nbsp;&nbsp;&nbsp;
-            <AccessTimeFilledIcon style={{fontSize: '1.5rem', color: '#808080'}} />
+            <AccessTimeFilledIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
             &nbsp;
             <span>
               {(() => {
@@ -257,11 +226,11 @@ function Page({ params }) {
               })()}
             </span>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <ReportIcon 
-              variant="contained" 
-              className="report-btn" 
+            <ReportIcon
+              variant="contained"
+              className="report-btn"
               style={{
-                marginRight: '10px', 
+                marginRight: '10px',
                 fontSize: '2rem',
                 color: '#808080',
                 cursor: 'pointer'
@@ -277,14 +246,14 @@ function Page({ params }) {
             />
             <span>신고</span>
 
-            <div className="status-buttons" style={{ textAlign: 'center', margin: '40px'}}>
+            <div className="status-buttons" style={{ textAlign: 'center', margin: '40px' }}>
               <Button
                 variant="contained"
                 color={dealStatus === '판매 중' ? 'primary' : 'default'}
                 style={{ marginRight: '10px', width: '150px', height: '50px', backgroundColor: dealStatus === '판매 중' ? '#1976d2' : '#808080' }}
                 onClick={() => {
                   const isSelling = dealStatus === '판매 중';
-                  
+
                   if (isSelling) {
                     if (window.confirm("판매 완료 상태로 변경 됩니다.")) {
                       setDealStatus('판매 완료');
@@ -313,7 +282,7 @@ function Page({ params }) {
         <div className="product-description">
           <h5>상품 설명</h5>
           <div className="deal-description">
-          {item.dealDescription}
+            {item.dealDescription}
           </div>
         </div>
 
@@ -344,8 +313,8 @@ function Page({ params }) {
           </div>
         </div>
       </div>
-      </>
-    );
+    </>
+  );
 }
 
 export default Page;

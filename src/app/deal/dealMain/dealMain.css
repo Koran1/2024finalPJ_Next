@@ -144,4 +144,17 @@
       margin-left: 10px;
     }
 
-  
+    .product-grid {
+      margin-top: 30px;
+    }
+
+    .product-image {
+      width: 100%;
+      border: none;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }

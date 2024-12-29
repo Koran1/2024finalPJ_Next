@@ -1,5 +1,4 @@
 "use client"
-
 import React from 'react';
 import Link from "next/link";
 import { useState, useEffect } from 'react';
@@ -139,10 +138,6 @@ export default function ProductSearchPage() {
 
       {/* 상품 목록 */}
       <div className="product-grid">
-
-        {/* 실제 상품 이미지 링크 시 삭제 */}
-        <Link href={`/deal/detail/1`}><img src={`../images/dealDetailImage01.png`} alt="상품 이미지" style={{ width: "100px", height: "100px" }} /></Link>
-
 
         {products.map((product) => (
 

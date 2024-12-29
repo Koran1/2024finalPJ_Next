@@ -10,9 +10,10 @@ function Page() {
   const { dealIdx } = useParams();
   const router = useRouter();
   const [images, setImages] = useState([]);
+  const [initialImages, setInitialImages] = useState([]);
   const [formData, setFormData] = useState({
     dealTitle: '',
-    dealCategory: '기타 물품', //
+    dealCategory: '기타 물품',
     dealStatus: '미개봉(미사용)',
     dealDescription: '',
     dealPrice: '0',
@@ -21,7 +22,7 @@ function Page() {
     dealDirectContent: '',
     dealCount: '1',
     dealRegDate: new Date().toISOString(),
-    priceOption: '나눔'
+    priceOption: '가격 입력'
   });
   const [isFormValid, setIsFormValid] = useState(false);
   const [initialFormData, setInitialFormData] = useState(null);
@@ -41,7 +42,7 @@ function Page() {
         });
         
         if (response.status === 302 || response.status === 401) {
-          window.location.href = '/login';
+          window.location.href = '/user/login';
           return;
         }
 
@@ -51,7 +52,7 @@ function Page() {
         
         // JSON 파싱 간소화
         const data = await response.json();
-
+        console.log('Response data:', data);
         if (!data || !data.success) {
           throw new Error('서버에서 데이터를 받지 못했습니다.');
         }
@@ -70,7 +71,7 @@ function Page() {
           dealDirectContent: dealData.dealDirectContent || '',
           dealCount: (dealData.dealCount || 1).toString(),
           dealRegDate: dealData.dealRegDate || new Date().toISOString(),
-          priceOption: dealData.priceOption || '나눔'
+          priceOption: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
         });
 
         setInitialFormData({
@@ -84,22 +85,24 @@ function Page() {
           dealDirectContent: dealData.dealDirectContent || '',
           dealCount: (dealData.dealCount || 1).toString(),
           dealRegDate: dealData.dealRegDate || new Date().toISOString(),
-          priceOption: dealData.priceOption || '나눔'
+          priceOption: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
         });
 
         // 이미지 설정
         if (data.data.files && Array.isArray(data.data.files)) {
-          setImages(data.data.files.slice(0, 5).map(file => ({
+          const initialImgs = data.data.files.slice(0, 5).map(file => ({
             file: null,
-            preview: `${LOCAL_IMG_URL}/${file.fileName}`
-          })));
+            preview: file.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : null
+          }));
+          setImages(initialImgs);
+          setInitialImages(initialImgs);
         }
       } catch (error) {
-        console.error('상품 정보 불러오기 실패:', error);
+        console.error('상품 수정 불러오기 실패:', error);
         if (error.message.includes('Failed to fetch')) {
           alert('서버 연결에 실패했습니다. 로그인 상태를 확인해주세요.');
         } else {
-          alert(error.message || '상품 정보를 불러오는 중 오류가 발생했습니다.');
+          alert(error.message || '상품 수정 불러오는 중 오류가 발생했습니다.');
         }
       }
     };
@@ -110,10 +113,12 @@ function Page() {
   }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
 
   useEffect(() => {
-    if (initialFormData) {
-      setIsModified(JSON.stringify(formData) !== JSON.stringify(initialFormData));
+    if (initialFormData && initialImages) {
+        const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+        const isImagesChanged = JSON.stringify(images) !== JSON.stringify(initialImages);
+        setIsModified(isFormChanged || isImagesChanged);
     }
-  }, [formData, initialFormData]);
+  }, [formData, initialFormData, images, initialImages]);
 
   useEffect(() => {
     const checkFormValidity = () => {
@@ -135,57 +140,51 @@ function Page() {
   const MAX_TOTAL_SIZE = 5 * 1024 * 1024; // 4MB
   const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // 이미지 파일 유효성 검사
     if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드 가능합니다.');
-      return;
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
     }
 
-    // 개별 파일 크기 제한 검사
     if (file.size > MAX_FILE_SIZE) {
-      alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
-      return;
+        alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
+        return;
     }
 
-    // 현재 이미지 크기 합계 계산
-    const currentTotalSize = images.reduce((total, img) => {
-      return total + (img ? img.file.size : 0);
-    }, 0);
-
-    // 새로운 파일 크기 합계 계산
-    const newTotalSize = currentTotalSize + file.size;
-
-    // 파일 크기 제한 검사
-    if (newTotalSize > MAX_TOTAL_SIZE) {
-      alert('이미지 파일 용량들의 합은 최대 5MB를 초과할 수 없습니다.');
-      return;
-    }
-
-    // 이미지 미리보기 URL 생성
-    const imageUrl = URL.createObjectURL(file);
-    
-    // input의 index 찾기
     const index = parseInt(e.target.id.split('-')[2]);
     
-    // 이미지 배열 업데이트
-    setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = {
-        file: file,
-        preview: imageUrl
-      };
-      return newImages;
-    });
+    try {
+        // 기존 이미지가 있는 경우 삭제
+        if (images[index] && images[index].preview) {
+            const fileName = images[index].preview.split('/').pop();
+            await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file?fileName=${fileName}`, {
+                method: 'DELETE'
+            });
+        }
 
-    // FormData 업데이트
-    setFormData(prev => ({
-      ...prev,
-      file: file
-    }));
+        // 새 이미지로 업데이트
+        const imageUrl = URL.createObjectURL(file);
+        setImages(prev => {
+            const newImages = [...prev];
+            newImages[index] = {
+                file: file,
+                preview: imageUrl
+            };
+            return newImages;
+        });
+
+        // 파일 순서 재정렬
+        await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/reorder`, {
+            method: 'PUT'
+        });
+
+        setIsModified(true);
+    } catch (error) {
+        console.error('이미지 업로드/삭제 중 오류:', error);
+    }
   };
 
   const handleChange = (e) => {
@@ -215,65 +214,56 @@ function Page() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!isFormComplete()) {
-      alert('모든 항목을 입력해주세요.');
-      return;
-    }
-
-    const submitData = new FormData();
+    
+    const formDataToSend = new FormData();
+    
+    // 기본 데이터 추가
     Object.keys(formData).forEach(key => {
-      submitData.append(key, formData[key]);
+      if (key !== 'file') formDataToSend.append(key, formData[key]);
     });
 
-    // 이미지 파일 추가
-    images.forEach((image) => {
-      if (image && image.file) {
-        submitData.append('file', image.file);
-      }
+    // 파일 액션 정보 생성
+    const fileOrders = {
+        deleted: [], // 삭제된 파일들
+    };
+
+    console.log('initialImages : ', initialImages);
+    // 삭제된 파일 확인
+    initialImages.forEach(img => {
+      console.log('img : ', img);
+      console.log('images : ', images);
+        if (!images.some(current => current && current.preview === img.preview)) {
+          fileOrders.deleted.push(img.preview);
+          console.log('fileOrders.deleted : ', img.preview);
+        }
+    });
+
+
+    // 새로운 파일 또는 수정된 파일 추가
+    images.forEach((image, index) => {
+        if (image && image.file) {
+            formDataToSend.append('file', image.file);
+        }
     });
     
+    formDataToSend.append('fileOrders', fileOrders.deleted);
+
     try {
-      const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
-        method: 'PUT',
-        credentials: 'include',
-        body: submitData,
-      });
+        const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
+            method: 'PUT',
+            body: formDataToSend,
+        });
 
-<<<<<<< Updated upstream
-      if (response.status === 302 || response.status === 401) {
-        window.location.href = '/login';
-        return;
-      }
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({
-          message: '서버 응답 오류'
-        }));
-        alert(`상품 수정을 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
-        return;
-      }
-
-      const responseData = await response.json();
-
-      if (responseData.success) {
-        alert('상품이 성공적으로 수정되었습니다.');
-        router.push(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`); // Next.js router를 사용하여 페이지 이동
-      } else {
-        alert('상품 수정에 실패했습니다.');
-      }
-=======
         const data = await response.json();
         if (data.success) {
-            alert('상품이 정상적으로 수정되었습니다.');
+            alert('상품이 성공적으로 수정되었습니다.');
             router.push(`/deal/detail/${dealIdx}`);
         } else {
             alert(data.message || '상품 수정에 실패했습니다.');
         }
->>>>>>> Stashed changes
     } catch (error) {
-      console.error(error);
-      alert('상품 수정 중 오류가 발생했습니다.');
+        console.error('상품 수정 중 오류 발생:', error);
+        alert('상품 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -341,19 +331,39 @@ function Page() {
     }));
   };
 
-  const handleImageDelete = (index) => {
-    // 해당 input의 value를 초기화
-    const inputElement = document.getElementById(`image-upload-${index}`);
-    if (inputElement) {
-      inputElement.value = '';
-    }
+  const handleImageDelete = async (index) => {
+    // 현재 이미지 개수 확인
+    const currentImageCount = images.filter(img => img !== null).length;
     
-    // 이미지 상태 업데이트
-    setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = null;
-      return newImages;
-    });
+    // 마지막 남은 이미지를 삭제하려는 경우
+    if (currentImageCount === 1 && images[index] !== null) {
+        alert("이미지 첨부는 필수 항목입니다");
+        return;
+    }
+
+    try {
+        // 기존 이미지인 경우 서버에서도 삭제
+        if (images[index] && images[index].preview) {
+            const fileName = images[index].preview.split('/').pop();
+            const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file?fileName=${fileName}`, {
+                method: 'DELETE',
+            });
+            
+            const data = await response.json();
+            if (!data.success) {
+                console.error('파일 삭제 실패:', data.message);
+                return;
+            }
+        }
+
+        // UI에서 이미지 제거
+        const newImages = [...images];
+        newImages[index] = null;
+        setImages(newImages);
+        
+    } catch (error) {
+        console.error('이미지 삭제 중 오류:', error);
+    }
   };
 
   const handlePriceOptionChange = (value) => {
@@ -373,11 +383,7 @@ function Page() {
 
   return (
     <div className="pd-reg-container">
-<<<<<<< Updated upstream
-      <h2 className="title">상품정보</h2>
-=======
-      <h3>상품정보 수정</h3>
->>>>>>> Stashed changes
+      <h2 className="title">상품정보 수정</h2>
       <br />
       <div className="image-upload-section">
         <h4>상품 이미지</h4>
@@ -671,7 +677,7 @@ function Page() {
                 onChange={e => handleStateChange(e.target.value)} 
                 checked={formData.dealStatus === "사용감 적음"} 
               />
-              사용감 적음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 약간 있음</span>
+              사용감 적음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 약 있음</span>
             </label>
           </p>
           <p>
@@ -695,7 +701,7 @@ function Page() {
                 onChange={e => handleStateChange(e.target.value)} 
                 checked={formData.dealStatus === "고장/파손 있음"} 
               />
-              수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 손상이 있으나 수리/수선하면 쓸 수 있음</span>
+              수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 상이 있으나 수리/수선하면 쓸 수 있음</span>
             </label>
           </p>
         </div>
@@ -901,7 +907,7 @@ function Page() {
 
       <br />
       <h6 className={`form-completion-message ${isFormComplete() ? 'complete' : 'incomplete'}`}>
-        {isFormComplete() ? "이제 수정사항을 수정 해보세요." : "수정 사항이 입력되면 수정이 가능합니다"}
+        {isFormComplete() ? "이제 수정사항을 등록 해보세요." : "수정 사항이 입력되면 수정이 가능합니다"}
       </h6>
 
       <div className="button-group">
