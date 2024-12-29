@@ -275,7 +275,7 @@ function Page() {
 
   return (
     <div className="pd-reg-container">
-      <h2 className="title">상품정보</h2>
+      <h3>상품정보</h3>
       <br />
       <div className="image-upload-section">
         <h4>상품 이미지</h4>

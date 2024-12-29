@@ -25,6 +25,22 @@ function Page({ params }) {
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
   const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
   const [dealStatus, setDealStatus] = useState('판매 중'); // 판매 상태
+  const [favoriteCount, setFavoriteCount] = useState(0); // 찜하기 카운트 상태 추가
+
+  // 찜하기 카운트를 가져오는 함수
+  const fetchFavoriteCount = async () => {
+    try {
+      console.log('Fetching favorite count for dealIdx:', dealIdx);
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/likeCount/${dealIdx}`);
+      console.log('Favorite count response:', response.data);
+      
+      // 성공 여부와 관계없이 data 값을 사용 (실패시 0이 반환됨)
+      setFavoriteCount(response.data.data);
+    } catch (error) {
+      console.error('찜하기 카운트 조회 실패:', error);
+      setFavoriteCount(0);  // 에러 시 기본값 설정
+    }
+  };
 
 // 상품 데이터 가져오기
   useEffect(() => {
@@ -70,6 +86,16 @@ function Page({ params }) {
         } finally {
             setLoading(false);
         }
+<<<<<<< Updated upstream
+=======
+        await fetchFavoriteCount(); // 찜하기 카운트 조회 추가
+      } catch (err) {
+        console.error("Error details:", err);
+        setError('상품 정보를 가져오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+>>>>>>> Stashed changes
     };
 
     if (dealIdx) {
@@ -208,9 +234,13 @@ function Page({ params }) {
                 <span> {item.dealCount} 개(건)</span>
               </li>
             </ul>
+<<<<<<< Updated upstream
             <BookmarkIcon style={{fontSize: '1.5rem', color: '#808080'}} />
+=======
+            <span style={{ fontSize: '1.5rem', color: '#808080' }}>❤️</span>
+>>>>>>> Stashed changes
             &nbsp;
-            <span>12</span>
+            <span>{favoriteCount}</span>
             &nbsp;&nbsp;&nbsp;
             <VisibilityIcon style={{fontSize: '1.5rem', color: '#808080'}} />
             &nbsp;

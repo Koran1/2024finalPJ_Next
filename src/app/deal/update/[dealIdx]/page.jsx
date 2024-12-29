@@ -240,6 +240,7 @@ function Page() {
         body: submitData,
       });
 
+<<<<<<< Updated upstream
       if (response.status === 302 || response.status === 401) {
         window.location.href = '/login';
         return;
@@ -261,6 +262,15 @@ function Page() {
       } else {
         alert('상품 수정에 실패했습니다.');
       }
+=======
+        const data = await response.json();
+        if (data.success) {
+            alert('상품이 정상적으로 수정되었습니다.');
+            router.push(`/deal/detail/${dealIdx}`);
+        } else {
+            alert(data.message || '상품 수정에 실패했습니다.');
+        }
+>>>>>>> Stashed changes
     } catch (error) {
       console.error(error);
       alert('상품 수정 중 오류가 발생했습니다.');
@@ -363,7 +373,11 @@ function Page() {
 
   return (
     <div className="pd-reg-container">
+<<<<<<< Updated upstream
       <h2 className="title">상품정보</h2>
+=======
+      <h3>상품정보 수정</h3>
+>>>>>>> Stashed changes
       <br />
       <div className="image-upload-section">
         <h4>상품 이미지</h4>
