@@ -64,6 +64,7 @@ export default function ProductSearchPage() {
 if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
+  
 
   // 카테고리 선택 토글 함수
   const toggleCategory = (category) => {
@@ -110,6 +111,7 @@ if (loading) return <div>Loading...</div>;
       {/* 검색 상품 개수 */}
       <div className="part">상품 {products.length || 0}개</div>
 
+
       {/* 카테고리 필터 */}
       <div className="categories">
         {[
@@ -120,27 +122,38 @@ if (loading) return <div>Loading...</div>;
           <button
             key={category}
             className={`category ${selectedCategories.includes(category) ? 'active' : ''}`}
-            onClick={() => toggleCategory(category)}
-          >
+            onClick={() => toggleCategory(category)}>
             {category}
           </button>
         ))}
       </div>
 
+        
+      <a> 최신순 </a>
+      <a> 조회순 </a>
+      <a> 가격순 </a>
+
       {/* 상품 목록 */}
       <div className="product-grid">
 
         {/* 실제 상품 이미지 링크 시 삭제 */}
+<<<<<<< Updated upstream
         <Link href={`/deal/detail/1`}><img src={`../images/dealDetailImage01.png`} alt="상품 이미지" style={{ width: "100px", height: "100px" }} /></Link>
 
         {products.map((product) => (         
 
           <div className="product-item" key={product.dealIdx}>
             <div className="product-image">
+=======
+        {products.map((product) => (
+          <div className="product-card" key={product.dealIdx}>
+            <div className="card-content">
+>>>>>>> Stashed changes
               <Link href={`/deal/detail/${product.dealIdx}`}>
                 <img
                   src={product.deal01 || "../images/defaultImage.png"}
                   alt={product.title}
+<<<<<<< Updated upstream
                   style={{ width: "200px", height: "200px" }}
                 />
                 <div className="product-title">
@@ -148,6 +161,19 @@ if (loading) return <div>Loading...</div>;
                 </div>
               </Link>
             </div>
+=======
+                  style={{ width: "180px", height: "200px" }}/>
+                  
+                <div className="product-info">
+                  <div className="seller-name">{product.dealSellerNick}</div>
+                  <div className="product-name"> {product.dealTitle}</div>
+                  <div className='product-price'>{product.dealPrice} 원 </div>
+                  {/* vo 이름 다름 */}
+                  <div className='favor'> 찜 {product.dealFavorCount} </div>
+                </div>
+              </Link>
+              </div>
+>>>>>>> Stashed changes
           </div>
           
         ))}

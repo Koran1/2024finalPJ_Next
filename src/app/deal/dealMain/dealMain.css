@@ -1,4 +1,132 @@
+<<<<<<< Updated upstream
 .category {
+=======
+
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+
+.product-card {
+  width: 185px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+}
+
+.card-content {
+  position: relative;
+}
+
+.product-image {
+  width: 100%;        /* 부모 요소의 가로폭을 가득 채우기 */
+  height: 200px;       /* 세로 비율에 맞춰 자동으로 조정 */
+  object-fit: cover;  /* 이미지 비율을 유지하면서 부모 요소에 맞게 잘리도록 설정 */
+}
+
+
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.filled-heart {
+  color: red;
+  font-size: 20px;
+}
+
+.empty-heart {
+  color: #ccc;
+  font-size: 20px;
+}
+
+.product-info {
+  text-align: left; /* 왼쪽 정렬 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 부분 숨기기 */
+  text-overflow: ellipsis; /* "..." 표시 */
+  width: 100%; /* 부모 요소의 가로폭에 맞게 설정 */
+  max-width: 200px; /* 원하는 최대 너비 설정 */
+  padding: 10px;
+}
+
+.seller-name {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.product-price {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.description {
+  font-size: 12px;
+  color: #666;
+  text-overflow: ellipsis; 
+  overflow: hidden;
+}
+
+
+
+.product-grid {
+  text-decoration: none; 
+  display: flex;
+  flex-wrap: wrap; /* 줄 바꿈을 허용 */
+  justify-content: center; /* 아이템들을 가운데 정렬 */
+  border-radius: 10px;
+  margin: 1px;
+  padding: 10px;
+  margin-top: 30px;
+  gap: 10px; /* 아이템 간의 간격 */
+}
+
+/* Link 태그가 a 태그로 변환되기에 a로 작성함 */
+.product-item a {
+  text-decoration: none; /* 밑줄 제거 */
+  color: black; /* 링크 텍스트를 검정색으로 변경 */
+  font-family: 'Arial', sans-serif; /* 원하는 폰트 적용 */
+}
+  
+  .product-item {
+    width: calc(16.66% - 14px); /* 한 줄에 6개: 너비 16.66%, gap 포함 계산 */
+    box-sizing: border-box; /* padding과 border를 포함한 크기 계산 */
+    /* border: 1px solid gray;  */
+    margin-bottom: 10px; /* 아이템 아래 간격 */
+  }
+
+  .nick {
+    font-size: 15px;
+  }
+
+  .title {
+    font-size: 17px;
+  }
+  
+  .price {
+    font-size: 16px;
+  }
+
+  .favor {
+    font-size: 15px;
+  }
+ 
+ .category {
+>>>>>>> Stashed changes
     margin: 5px;
     padding: 5px 15px; /* 크기 줄임 */
     font-size: 13px; /* 폰트 크기 줄임 */
