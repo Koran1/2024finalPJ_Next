@@ -67,8 +67,7 @@ export default function RootLayout({ children }) {
     isShow ? setPhoto(null) : setPhoto(e.currentTarget);
   }
 
-  // 임의 캠핑장 정보 Idx
-  const campIdx = "10";
+  // 임의 예약정보 Idx
   const bookIdx = "2";
 
   return (
@@ -122,8 +121,6 @@ export default function RootLayout({ children }) {
             </div>
           </nav>
         </header>
-        <Link href={`/book/write?campIdx=${campIdx}`}>예약하기 임시</Link>
-        <br />
         <Link href={`/book/detail?bookIdx=${bookIdx}`}>예약상세 임시</Link>
         {children}
         <hr />
