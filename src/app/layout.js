@@ -82,10 +82,10 @@ export default function RootLayout({ children }) {
     }
   };
 
-  useEffect(() => {
-    // 앱 시작 시 로그인 상태 복원
-    useAuthStore.getState().hydrate();
-  }, []);
+  // useEffect(() => {
+  //   // 앱 시작 시 로그인 상태 복원
+  //   useAuthStore.getState().hydrate();
+  // }, []);
 
   return (
     <html lang="en">

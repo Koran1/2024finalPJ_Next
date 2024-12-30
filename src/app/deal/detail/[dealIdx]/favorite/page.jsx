@@ -13,37 +13,61 @@ function Page({ onFavoriteChange }) {
   const router = useRouter();
 
   useEffect(() => {
-      if (!isAuthenticated || !dealIdx) return;
+    console.log("Current auth state:", { 
+        isAuthenticated, 
+        user, 
+        userIdx 
+    });
+    if (!isAuthenticated || !dealIdx || !userIdx) return;
 
-      axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
-          params: { userIdx, dealIdx }
-      })
-      .then(({ data }) => {
-          setIsLiked(data.data);
-      })
-      .catch((error) => {
-          console.error("Failed to fetch like status:", error);
-      });
-  }, [isAuthenticated, userIdx, dealIdx, LOCAL_API_BASE_URL]);
+    axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
+      params: { 
+        userIdx: userIdx,
+        dealIdx 
+      }
+    })
+    .then(({ data }) => {
+      setIsLiked(data.data);
+    })
+    .catch((error) => {
+      console.error("Failed to fetch like status:", error);
+    });
+  }, [isAuthenticated, user, userIdx, dealIdx, LOCAL_API_BASE_URL]);
 
   const handleLike = async () => {
-      if (!isAuthenticated) {
-          router.push("/user/login");
-          return;
-      }
+    if (!isAuthenticated) {
+      router.push("/user/login");
+      return;
+    }
 
-      try {
-          await axios.get(`${LOCAL_API_BASE_URL}/deal/like`, {
-              params: { userIdx, dealIdx, isLiked }
-          });
-          setIsLiked(!isLiked);
-          
-          if (onFavoriteChange) {
-              onFavoriteChange();
-          }
-      } catch (error) {
-          console.error("Failed to toggle like:", error);
+    console.log("Attempting like toggle with:", {
+      userIdx,
+      dealIdx,
+      isLiked
+    });
+
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like`, {
+        params: {
+          userIdx: userIdx,
+          dealIdx: dealIdx,
+          isLiked: String(isLiked)
+        }
+      });
+      console.log("Like toggle response:", response.data);
+
+      if (response.data.success) {
+        setIsLiked(!isLiked);
+        if (onFavoriteChange) {
+          onFavoriteChange();
+        }
+      } else {
+        alert('찜 상태 변경에 실패했습니다.');
       }
+    } catch (error) {
+      console.error("Like toggle error:", error);
+      alert('찜 처리 중 오류가 발생했습니다.');
+    }
   };
 
   return (

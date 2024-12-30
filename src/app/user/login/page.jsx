@@ -64,7 +64,7 @@ function Page() {
                     const user = {
                         userIdx: data.data.userIdx,
                         nickname: data.data.userNickname,
-                        m_id: data.data.userIdx
+                        // m_id: data.data.userIdx
                     }
                     // 토큰과 사용자 정보 저장
                     useAuthStore.getState().login(data.jwtToken, user);

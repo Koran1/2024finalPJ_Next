@@ -149,6 +149,15 @@ function Page() {
 
     const submitData = new FormData();
 
+    // 판매자 정보 추가 (user 객체에서 정보 가져오기)
+    if (user && user.userIdx && user.nickname) {
+      submitData.append('dealSellerUserIdx', user.userIdx);
+      submitData.append('dealSellerNick', user.nickname);
+    } else {
+      alert('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+
     // 기본 데이터 추가
     Object.keys(formData).forEach(key => {
       if (key !== 'file' && key !== 'priceOption') {

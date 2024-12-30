@@ -34,12 +34,18 @@ function Page({ params }) {
   const getFavoriteCount = async () => {
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/favorite-count/${dealIdx}`);
+      console.log("찜아요 개수 응답:", response.data);
       if (response.data.success) {
         setFavoriteCount(response.data.data);
       }
     } catch (error) {
-      console.error('좋아요 개수 조회 실패:', error);
+      console.error('찜아요 개수 조회 실패:', error);
     }
+  };
+
+  // 좋아요 상태 변경 시 개수 업데이트를 위한 콜백
+  const handleFavoriteChange = () => {
+    getFavoriteCount();  // 좋아요 개수 다시 조회
   };
 
   // 조회수 가져오는 함수
@@ -93,7 +99,7 @@ function Page({ params }) {
           setError(data.message || '상품 정보를 불러올 수 없습니다.');
         }
 
-        // 좋아요 개수 조회
+        // 좋 개수 조회 추가
         await getFavoriteCount();
 
       } catch (err) {
@@ -107,6 +113,22 @@ function Page({ params }) {
     if (dealIdx) {
       fetchData();
     }
+  }, [dealIdx]);
+
+  // 좋아요 개수 조회 함수
+  useEffect(() => {
+    const fetchFavoriteCount = async () => {
+        try {
+            const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/favorite-count/${dealIdx}`);
+            if (response.data.success) {
+                setFavoriteCount(response.data.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch favorite count:", error);
+        }
+    };
+
+    fetchFavoriteCount();
   }, [dealIdx]);
 
   // item이 null일 경우 처리 추가
@@ -138,9 +160,9 @@ function Page({ params }) {
       </div>
     );
   }
-  // 글 작성자와 현재 로그인한 사용자 비교 
-  const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
-  // 로딩 완료 후
+  // // 글 작성자와 현재 로그인한 사용자 비교 
+  // const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
+  // // 로딩 완료 후
 
   return (
     <>
@@ -177,7 +199,7 @@ function Page({ params }) {
               <h3 style={{ fontWeight: 'bold' }}>{item.dealTitle}</h3>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <div className="like-container">
-                <Favorite onFavoriteChange={getFavoriteCount} />
+                <Favorite onFavoriteChange={handleFavoriteChange} />
               </div>
             </div>
             <hr />
