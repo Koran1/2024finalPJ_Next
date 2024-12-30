@@ -100,18 +100,22 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
                     </tr>
                 </thead>
                 <tbody>
-                     { item.map((k)=>{
+                     { item.map((k, idx)=>{
                         return(
 
-                            <tr key={k.dealSellerUserIdx}>
+                            <tr key={idx}>
                             <td>
-                                <Link href={`/product/${k.dealIdx}`}>
-                                    {/* <img src={product.image} alt={product.dealTitle} width="50" height="50" /> */}
+                                <Link href={`/deal/detail/${k.dealIdx}`}>
+                                    <img src={`${LOCAL_IMG_URL}/deal/${k.deal01}`} alt={k.dealTitle} width="50" height="50" />
                                 </Link>
                             </td>
-                            <td>{k.dealTitle}</td>
                             <td>
-                                {/* <Link href={`/detail/${product.dealIdx}`} style={{ textDecoration: "none" }}>{product.name}</Link> */}
+                                {k.dealStatus}
+                            </td>
+                            <td>
+                                <Link href={`/deal/detail/${k.dealIdx}`} style={{ textDecoration: "none" }}>
+                                    {k.dealTitle}
+                                </Link>
                             </td>
                             <td>{k.dealPrice}</td>
                             <td>{k.dealRegDate}</td>

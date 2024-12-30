@@ -55,7 +55,7 @@ function Page({ params }) {
               .find(file => parseInt(file.fileOrder) === 0);
             // 메인 이미지 URL 설정
             if (mainImgObj) {
-              setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+              setMainImage(`${LOCAL_IMG_URL}/deal/${mainImgObj.fileName}`);
             } else {
               setError('메인 이미지가 누락되었습니다.');
               return;

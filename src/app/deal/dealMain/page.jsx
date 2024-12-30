@@ -6,17 +6,20 @@ import { useState, useEffect } from 'react';
 
 import './dealMain.css';
 import axios from 'axios';
+import { Box, Button, TextField } from '@mui/material';
+import useAuthStore from '../../../../store/authStore';
 
 export default function ProductSearchPage() {
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
-  const [selectedCategories, setSelectedCategories] = useState([]); // 선택된 카테고리 상태
- // const [products, setProducts] = useState([]); // 검색 결과로 표시될 상품 리스트
+  const [selectedCategories, setSelectedCategories] = useState('전체'); // 선택된 카테고리 상태
 
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const [products, setProducts] = useState([]);                 // 데이터 상태 
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
+
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const {user} = useAuthStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,34 +71,85 @@ if (loading) return <div>Loading...</div>;
 
   // 카테고리 선택 토글 함수
   const toggleCategory = (category) => {
-    if (selectedCategories.includes(category)) {
-      setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
-    }
+    // if (selectedCategories.includes(category)) {
+    //   setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
+    // }
+    setSelectedCategories(category)
+    console.log(category)
+  }
 
+  const filteredProducts = products.filter((prod) => 
+    selectedCategories === '전체' || prod.dealCategory === selectedCategories
+  );
 
-    // 검색 제출 핸들러
-    const handleSearchSubmit = async (e) => {
-      e.preventDefault(); // 폼 제출 기본 동작 방지
+  // 검색어 핸들러
+  const handleKeyword = (e) => setSearchKeyword(e.target.value);
 
-      // 검색 API 호출 (임시: 실제 API URL 및 로직 추가 필요)
-      const response = await fetch(`/api/products?search=${searchTerm}&categories=${selectedCategories.join(",")}`);
-      const data = await response.json();
+  // 검색 제출 핸들러
+  const handleSearch = () => {
+    // 여기에서 서버단으로
+    const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainSearch`
+    const response = axios.get(`${API_URL}?searchKeyword=${searchKeyword}`)
+      .then((res) => {
+        console.log(res.data);
+        if(res.data.success){
+          setProducts(res.data.data);
+          console.log(res.data.message)
+        }else{
+          console.log(res.data.message)
+        }
+      })
+      .catch((err) => console.log(err))
+  }
 
-      setProducts(data); // 검색 결과 업데이트
-    };
-  };
+  // 정렬 필터 
+  // 1.최신순
+  const sortByRegDate = () => {
+    const sortedProducts = [...products]
+        .sort((a,b) => 
+          new Date(b.dealRegDate) - new Date(a.dealRegDate)
+        )
+    console.log(sortedProducts);
+    setProducts(sortedProducts)
+  }
+
+  // 2. 조회순
+  const sortByUserViewCount = () => {
+    const sortedProducts = [...products]
+        .sort((a,b) => 
+          b.dealUserViewCount - a.dealUserViewCount
+        )
+    console.log(sortedProducts);
+    setProducts(sortedProducts)
+  }
+
+  // 3. 가격순
+  const sortByPrice = () => {
+    const sortedProducts = [...products]
+        .sort((a,b) => 
+          b.dealPrice - a.dealPrice
+        )
+    console.log(sortedProducts);
+    setProducts(sortedProducts)
+  }
+
 
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
       <div>
-
-        <form className="search-box" action="" method="get">
-          <input className="search-txt" type='text' name='' placeholder='상품검색'></input>
-          <button className="search-btn" type="submit">
-            <img src="../images/search_icon.png" alt="Search" className="icon" />
-          </button>
-        </form>
+        <Box>
+            <TextField
+                variant="outlined"
+                placeholder="검색어를 입력하세요..."
+                value={searchKeyword}
+                onChange={handleKeyword}
+                sx={{ mb: 2 }}
+            />
+            <Button variant='outlined' onClick={handleSearch}>
+              <img src="../images/search_icon.png" alt="Search" className="icon" />
+            </Button>
+        </Box>
 
 
         {/* 상품 등록 버튼 */}
@@ -104,7 +158,7 @@ if (loading) return <div>Loading...</div>;
         {/* </div> */}
 
         {/* 나의 거래 버튼 */}
-        <Link href="/deal/management/" className="btn1">나의 거래</Link>
+        <Link href={`/deal/management/${user.userIdx}`} className="btn1">나의 거래</Link>
       </div>
 
     {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
@@ -129,35 +183,42 @@ if (loading) return <div>Loading...</div>;
       </div>
 
         
-      <a> 최신순 </a>
-      <a> 조회순 </a>
-      <a> 가격순 </a>
+      <a onClick={sortByRegDate}> 최신순 </a>
+      <a onClick={sortByUserViewCount}> 조회순 </a>
+      <a onClick={sortByPrice}> 가격순 </a>
 
       {/* 상품 목록 */}
       <div className="product-grid">
 
         {/* 실제 상품 이미지 링크 시 삭제 */}
-        {products.map((product) => (
-          <div className="product-card" key={product.dealIdx}>
-            <div className="card-content">
-              <Link href={`/deal/detail/${product.dealIdx}`}>
-                <img
-                  src={product.deal01 || "../images/defaultImage.png"}
-                  alt={product.title}
-                  style={{ width: "180px", height: "200px" }}/>
-                  
-                <div className="product-info">
-                  <div className="seller-name">{product.dealSellerNick}</div>
-                  <div className="product-name"> {product.dealTitle}</div>
-                  <div className='product-price'>{product.dealPrice} 원 </div>
-                  {/* vo 이름 다름 */}
-                  <div className='favor'> 찜 {product.dealFavorCount} </div>
+        { filteredProducts.length > 0 ?
+          filteredProducts
+          .map((product) => (
+            <div className="product-card" key={product.dealIdx}>
+              <div className="card-content">
+                <Link href={`/deal/detail/${product.dealIdx}`}>
+                  <img
+                    src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"}
+                    alt={product.title}
+                    style={{ width: "180px", height: "200px" }}/>
+                    
+                  <div className="product-info">
+                    <div className="seller-name">{product.dealSellerNick}</div>
+                    <div className="product-name"> {product.dealTitle}</div>
+                    <div className='product-price'>{product.dealPrice} 원 </div>
+                    {/* vo 이름 다름 */}
+                    <div className='favor'> 찜 {product.dealFavorCount} </div>
+                  </div>
+                </Link>
                 </div>
-              </Link>
+            </div>
+          ))
+            :
+            <div>
+              검색 결과가 없습니다
               </div>
-          </div>
-          
-        ))}
+
+        }
       </div>
 
       <br></br>
