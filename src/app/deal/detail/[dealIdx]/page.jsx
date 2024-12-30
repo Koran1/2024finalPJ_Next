@@ -24,7 +24,7 @@ function Page({ params }) {
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
   const [mainImage, setMainImage] = useState('');
   const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
-  const [dealStatus, setDealStatus] = useState('판매 중'); // 판매 상태
+  const [dealStatus, setDealStatus] = useState(''); // 판매 상태
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [viewCount, setViewCount] = useState(0);  // 조회수 상태 추가
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -73,7 +73,9 @@ function Page({ params }) {
 
         if (data.success) {
           setItem(data.data.deal);
-          setViewCount(data.data.viewCount);  // 조회수 설정
+          setViewCount(data.data.viewCount);
+          // deal02 값으로 판매 상태 설정
+          setDealStatus(data.data.deal.deal02 || '판매중');  // 기본값은 '판매중'으로 설정
 
           // 이미지 처리 코드 추가
           const files = data.data.files;
@@ -99,7 +101,7 @@ function Page({ params }) {
           setError(data.message || '상품 정보를 불러올 수 없습니다.');
         }
 
-        // 좋 개수 조회 추가
+        // 좋아요 개수 조회
         await getFavoriteCount();
 
       } catch (err) {
@@ -145,6 +147,29 @@ function Page({ params }) {
     // 수정페이지로 이동
     router.push(`/deal/update/${item.dealIdx}`)
   }
+
+  // 판매자 체크 함수 추가
+  const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
+
+  // 판매 상태 변경 함수
+  const updateDealStatus = async (newStatus) => {
+    try {
+      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/status/${dealIdx}`, null, {
+        params: {
+          status: newStatus
+        }
+      });
+
+      if (response.data.success) {
+        setDealStatus(newStatus);
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error('상태 변경 실패:', error);
+      alert('상태 변경에 실패했습니다.');
+    }
+  };
 
   // 로딩 중
   if (loading) {
@@ -288,33 +313,41 @@ function Page({ params }) {
             <div className="status-buttons" style={{ textAlign: 'center', margin: '40px' }}>
               <Button
                 variant="contained"
-                color={dealStatus === '판매 중' ? 'primary' : 'default'}
-                style={{ marginRight: '10px', width: '150px', height: '50px', backgroundColor: dealStatus === '판매 중' ? '#1976d2' : '#808080' }}
+                color={dealStatus === '판매중' ? 'primary' : 'default'}
+                className={`status-button ${dealStatus === '판매중' ? 'selling' : 'completed'}`}
+                style={{ 
+                  cursor: isSellerUser ? 'pointer' : 'default'
+                }}
                 onClick={() => {
-                  const isSelling = dealStatus === '판매 중';
-
+                  if (!isSellerUser) return;
+                  
+                  const isSelling = dealStatus === '판매중';
                   if (isSelling) {
                     if (window.confirm("판매 완료 상태로 변경 됩니다.")) {
-                      setDealStatus('판매 완료');
+                      updateDealStatus('판매완료');
                     }
                   } else {
                     if (window.confirm("판매 중 상태로 변경됩니다.")) {
-                      setDealStatus('판매 중');
+                      updateDealStatus('판매중');
                     }
                   }
                 }}
+                disabled={!isSellerUser}
               >
-                {dealStatus}
+                {dealStatus === '판매중' ? '판매중' : '판매완료'}
               </Button>
-              <Button
-                variant="contained"
-                color="success"
-                style={{ marginLeft: '50px', width: '150px', height: '50px' }}
-                onClick={() => setIsSatisfactionModalOpen(true)}
-                disabled={dealStatus === '판매 중'}
-              >
-                만족도
-              </Button>
+
+              {/* 판매 완료이고 판매자가 아닐 때만 만족도 버튼 표시 */}
+              {dealStatus === '판매완료' && !isSellerUser && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  className="satisfaction-button"
+                  onClick={() => setIsSatisfactionModalOpen(true)}
+                >
+                  만족도
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -325,15 +358,18 @@ function Page({ params }) {
           </div>
         </div>
 
-        <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
-          <Button
-            variant="contained"
-            color="darkgray"
-            onClick={handleUpdate}
-          >
-            수정하기
-          </Button>
-        </div>
+        {/* 수정하기 버튼은 판매자일 때만 표시 */}
+        {isSellerUser && (
+          <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
+            <Button
+              variant="contained"
+              color="darkgray"
+              onClick={handleUpdate}
+            >
+              수정하기
+            </Button>
+          </div>
+        )}
 
         <div className="seller-products">
           <h5>판매자의 다른 상품</h5>

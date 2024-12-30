@@ -4,15 +4,18 @@ import './satisfaction.css';
 import axios from 'axios';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import useAuthStore from '../../../../../../store/authStore';
 
 function SatisfactionModal({ isOpen, onClose, dealIdx }) {
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
+  const [sellerInfo, setSellerInfo] = useState(null);
+  const { user } = useAuthStore();
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const modalRef = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
 
   const handleMouseDown = (e) => {
     if (e.target.closest('.satisfaction-header')) {
@@ -47,23 +50,64 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
     };
   }, [isDragging]);
 
+  // 판매자 정보 가져오기
+  useEffect(() => {
+    if (isOpen && dealIdx) {
+      const fetchSellerInfo = async () => {
+        try {
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`);
+          if (response.data.success) {
+            const dealData = response.data.data.deal;
+            setSellerInfo({
+              userIdx: dealData.dealSellerUserIdx,
+              nickname: dealData.dealSellerNick
+            });
+          }
+        } catch (error) {
+          console.error('판매자 정보 조회 실패:', error);
+        }
+      };
+      fetchSellerInfo();
+    }
+  }, [isOpen, dealIdx]);
+
   const handleSubmit = async () => {
+    if (!sellerInfo) {
+      alert('판매자 정보를 불러올 수 없습니다.');
+      return;
+    }
+
+    if (rating === 0) {
+      alert('별점을 선택해주세요.');
+      return;
+    }
+
+    if (!content.trim()) {
+      alert('구매 후기를 작성해주세요.');
+      return;
+    }
+
     try {
-      const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/satisfaction`, {
-        dealIdx,
-        dealSatisBuyerScore: rating,
-        dealSatisBuyerContent: content
-      });
+      const satisfactionData = {
+        dealSatisSellerUserIdx: sellerInfo.userIdx,
+        dealSatisSellerNick: sellerInfo.nickname,
+        dealSatisBuyerUserIdx: user.userIdx,
+        dealSatisBuyerNick: user.nickname,
+        dealSatisBuyerContent: content,
+        dealSatisBuyerScore: rating
+      };
+
+      const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/satisfaction`, satisfactionData);
 
       if (response.data.success) {
-        alert('평가가 정상적으로 등록 되었습니다.');
+        alert('만족도 평가가 등록되었습니다.');
         onClose();
       } else {
-        alert('평가 등록에 실패했습니다.');
+        alert(response.data.message || '만족도 평가 등록에 실패했습니다.');
       }
     } catch (error) {
       console.error('만족도 평가 등록 실패:', error);
-      alert('평가 등록 중 오류가 발생했습니다.');
+      alert('만족도 평가 등록 중 오류가 발생했습니다.');
     }
   };
 

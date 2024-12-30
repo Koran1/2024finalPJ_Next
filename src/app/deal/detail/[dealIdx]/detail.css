@@ -179,3 +179,27 @@
     font-size: 1.2rem;
     color: #666;
 }
+
+/* 판매 상태 버튼 스타일 */
+.status-button {
+  margin-right: 10px;
+  width: 150px;
+  height: 50px;
+}
+
+.status-button.selling {
+  background-color: #1976d2 !important;
+  color: #ffffff !important;
+}
+
+.status-button.completed {
+  background-color: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+/* 만족도 버튼 스타일 */
+.satisfaction-button {
+  margin-left: 50px;
+  width: 150px;
+  height: 50px;
+}

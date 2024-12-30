@@ -2,11 +2,12 @@
 import React from 'react';
 import Link from "next/link";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import useAuthStore from '../../../../store/authStore';
+import axios from 'axios';
+import { Button } from '@mui/material';
 
 import './dealMain.css';
-import axios from 'axios';
-import useAuthStore from '../../../../store/authStore';
-import { useRouter } from 'next/navigation';
 
 export default function ProductSearchPage() {
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
@@ -20,7 +21,7 @@ export default function ProductSearchPage() {
   const [error, setError] = useState(null);               // 에러 상태
 
   // store - authStore 에 있는 정보를 사용한다.
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -90,9 +91,27 @@ export default function ProductSearchPage() {
     };
   };
 
-  const handlemanage = () => {
+  // 상품등록 페릭 핸들러
+  const handleWriteClick = (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push('/user/login');
+      return;
+    }
+    router.push('/deal/write');
+  };
+
+  // 나의거래 페릭 핸들러
+  const handleMyDealsClick = (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push('/user/login');
+      return;
+    }
     router.push(`/deal/management/${user.userIdx}`);
-  }
+  };
 
   return (
     <div className="pd-reg-container">
@@ -107,13 +126,15 @@ export default function ProductSearchPage() {
         </form>
 
 
-        {/* 상품 등록 버튼 */}
-        {/* <div> */}
-        <Link href="/deal/write" className="btn1">상품 등록</Link>
-        {/* </div> */}
+        {/* 상품 등록 링크 */}
+        <a href="/deal/write" className="btn1" onClick={handleWriteClick}>
+          상품 등록
+        </a>
 
-        {/* 나의 거래 버튼 */}
-        <p className="btn1" onClick={handlemanage}> 나의 거래</p>
+        {/* 나의 거래 링크 */}
+        <a href="#" className="btn1" onClick={handleMyDealsClick}>
+          나의 거래
+        </a>
       </div>
 
       {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
