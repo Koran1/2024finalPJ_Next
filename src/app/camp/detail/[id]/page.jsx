@@ -134,6 +134,7 @@ function Page() {
                                 ? item.campImg2
                                 : "/images/campImageholder2.png"}
                         alt="캠핑장 사진"
+                        onError={(e) => e.target.src = "/images/campImageholder2.png"}
                         className="product-image"
                     />
 

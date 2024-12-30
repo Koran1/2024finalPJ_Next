@@ -75,7 +75,7 @@ function Page() {
 
     const getCampList = async () => {
         try {
-            setLoading(true);
+            setLoading(false);
             console.log("Fetching data with params:", { region, selectedSigungu, page, size, sortOption });
             const response = await axios.get(`http://localhost:8080/api/camp/list`, {
                 params: {
@@ -336,11 +336,40 @@ function Page() {
                                 </div>
                                 <div className="camp-text">
                                     {/* 통계 데이터 */}
-                                    <p>
+                                    {/* <p>
                                         <span className="totalViews">조회수 <span className="totalNumber">{camp.totalViews}</span></span> | 
                                         <span className="totalLogs"> 캠핑로그 <span className="totalNumber">{camp.totalLogs}</span></span> | 
                                         <span className="totalLikes"> 찜수 <span className="totalNumber">{camp.totalLikes}</span></span>
+                                    </p> */}
+                                    
+                                    {/* <p>
+                                        <span className={`totalViews ${sortOption === "views" ? "active-stat" : ""}`}>
+                                            조회수 <span className="totalNumber">{camp.totalViews}</span>
+                                        </span> | &nbsp;
+                                        <span className={`totalLogs`}>
+                                            캠핑로그 <span className="totalNumber">{camp.totalLogs}</span>
+                                        </span> | &nbsp;
+                                        <span className={`totalLikes ${sortOption === "likes" ? "active-stat" : ""}`}>
+                                            찜수 <span className="totalNumber">{camp.totalLikes}</span>
+                                        </span>
+                                    </p> */}
+
+                                    <p
+                                    className={`camp-stats ${
+                                        sortOption === "title" || sortOption === "latest" ? "bold-stats" : ""
+                                        }`}
+                                    >
+                                        <span className={`totalViews ${sortOption === "views" ? "active-stat" : ""}`}>
+                                            조회수 <span className="totalNumber">{camp.totalViews}</span>
+                                        </span> | &nbsp;
+                                        <span className="totalLogs">
+                                            캠핑로그 <span className="totalNumber">{camp.totalLogs}</span>
+                                        </span> | &nbsp;
+                                        <span className={`totalLikes ${sortOption === "likes" ? "active-stat" : ""}`}>
+                                            찜수 <span className="totalNumber">{camp.totalLikes}</span>
+                                        </span>
                                     </p>
+
                                     {/* 캠핑장명 */}
                                     <h3><Link href={`/camp/detail/${camp.campIdx}`}>[{camp.doNm2} {camp.sigunguNm}] {camp.facltNm}</Link></h3>
 
@@ -363,6 +392,13 @@ function Page() {
                                         </p>
                                     )}
 
+                                    {/* 최신순으로 눌렀을 때 캠핑장 수정날짜 표시 */}
+                                    {sortOption === "latest" && camp.modifiedtime && (
+                                        <p className="camp-modified-time">
+                                            <b>업데이트 날짜:</b> {camp.modifiedtime.substring(0,10)}
+                                        </p>
+                                    )}
+
                                 </div>
                             </div>
                         ))}
@@ -375,6 +411,10 @@ function Page() {
                             defaultPage={1} 
                             onChange={(event, value) => {
                                 setPage(value);
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: "smooth",
+                                });
                             }}
                         />
                     </div>

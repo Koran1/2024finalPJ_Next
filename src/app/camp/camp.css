@@ -213,19 +213,29 @@
     margin: 5px 0;
 }
 
+/* 통계 데이터 영역 */
+.totalViews.active-stat {
+    font-weight: bold;
+}
+
+.totalLikes.active-stat {
+    font-weight: bold;
+}
+
+.camp-stats.bold-stats span {
+    font-weight: bold;
+}
+
 .totalViews {
     color: #0E1885;
-    font-weight: bold;
 }
 
 .totalLogs {
     color: #1976D2;
-    font-weight: bold;
 }
 
 .totalLikes {
     color: #FF0000;
-    font-weight: bold;
 }
 
 .totalNumber {
@@ -307,4 +317,9 @@
 .scroll-to-top:hover {
     background-color: #3a6db3;
     transform: scale(1.1);
+}
+
+/* 페이징 */
+.camp-pagination {
+    margin: 0 auto;
 }
