@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import useAuthStore from '../../../../../../store/authStore'
 import { useParams, useRouter } from 'next/navigation'
@@ -9,30 +9,29 @@ function Page({ onFavoriteChange }) {
   const [isLiked, setIsLiked] = useState(false);
   const { isAuthenticated, user } = useAuthStore();
   const { dealIdx } = useParams();
-  const userIdx = user?.userIdx;
   const router = useRouter();
 
-  useEffect(() => {
-    console.log("Current auth state:", { 
-        isAuthenticated, 
-        user, 
-        userIdx 
-    });
-    if (!isAuthenticated || !dealIdx || !userIdx) return;
+  // 좋아요 상태 체크 함수를 useCallback으로 감싸기
+  const checkLikeStatus = useCallback(async () => {
+    if (!isAuthenticated || !user?.userIdx || !dealIdx) return;
 
-    axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
-      params: { 
-        userIdx: userIdx,
-        dealIdx 
-      }
-    })
-    .then(({ data }) => {
-      setIsLiked(data.data);
-    })
-    .catch((error) => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
+        params: { 
+          userIdx: user.userIdx,
+          dealIdx 
+        }
+      });
+      setIsLiked(response.data.data);
+    } catch (error) {
       console.error("Failed to fetch like status:", error);
-    });
-  }, [isAuthenticated, user, userIdx, dealIdx, LOCAL_API_BASE_URL]);
+    }
+  }, [isAuthenticated, user?.userIdx, dealIdx, LOCAL_API_BASE_URL]);
+
+  // useEffect에서는 checkLikeStatus만 의존성으로 사용
+  useEffect(() => {
+    checkLikeStatus();
+  }, [checkLikeStatus]);
 
   const handleLike = async () => {
     if (!isAuthenticated) {
@@ -40,21 +39,14 @@ function Page({ onFavoriteChange }) {
       return;
     }
 
-    console.log("Attempting like toggle with:", {
-      userIdx,
-      dealIdx,
-      isLiked
-    });
-
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like`, {
         params: {
-          userIdx: userIdx,
+          userIdx: user.userIdx,
           dealIdx: dealIdx,
           isLiked: String(isLiked)
         }
       });
-      console.log("Like toggle response:", response.data);
 
       if (response.data.success) {
         setIsLiked(!isLiked);
@@ -62,7 +54,9 @@ function Page({ onFavoriteChange }) {
           onFavoriteChange();
         }
       } else {
-        alert('찜 상태 변경에 실패했습니다.');
+        const errorMessage = response.data.message || '찜 상태 변경에 실패했습니다.';
+        console.error("Like toggle failed:", errorMessage);
+        alert(errorMessage);
       }
     } catch (error) {
       console.error("Like toggle error:", error);

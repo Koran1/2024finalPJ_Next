@@ -67,7 +67,7 @@ function Page() {
                         // m_id: data.data.userIdx
                     }
                     // 토큰과 사용자 정보 저장
-                    useAuthStore.getState().login(data.jwtToken, user);
+                    login(user, data.jwtToken);
                     router.push('/');
                 } else {
                     alert(data.message);

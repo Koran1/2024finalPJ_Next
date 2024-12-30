@@ -19,24 +19,24 @@ export default function RootLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   const protectedRoutes = ["/add/notice", "/deal/dealMain"];
-  //   const isProtectedRoute = protectedRoutes.includes(pathname);
-  //   console.log(pathname);
-  //   console.log('isProtectedRoute', isProtectedRoute);
-  //   console.log('!isAuthenticated', !isAuthenticated);
-  //   console.log(isExpired());
+    const protectedRoutes = ["/add/notice", "/deal/dealMain"];
+    const isProtectedRoute = protectedRoutes.includes(pathname);
+    console.log(pathname);
+    console.log('isProtectedRoute', isProtectedRoute);
+    console.log('!isAuthenticated', !isAuthenticated);
+    console.log(isExpired());
 
-  //   if (isProtectedRoute) {
-  //     if (isExpired()) {
-  //       alert("로그인이 필요한 서비스입니다.");
-  //       logout();
-  //       router.push("/user/login");
-  //     }
-  //   }
+    if (isProtectedRoute) {
+      if (isExpired()) {
+        alert("로그인이 필요한 서비스입니다.");
+        logout();
+        router.push("/user/login");
+      }
+    }
 
-  // }, [isAuthenticated, router]);
+  }, [isAuthenticated, router]);
 
   const handleLogout = () => {
     // zustand에 있는 함수 호출

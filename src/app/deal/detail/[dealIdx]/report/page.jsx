@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect, useRef } from 'react';
+import useAuthStore from '../../../../../../store/authStore';
 import './report.css';
 
 function ReportModal({ isOpen, onClose, dealTitle, sellerNick }) {
+  const { user } = useAuthStore();
   const [selectedReason, setSelectedReason] = useState('스팸홍보/도배글입니다.');
   const [description, setDescription] = useState('');
   const modalRef = useRef(null);
@@ -94,7 +96,7 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick }) {
         <div className="report-form">
           <div className="form-group">
             <label>작성자</label>
-            <span> 블랙고양이</span>
+            <span> {user.nickname}</span>
           </div>
           <div className="form-group">
             <label>신고 사유</label>
