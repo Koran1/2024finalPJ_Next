@@ -1,3 +1,9 @@
+.pd-reg-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 130%;
+}
 
 .product-list {
   display: flex;
@@ -7,7 +13,7 @@
 }
 
 .product-card {
-  width: 185px;
+  width: 200px;
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

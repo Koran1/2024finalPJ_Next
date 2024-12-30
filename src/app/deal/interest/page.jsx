@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import "./interest.css";
+import ProductList from "./ProductList";
 
 // 관심 목록 페이지
 
@@ -48,9 +49,8 @@ function Page() {
             </div>
 
             <hr />
-            <div className="purchase-info">
-                <div className="part"> 평점 {}개</div>
-            </div>
+         
+            <ProductList />
             
         </div>
     );

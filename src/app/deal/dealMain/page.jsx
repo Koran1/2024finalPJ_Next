@@ -8,77 +8,74 @@ import './dealMain.css';
 import axios from 'axios';
 import { Box, Button, TextField } from '@mui/material';
 import useAuthStore from '../../../../store/authStore';
+import MainProductCard from './MainProductCard';
 
 export default function ProductSearchPage() {
   const [selectedCategories, setSelectedCategories] = useState('전체'); // 선택된 카테고리 상태
 
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-  const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
+  // const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const [products, setProducts] = useState([]);                 // 데이터 상태 
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
 
   const [searchKeyword, setSearchKeyword] = useState('');
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            setLoading(true); // 로딩 시작
-            const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMain`;
+      try {
+        setLoading(true); // 로딩 시작
+        const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMain`;
 
-            // 데이터 가져오기
-            const response = await axios.get(API_URL);
+        // 데이터 가져오기
+        const response = await axios.get(API_URL);
 
-            if (response.data.success) {
-                console.log("setProducts: ", response.data.data);
-            
-                const list = response.data.data.list;
-                const file_list = response.data.data.file_list;
-            
-                // Map over the list to create a new array with the updated structure
-                const resultProducts = list.map((k) => {
-                    // Find the matching file from file_list
-                    const matchingFile = file_list.find(file => file.fileTableIdx === k.dealIdx);
-                    
-                    // Return a new object with the additional field
-                    return {
-                        ...k,  // Spread the original `k` object
-                        deal01: matchingFile ? matchingFile.fileName : null // Add the `deal01` field
-                    };
-                });
-            
-                console.log(resultProducts);
-                setProducts(resultProducts);
-            } else {
-                setError("Failed to fetch product data.");
-            }
-        } catch (err) {
-            console.error("Error fetching product data:", err);
-            setError("Failed to fetch product data.");
-        } finally {
-            setLoading(false); // 로딩 종료
+        if (response.data.success) {
+          console.log("setProducts: ", response.data.data);
+
+          const list = response.data.data.list;
+          const file_list = response.data.data.file_list;
+
+          // Map over the list to create a new array with the updated structure
+          const resultProducts = list.map((k) => {
+            // Find the matching file from file_list
+            const matchingFile = file_list.find(file => file.fileTableIdx === k.dealIdx);
+
+            // Return a new object with the additional field
+            return {
+              ...k,  // Spread the original `k` object
+              deal01: matchingFile ? matchingFile.fileName : null // Add the `deal01` field
+            };
+          });
+
+          console.log(resultProducts);
+          setProducts(resultProducts);
+        } else {
+          setError("Failed to fetch product data.");
         }
+      } catch (err) {
+        console.error("Error fetching product data:", err);
+        setError("Failed to fetch product data.");
+      } finally {
+        setLoading(false); // 로딩 종료
+      }
     };
 
     fetchData();
-}, [ LOCAL_API_BASE_URL]);
+  }, [LOCAL_API_BASE_URL]);
 
-if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
-  
+
 
   // 카테고리 선택 토글 함수
   const toggleCategory = (category) => {
-    // if (selectedCategories.includes(category)) {
-    //   setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
-    // }
     setSelectedCategories(category)
-    console.log(category)
   }
 
-  const filteredProducts = products.filter((prod) => 
+  const filteredProducts = products.filter((prod) =>
     selectedCategories === '전체' || prod.dealCategory === selectedCategories
   );
 
@@ -92,10 +89,10 @@ if (loading) return <div>Loading...</div>;
     const response = axios.get(`${API_URL}?searchKeyword=${searchKeyword}`)
       .then((res) => {
         console.log(res.data);
-        if(res.data.success){
+        if (res.data.success) {
           setProducts(res.data.data);
           console.log(res.data.message)
-        }else{
+        } else {
           console.log(res.data.message)
         }
       })
@@ -106,9 +103,9 @@ if (loading) return <div>Loading...</div>;
   // 1.최신순
   const sortByRegDate = () => {
     const sortedProducts = [...products]
-        .sort((a,b) => 
-          new Date(b.dealRegDate) - new Date(a.dealRegDate)
-        )
+      .sort((a, b) =>
+        new Date(b.dealRegDate) - new Date(a.dealRegDate)
+      )
     console.log(sortedProducts);
     setProducts(sortedProducts)
   }
@@ -116,9 +113,9 @@ if (loading) return <div>Loading...</div>;
   // 2. 조회순
   const sortByUserViewCount = () => {
     const sortedProducts = [...products]
-        .sort((a,b) => 
-          b.dealUserViewCount - a.dealUserViewCount
-        )
+      .sort((a, b) =>
+        b.dealUserViewCount - a.dealUserViewCount
+      )
     console.log(sortedProducts);
     setProducts(sortedProducts)
   }
@@ -126,29 +123,31 @@ if (loading) return <div>Loading...</div>;
   // 3. 가격순
   const sortByPrice = () => {
     const sortedProducts = [...products]
-        .sort((a,b) => 
-          b.dealPrice - a.dealPrice
-        )
+      .sort((a, b) =>
+        b.dealPrice - a.dealPrice
+      )
     console.log(sortedProducts);
     setProducts(sortedProducts)
   }
 
+  // 찜 기능
+ 
 
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
       <div>
         <Box>
-            <TextField
-                variant="outlined"
-                placeholder="검색어를 입력하세요..."
-                value={searchKeyword}
-                onChange={handleKeyword}
-                sx={{ mb: 2 }}
-            />
-            <Button variant='outlined' onClick={handleSearch}>
-              <img src="../images/search_icon.png" alt="Search" className="icon" />
-            </Button>
+          <TextField
+            variant="outlined"
+            placeholder="검색어를 입력하세요..."
+            value={searchKeyword}
+            onChange={handleKeyword}
+            sx={{ mb: 2 }}
+          />
+          <Button variant='outlined' onClick={handleSearch}>
+            <img src="../images/search_icon.png" alt="Search" className="icon" />
+          </Button>
         </Box>
 
 
@@ -161,7 +160,7 @@ if (loading) return <div>Loading...</div>;
         <Link href={`/deal/management/${user.userIdx}`} className="btn1">나의 거래</Link>
       </div>
 
-    {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
+      {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
       {/* 검색 상품 개수 */}
       <div className="part">상품 {products.length || 0}개</div>
 
@@ -182,7 +181,7 @@ if (loading) return <div>Loading...</div>;
         ))}
       </div>
 
-        
+
       <a onClick={sortByRegDate}> 최신순 </a>
       <a onClick={sortByUserViewCount}> 조회순 </a>
       <a onClick={sortByPrice}> 가격순 </a>
@@ -191,32 +190,40 @@ if (loading) return <div>Loading...</div>;
       <div className="product-grid">
 
         {/* 실제 상품 이미지 링크 시 삭제 */}
-        { filteredProducts.length > 0 ?
+        {filteredProducts.length > 0 ?
           filteredProducts
-          .map((product) => (
-            <div className="product-card" key={product.dealIdx}>
-              <div className="card-content">
-                <Link href={`/deal/detail/${product.dealIdx}`}>
-                  <img
-                    src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"}
-                    alt={product.title}
-                    style={{ width: "180px", height: "200px" }}/>
-                    
-                  <div className="product-info">
-                    <div className="seller-name">{product.dealSellerNick}</div>
-                    <div className="product-name"> {product.dealTitle}</div>
-                    <div className='product-price'>{product.dealPrice} 원 </div>
-                    {/* vo 이름 다름 */}
-                    <div className='favor'> 찜 {product.dealFavorCount} </div>
-                  </div>
-                </Link>
-                </div>
-            </div>
-          ))
-            :
-            <div>
-              검색 결과가 없습니다
-              </div>
+            .map((product) => (
+              <MainProductCard key={product.dealIdx} product={product}/>
+              
+              // <div className="product-card" key={product.dealIdx}>
+              //   <div className="card-content">
+              //     <Link href={`/deal/detail/${product.dealIdx}`}>
+              //       <img
+              //         src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"}
+              //         alt={product.title}
+              //         style={{ width: "180px", height: "200px" }} />
+              //       <div className="heart-icon" onClick={toggleFavorite}>
+              //         {isFavorite ? (
+              //           <span className="filled-heart">❤️</span>
+              //         ) : (
+              //           <span className="empty-heart">🤍</span>
+              //         )}
+              //       </div>
+              //       <div className="product-info">
+              //         <div className="seller-name">{product.dealSellerNick}</div>
+              //         <div className="product-name"> {product.dealTitle}</div>
+              //         <div className='product-price'>{product.dealPrice} 원 </div>
+              //         {/* vo 이름 다름 */}
+              //         <div className='favor'> 찜 {product.dealFavorCount} </div>
+              //       </div>
+              //     </Link>
+              //   </div>
+              // </div>
+            ))
+          :
+          <div>
+            검색 결과가 없습니다
+          </div>
 
         }
       </div>
