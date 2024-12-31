@@ -15,9 +15,12 @@ import { useSearchParams } from "next/navigation";
 function Page() {
     const campIdx = useSearchParams().get("campIdx");
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const {isAuthenticated, token} = useAuthStore(); // 로그인 상태
     const [amount, setAmount] = useState(150); // 결제 금액
     const [siteAndPrice, setSiteAndPrice] = useState([]); // 캠핑장 구역과 가격
+    const [maxPeople, setMaxPeople] = useState(8); // 사이트 총 인원 제한
     // 날짜 선택 상태
     const [selectionRange, setSelectionRange] = useState({
         startDate: new Date(),
@@ -64,6 +67,7 @@ function Page() {
 
     const getData = async () => {
         try {
+            setLoading(true);
             const API_URL = `${LOCAL_API_BASE_URL}/book/goBookPage?campIdx=${campIdx}`;
             // 캠핑장 정보 페이지에서 idx 받아서 넣고 서버에서 해당 캠핑장의 데이터 받아오기
             const response = await axios.get(API_URL);
@@ -92,7 +96,9 @@ function Page() {
                 });
             });
         } catch (error) {
-            console.error('Error sending campIdx:', error);
+            setError("Error fetching data:", error);
+        } finally{
+            setLoading(false);
         }
     };
 
@@ -119,18 +125,23 @@ function Page() {
     };
 
     const selectSite = (item) => {
-        setAmount(item.price);
-        setFormData(prevCounts => ({
-            ...prevCounts,
-            bookSelectedZone: item.site,
-            bookTotalPrice: item.price * differenceInDays
-        }));
+        if(formData.bookCheckOutDate === formData.bookCheckInDate){
+            alert("날짜는 최소2일 이상 선택해주세요.")
+        }else{
+            setAmount(item.price);
+            setMaxPeople(item.maxPeople);
+            setFormData(prevCounts => ({
+                ...prevCounts,
+                bookSelectedZone: item.site,
+                bookTotalPrice: item.price * differenceInDays
+            }));
+        }
     };
 
     const increment = (category) => {
         const totalCount = formData.bookAdultCount + formData.bookYouthCount + formData.bookChildCount;
         console.log(totalCount);
-        if (totalCount >= 8) return;
+        if (totalCount >= maxPeople) return;
 
         setFormData(prevCounts => ({
             ...prevCounts,
@@ -157,7 +168,7 @@ function Page() {
     };
 
     const decrementAdult = () => {
-        if (formData.bookAdultCount <= 1) return;
+        if (formData.bookAdultCount <= 1) return alert("성인은 최소 1명이상 동반하셔야 합니다.");
 
         setFormData(prevCounts => ({
             ...prevCounts,
@@ -174,7 +185,9 @@ function Page() {
     }
 
     const handleSubmit = async () => {
-        const API_URL = `${LOCAL_API_BASE_URL}/book/write`;
+        // const API_URL = `${LOCAL_API_BASE_URL}/book/write`;
+        // 임시로 데이터 서버에 저장
+        const API_URL = `${LOCAL_API_BASE_URL}/book/saveData`;
         const data = new FormData();
         const date = new Date();
         const YYMMDD = `${String(date.getFullYear()).slice(2)}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
@@ -188,7 +201,7 @@ function Page() {
             data.append("orderId", orderId);
 
             console.log(data);
-            // 서버에 전달 및 DB저장
+            // 서버에 데이터 임시 저장 DB에는 X
             await axios.post(API_URL, data);
 
             console.log("토스 서버 시작");
@@ -202,8 +215,8 @@ function Page() {
                 orderId: orderId, // 고유 주문 ID(값 변경) 캠핑장idx + 구역 + -YYMMDD + 랜덤수4자리
                 orderName: `${campData.facltNm} 예약 결제`,          // 결제할 때 표시될 제목(값 변경)
                 amount: formData.bookTotalPrice, // 실제 예약 데이터에 따라 금액 설정(값 변경)
-                successUrl: `${window.location.origin}/api/payments`,   // http://localhost:3000/pages/api/payments
-                failUrl: `${window.location.origin}/api/payments/fail`, // http://localhost:3000/pages/api/payments/fail
+                successUrl: `${window.location.origin}/api/payments`,
+                failUrl: `${window.location.origin}/api/payments/fail`,
             });
         } catch (error) {
             alert("결제 중 오류가 발생했습니다.");
@@ -212,7 +225,7 @@ function Page() {
 
     const handleSelect = (ranges) => {
         setSelectionRange(ranges.selection);
-        console.log(ranges)
+        
         // 날짜가 바뀌면 선택된 구역도 초기화
         setFormData(prev => ({
             ...prev,
@@ -223,25 +236,67 @@ function Page() {
         }));
     };
 
-    const isFormValid = 
-        // isAuthenticated &&
+    const handleCopy = () => {
+        // p 태그의 텍스트를 가져오기
+        const textToCopy = document.getElementById('addressText').innerText;
+    
+        // 클립보드에 텍스트 복사
+        navigator.clipboard.writeText(textToCopy)
+        .then(() => {
+            alert('복사되었습니다!');
+        })
+        .catch((err) => {
+            console.error('복사 실패:', err);
+        });
+      };
+
+    // 데이터 가져올 때 로딩
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div style={{color:'red'}}>{error}</div>
+    }
+
+    // 이거 수정하기
+    let isFormValid = "false";
+    
+    if(formData.bookCarCount === 2){
+        isFormValid =
+        formData.bookCar1.trim() !== "" &&
+        formData.bookCar2.trim() !== "" &&
         formData.bookUserName.trim() !== "" &&
-        formData.bookUserPhone.trim() !== "";
-        // formData.bookCar1.trim() !== "" &&
-        // formData.bookCar2.trim() !== "";
+        formData.bookUserPhone.trim() !== ""
+        // isAuthenticated &&
+    }else if(formData.bookCarCount === 1){
+        isFormValid =
+        formData.bookCar1.trim() !== "" &&
+        formData.bookUserName.trim() !== "" &&
+        formData.bookUserPhone.trim() !== ""
+        // isAuthenticated &&
+    }else{
+        isFormValid = 
+        formData.bookUserName.trim() !== "" &&
+        formData.bookUserPhone.trim() !== ""
+        // isAuthenticated &&
+    }
 
     return (
         <div style={{width:"600px", margin: "0 auto"}}>
-            <div>
+            <div style={{textAlign: "center", margin: "20px 0"}}>
                 <a style={{fontSize: "32px"}}>예약하기</a>
                 {/* <a style={{right: "20px"}}>성수기/비성수기</a> */}
             </div>
             {/* 캠핑장 정보(이름, 주소, 전화번호) */}
             <div style={{display: "flex", marginBottom: "20px"}}>
-                <img src={campData.firstImageUrl} style={{ width: '150px', height: '150px', margin: "0 5px"}} />
+                <img src={campData.firstImageUrl} style={{ width: '150px', height: '150px', margin: "0 5px", borderRadius: "10px"}} />
                 <div>
                     <h3>{campData.facltNm}</h3>
-                    <p>{campData.addr1} <a>복사하기</a></p>
+                    <div style={{display: "flex", width: "430px", justifyContent: "space-between"}}>
+                        <p style={{width: "360px", margin: "auto"}} id="addressText">{campData.addr1}</p>
+                        <Button style={{width: "70px"}} onClick={handleCopy}>복사하기</Button>
+                    </div>
                     { campData.tel && <p>{campData.tel}</p> }
                 </div>
             </div>
@@ -262,9 +317,9 @@ function Page() {
             <div>
                 <h5>↓ 캠핑구역(사이트) 선택</h5>
                 {Array.isArray(siteAndPrice) && siteAndPrice.map((item, index) => (
-                    <div key={index} style={{border: "1px solid black", display: "flex", marginBottom: "20px", padding: "5px"}}>
-                        <img src={item.siteImg} style={{ width: '200px', height: '200px', marginRight: "5px"}} />
-                        <div>
+                    <div key={index} style={{border: "1px solid black", borderRadius: "10px",display: "flex", marginBottom: "20px", padding: "5px"}}>
+                        <img src={item.siteImg} style={{ width: '200px', height: '200px', marginRight: "6px", borderRadius: "10px"}} />
+                        <div style={{width: "380px"}}>
                             <h3>{item.site} 구역({item.siteKor})</h3>
                             <p>입실 : 14:00시 ~ 퇴실 : 11:00시</p>
                             <p>최대인원 {item.maxPeople}명</p>
@@ -308,7 +363,7 @@ function Page() {
                     <div style={{border: "1px solid #4D88FF", borderRadius: "10px", padding: "10px", backgroundColor:"#4D88FF", color:"white"}}>
                         <div style={{display: "flex", justifyContent: "flex-end"}}>
                             <h5 style={{marginRight: "auto"}}>총 인원 제한</h5>
-                            <h5>8명</h5>
+                            <h5>{maxPeople}명</h5>
                         </div>
                         <div style={{display: "flex", justifyContent: "flex-end"}}>
                             <h5 style={{marginRight: "auto", marginBottom: "0"}}>차량 제한</h5>
@@ -334,14 +389,21 @@ function Page() {
                             required
                             margin="normal"
                         />
-                        {/* 차량 번호 입력 필드는 예약 차량(counts.car)수에 맞춰서 생성되게하기 */}
-                        <TextField label="차량번호"
-                            name='bookCar1'
-                            value={formData.bookCar1}
-                            onChange={handleChange}
-                            fullWidth
-                            margin="normal"
-                        />
+                        {/* 차량 번호 입력 필드는 예약 차량(counts.car)수에 맞춰서 생성 */}
+                        {
+                            Array.from({ length: formData.bookCarCount }).map((_, index) => (
+                                <TextField
+                                    key={index}
+                                    label={`차량번호 ${index + 1}`}
+                                    name={`bookCar${index + 1}`}
+                                    value={formData[`bookCar${index + 1}`]}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    required
+                                    margin="normal"
+                                />
+                            ))
+                        }
                         <TextField label="요청사항"
                             name='bookRequest'
                             value={formData.bookRequest}
@@ -368,7 +430,8 @@ function Page() {
                             <h4 style={{fontWeight:"bold"}}>총 {formData.bookTotalPrice} 원</h4>
                         </div>
                         <div>
-                            <h5 style={{marginBottom: "0"}}>{selectionRange.startDate.toLocaleDateString()} ~ {selectionRange.endDate.toLocaleDateString()}</h5>
+                            <h5 style={{marginBottom: "0"}}>{formData.bookCheckInDate} ~ {formData.bookCheckOutDate}</h5>
+                            {/* <h5 style={{marginBottom: "0"}}>{selectionRange.startDate.toLocaleDateString()} ~ {selectionRange.endDate.toLocaleDateString()}</h5> */}
                         </div>
                     </div>
                     {/* 결제하기 버튼 */}
