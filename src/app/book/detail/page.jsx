@@ -9,7 +9,9 @@ import { useSearchParams } from "next/navigation";
 function Page() {
     const bookIdx = useSearchParams().get('bookIdx');
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    
     // 예약 정보
     const [formData, setFormData] = useState({
         campIdx: "", // 캠핑장 idx
@@ -47,6 +49,7 @@ function Page() {
 
     const getBookData = async () => {
         try {
+            setLoading(true);
             const API_URL = `${LOCAL_API_BASE_URL}/book/detail?bookIdx=${bookIdx}`;
 
             // 예약 리스트 페이지에서 idx 받아서 넣고 서버에서 해당 예약 내역 데이터 받아오기
@@ -59,7 +62,9 @@ function Page() {
 
             setDifferenceInDays((new Date(formData.bookCheckOutDate) - new Date(formData.bookCheckInDate)) / (1000 * 3600 * 24));
         } catch (error) {
-            console.error('Error sending bookIdx:', error);
+            setError("Error fetching data:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -103,6 +108,15 @@ function Page() {
             alert("예약 취소 중 오류가 발생했습니다.");
         }
     };
+
+    // 데이터 가져올 때 로딩
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div style={{color:'red'}}>{error}</div>
+    }
     
     // 결제 내역을 보여주는 페이지
     return (
