@@ -8,7 +8,7 @@ import useAuthStore from "../../../../store/authStore";
 
 function Page() {
 // 선택된 네비게이션 바 표시
-const [activeLink, setActiveLink] = useState("/deal/management/");
+const [activeLink, setActiveLink] = useState("/deal/management");
 
     // const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     // const [products, setProducts] = useState([]);
@@ -60,8 +60,8 @@ const [activeLink, setActiveLink] = useState("/deal/management/");
     return (
             <>
         <div className="pd-reg-container">
-       
-            <div>
+            
+            <div className="nav-links">
                 <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>상품 관리</Link>
                 <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>구매 내역</Link>
                 <Link href="/deal/interest"

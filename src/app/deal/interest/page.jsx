@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+// import styles from "./interest.module.css";
 import "./interest.css";
 import ProductList from "./ProductList";
 
@@ -20,7 +21,7 @@ function Page() {
     return (
         <div className="pd-reg-container">
             {/* 상단 네비게이션 */}
-            <div >
+            <div className="nav-links">
                 <Link href="/deal/management"
                     className={`btn1 ${getActiveClass('/deal/management')}`}
                     onClick={() => setActiveLink('/deal/management')}>

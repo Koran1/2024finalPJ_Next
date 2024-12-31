@@ -34,8 +34,7 @@ const ProductList = () => {
 const styles = {
   list: {
     display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
+    gap: '10px',
   },
   rating: {
     width: '100%',         // 전체 가로폭을 차지하도록 설정

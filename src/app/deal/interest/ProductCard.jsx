@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './interest.css';
+import  styles from './interest.module.css';
 import { Link } from '@mui/material';
 import axios from 'axios';
 import useAuthStore from '../../../../store/authStore';
@@ -33,6 +33,8 @@ const ProductCard = ({ product }) => {
   };
 
   return (
+    <div className={styles}>
+      
     <div className="product-card">
       <div className="card-content">
         <div className="heart-icon" onClick={toggleFavorite}>
@@ -53,6 +55,7 @@ const ProductCard = ({ product }) => {
         </Link>
       </div>
     </div>
+          </div>
   );
 };
 
