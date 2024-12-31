@@ -29,37 +29,11 @@ function Page({ params }) {
   const [viewCount, setViewCount] = useState(0);  // 조회수 상태 추가
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isSatisfactionModalOpen, setIsSatisfactionModalOpen] = useState(false);
-
-  // 좋아요 개수 조회 함수
-  const getFavoriteCount = async () => {
-    try {
-      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/favorite-count/${dealIdx}`);
-      console.log("찜아요 개수 응답:", response.data);
-      if (response.data.success) {
-        setFavoriteCount(response.data.data);
-      }
-    } catch (error) {
-      console.error('찜아요 개수 조회 실패:', error);
-    }
-  };
-
-  // 좋아요 상태 변경 시 개수 업데이트를 위한 콜백
-  const handleFavoriteChange = () => {
-    getFavoriteCount();  // 좋아요 개수 다시 조회
-  };
-
-  // 조회수 가져오는 함수
-  const getViewCount = async () => {
-    try {
-      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`);
-      if (response.data.success) {
-        setViewCount(response.data.data.viewCount);
-      }
-    } catch (error) {
-      console.error('조회수 조회 실패:', error);
-    }
-  };
-
+  const [hasSatisfactionRating, setHasSatisfactionRating] = useState(false); // 만족도 등록 여부 상태 추가
+  
+  // isSellerUser를 여기서 먼저 선언
+  const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
+  
   // 상품 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
@@ -73,8 +47,7 @@ function Page({ params }) {
 
         if (data.success) {
           setItem(data.data.deal);
-          setViewCount(data.data.viewCount);
-          // deal02 값으로 판매 상태 설정
+          setViewCount(data.data.viewCount);          // deal02 값으로 판매 상태 설정
           setDealStatus(data.data.deal.deal02 || '판매중');  // 기본값은 '판매중'으로 설정
 
           // 이미지 처리 코드 추가
@@ -82,20 +55,13 @@ function Page({ params }) {
           if (files && files.length > 0) {
             // 메인 이미지 (fileOrder가 0인 이미지)
             const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
-            if (mainImgObj) {
               setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
-            } else {
-              setMainImage('/images/defaultImage.png'); // 기본 이미지 설정
-            }
 
             // 모든 이미지를 순서대로 정렬하여 작은 이미지 목록에 추가
             const smallImgs = files
               .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
               .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
             setSmallImages(smallImgs);
-          } else {
-            setMainImage('/images/defaultImage.png'); // 기본 이미지 설정
-            setSmallImages([]);
           }
         } else {
           setError(data.message || '상품 정보를 불러올 수 없습니다.');
@@ -103,6 +69,11 @@ function Page({ params }) {
 
         // 좋아요 개수 조회
         await getFavoriteCount();
+
+        // 만족도 등록 여부 확인
+        if (dealStatus === '판매완료' && !isSellerUser && user?.userIdx) {
+          await checkSatisfactionRating();
+        }
 
       } catch (err) {
         console.error("Error details:", err);
@@ -112,26 +83,47 @@ function Page({ params }) {
       }
     };
 
+    // dealIdx가 있을 때만 데이터 가져오기
     if (dealIdx) {
       fetchData();
     }
-  }, [dealIdx]);
+  }, [dealIdx, dealStatus, user?.userIdx]);
 
   // 좋아요 개수 조회 함수
-  useEffect(() => {
-    const fetchFavoriteCount = async () => {
-        try {
-            const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/favorite-count/${dealIdx}`);
-            if (response.data.success) {
-                setFavoriteCount(response.data.data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch favorite count:", error);
-        }
-    };
+  const getFavoriteCount = async () => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/favorite-count/${dealIdx}`);
+      if (response.data.success) {
+        setFavoriteCount(response.data.data);
+      }
+    } catch (error) {
+      console.error('찜하기 개수 조회 실패:', error);
+    }
+  };
 
-    fetchFavoriteCount();
+  // 좋아요 상태 변경 시 개수 업데이트를 위한 콜백
+  const handleFavoriteChange = () => {
+    getFavoriteCount();
+  };
+
+  // 초기 좋아요 개수 조회
+  useEffect(() => {
+    getFavoriteCount();
   }, [dealIdx]);
+
+  // 만족도 등록 여부 확인 함수
+  const checkSatisfactionRating = async () => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction/${dealIdx}`, {
+        params: {
+          userIdx: user?.userIdx
+        }
+      });
+      setHasSatisfactionRating(response.data.exists);
+    } catch (error) {
+      console.error('만족도 확인 실패:', error);
+    }
+  };
 
   // item이 null일 경우 처리 추가
   if (!item) {
@@ -147,9 +139,6 @@ function Page({ params }) {
     // 수정페이지로 이동
     router.push(`/deal/update/${item.dealIdx}`)
   }
-
-  // 판매자 체크 함수 추가
-  const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
 
   // 판매 상태 변경 함수
   const updateDealStatus = async (newStatus) => {
@@ -169,6 +158,12 @@ function Page({ params }) {
       console.error('상태 변경 실패:', error);
       alert('상태 변경에 실패했습니다.');
     }
+  };
+
+  // 만족도 모달 닫힐 때 만족도 상태 다시 확인
+  const handleSatisfactionModalClose = () => {
+    setIsSatisfactionModalOpen(false);
+    checkSatisfactionRating(); // 모달이 닫힐 때 만족도 등록 여부 다시 확인
   };
 
   // 로딩 중
@@ -245,8 +240,18 @@ function Page({ params }) {
                 <ForumIcon
                   variant="contained"
                   className="message-btn"
-                  onClick={() => router.push('/deal/message')}
-                  style={{ cursor: 'pointer', fontSize: '2rem' }}
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      alert('로그인이 필요한 서비스입니다.');
+                      router.push('/user/login');
+                      return;
+                    }
+                    router.push('/deal/message');
+                  }}
+                  style={{ 
+                    cursor: 'pointer', 
+                    fontSize: '2rem' 
+                  }}
                   title="채팅"
                 >
                 </ForumIcon>
@@ -298,7 +303,14 @@ function Page({ params }) {
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <div className="report-icon-container">
               <ReportIcon
-                onClick={() => setIsReportModalOpen(true)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    alert('로그인이 필요한 서비스입니다.');
+                    router.push('/user/login');
+                    return;
+                  }
+                  setIsReportModalOpen(true);
+                }}
                 style={{ 
                   cursor: 'pointer', 
                   fontSize: '2rem',
@@ -338,12 +350,25 @@ function Page({ params }) {
               </Button>
 
               {/* 판매 완료이고 판매자가 아닐 때만 만족도 버튼 표시 */}
-              {dealStatus === '판매완료' && !isSellerUser && (
+              {dealStatus === '판매완료' && !isSellerUser && isAuthenticated ? (
                 <Button
                   variant="contained"
                   color="success"
                   className="satisfaction-button"
                   onClick={() => setIsSatisfactionModalOpen(true)}
+                  disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
+                >
+                  {hasSatisfactionRating ? '만족도 등록 완료' : '만족도'}
+                </Button>
+              ) : dealStatus === '판매완료' && !isSellerUser && !isAuthenticated && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  className="satisfaction-button"
+                  onClick={() => {
+                    alert('로그인이 필요한 서비스입니다.');
+                    router.push('/user/login');
+                  }}
                 >
                   만족도
                 </Button>
@@ -396,7 +421,7 @@ function Page({ params }) {
       />
       <SatisfactionModal
         isOpen={isSatisfactionModalOpen}
-        onClose={() => setIsSatisfactionModalOpen(false)}
+        onClose={handleSatisfactionModalClose}
         dealIdx={dealIdx}
       />
     </>

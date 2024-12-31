@@ -11,7 +11,7 @@ function Page({ onFavoriteChange }) {
   const { dealIdx } = useParams();
   const router = useRouter();
 
-  // 좋아요 상태 체크 함수를 useCallback으로 감싸기
+  // 좋아요 상태 체크 함수
   const checkLikeStatus = useCallback(async () => {
     if (!isAuthenticated || !user?.userIdx || !dealIdx) return;
 
@@ -28,13 +28,13 @@ function Page({ onFavoriteChange }) {
     }
   }, [isAuthenticated, user?.userIdx, dealIdx, LOCAL_API_BASE_URL]);
 
-  // useEffect에서는 checkLikeStatus만 의존성으로 사용
   useEffect(() => {
     checkLikeStatus();
   }, [checkLikeStatus]);
 
   const handleLike = async () => {
     if (!isAuthenticated) {
+      alert('로그인이 필요한 서비스입니다.');
       router.push("/user/login");
       return;
     }

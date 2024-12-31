@@ -23,8 +23,8 @@
 }
 
 .small-image {
-  width: 70px;
-  height: 70px;
+  width: 90px;
+  height: 90px;
   object-fit: fill;
   min-width: 100%;
   min-height: 100%;
@@ -33,13 +33,12 @@
 }
 
 .main-image-container {
-  width: 390px;
-  height: 390px;
+  width: 500px;
+  height: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
 }
