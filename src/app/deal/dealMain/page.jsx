@@ -126,12 +126,10 @@ export default function ProductSearchPage() {
         </form>
 
 
-        {/* 상품 등록 링크 */}
         <a href="/deal/write" className="btn1" onClick={handleWriteClick}>
           상품 등록
         </a>
 
-        {/* 나의 거래 링크 */}
         <a href="#" className="btn1" onClick={handleMyDealsClick}>
           나의 거래
         </a>
@@ -182,7 +180,6 @@ export default function ProductSearchPage() {
                   <div className='price'>
                     {product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
                   </div>
-                  <div className='favor'>찜 {product.dealFavorCount}</div>
                 </div>
               </Link>
             </div>

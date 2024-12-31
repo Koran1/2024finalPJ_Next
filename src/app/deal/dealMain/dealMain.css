@@ -215,18 +215,21 @@
 }
 
 .pd-reg-container .nick {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
+  color: #525050;
 }
 
 .pd-reg-container .title {
   font-size: 17px;
   font-weight: bold;
+  color: #525050;
 }
 
 .pd-reg-container .price {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
+  color: rgb(15, 15, 158);
 }
 
 .pd-reg-container .favor {

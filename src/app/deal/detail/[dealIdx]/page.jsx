@@ -2,16 +2,17 @@
 import './detail.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Button } from '@mui/material';
+import { Button, Rating } from '@mui/material';
 import useAuthStore from '../../../../../store/authStore';
 import { useParams, useRouter } from 'next/navigation';
-import ForumIcon from '@mui/icons-material/Forum';
+import ChatIcon from '@mui/icons-material/Chat';
 import ReportIcon from '@mui/icons-material/Report';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import Favorite from './favorite/page';
 import ReportModal from './report/page';
 import SatisfactionModal from './satisfaction/page';
+import Link from 'next/link';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -30,6 +31,10 @@ function Page({ params }) {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isSatisfactionModalOpen, setIsSatisfactionModalOpen] = useState(false);
   const [hasSatisfactionRating, setHasSatisfactionRating] = useState(false); // 만족도 등록 여부 상태 추가
+  const [sellerOtherDeals, setSellerOtherDeals] = useState([]);
+  const [sellerOtherFiles, setSellerOtherFiles] = useState([]);
+  const [sellerScore, setSellerScore] = useState(0);
+  const [sellerSatisfactions, setSellerSatisfactions] = useState([]);
   
   // isSellerUser를 여기서 먼저 선언
   const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
@@ -125,6 +130,64 @@ function Page({ params }) {
     }
   };
 
+  // 판매자의 다른 상품 조회 함수
+  const fetchSellerOtherDeals = async () => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-other-deals/${dealIdx}`);
+      if (response.data.success) {
+        setSellerOtherDeals(response.data.data.deals);
+        setSellerOtherFiles(response.data.data.files);
+      }
+    } catch (error) {
+      console.error('판매자의 다른 상품 조회 실패:', error);
+    }
+  };
+
+  // useEffect에 추가
+  useEffect(() => {
+    if (dealIdx) {
+      fetchSellerOtherDeals();
+    }
+  }, [dealIdx]);
+
+  // 판매자 평점 조회
+  useEffect(() => {
+    const fetchSellerScore = async () => {
+      try {
+        if (item?.dealSellerUserIdx) {
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`, {
+            withCredentials: false
+          });
+          if (response.data.success) {
+            setSellerScore(Number(response.data.data || 0));
+          }
+        }
+      } catch (error) {
+        console.error('판매자 평점 조회 실패:', error);
+      }
+    };
+
+    fetchSellerScore();
+  }, [item?.dealSellerUserIdx]);
+
+  // 판매자 만족도 목록 조회
+  useEffect(() => {
+    const fetchSellerSatisfactions = async () => {
+      try {
+        if (item?.dealSellerUserIdx) {
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-satisfaction/${item.dealSellerUserIdx}`);
+          if (response.data.success) {
+            setSellerSatisfactions(response.data.data);
+          }
+        }
+      } catch (error) {
+        console.error('판매자 만족도 조회 실패:', error);
+      }
+    };
+
+    fetchSellerSatisfactions();
+  }, [item?.dealSellerUserIdx]);
+
   // item이 null일 경우 처리 추가
   if (!item) {
     return (
@@ -216,10 +279,11 @@ function Page({ params }) {
 
           <div className="product-info">
             <div className="product-header">
-              <h3 style={{ fontWeight: 'bold' }}>{item.dealTitle}</h3>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <div className="like-container">
-                <Favorite onFavoriteChange={handleFavoriteChange} />
+              <div className="title-favorite-container">
+                <h2>{item.dealTitle}</h2>
+                <div className="favorite-wrapper">
+                  <Favorite />
+                </div>
               </div>
             </div>
             <hr />
@@ -231,15 +295,28 @@ function Page({ params }) {
               <span> {item.dealSellerNick}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <span>평점</span>
-              <span className="rating">★★★★★</span>
-              <span>4.8</span>
+              <Rating 
+                value={sellerScore} 
+                precision={0.1} 
+                readOnly 
+                size="small"
+                sx={{ 
+                  '& .MuiRating-iconFilled': {
+                    color: '#FFD700'
+                  },
+                  '& .MuiRating-iconEmpty': {
+                    color: '#e0e0e0'
+                  },
+                  marginLeft: '5px', 
+                  marginRight: '5px',
+                  verticalAlign: 'middle' 
+                }}
+              />
+              <span style={{ verticalAlign: 'middle' }}>{sellerScore.toFixed(1)}</span>
 
               &nbsp;&nbsp;&nbsp;
               <div className="action-buttons">
-                <span>채팅</span>
-                <ForumIcon
-                  variant="contained"
-                  className="message-btn"
+                <div 
                   onClick={() => {
                     if (!isAuthenticated) {
                       alert('로그인이 필요한 서비스입니다.');
@@ -249,12 +326,20 @@ function Page({ params }) {
                     router.push('/deal/message');
                   }}
                   style={{ 
-                    cursor: 'pointer', 
-                    fontSize: '2rem' 
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    cursor: 'pointer'
                   }}
-                  title="채팅"
                 >
-                </ForumIcon>
+                  <ChatIcon
+                    variant="contained"
+                    className="message-btn"
+                    style={{ fontSize: '2.3rem' }}
+                    title="채팅"
+                  />
+                  <span>채팅</span>
+                </div>
               </div>
             </div>
 
@@ -282,44 +367,51 @@ function Page({ params }) {
                 <span> {item.dealCount} 개(건)</span>
               </li>
             </ul>
-            <Favorite style={{ fontSize: '1.5rem', color: '#808080' }} /> 
-            &nbsp;
-            <span>{favoriteCount}</span>
-            &nbsp;&nbsp;&nbsp;
-            <VisibilityIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
-            &nbsp;
-            <span>{viewCount}</span>
-            &nbsp;&nbsp;&nbsp;
-            <AccessTimeFilledIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
-            &nbsp;
-            <span>
-              {(() => {
-                const today = new Date();
-                const regDate = new Date(item.dealRegDate);
-                const diffTime = Math.floor((today - regDate) / (1000 * 60 * 60 * 24));
-                return diffTime === 0 ? "금일" : `${diffTime}일 전`;
-              })()}
-            </span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <div className="report-icon-container">
-              <ReportIcon
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    alert('로그인이 필요한 서비스입니다.');
-                    router.push('/user/login');
-                    return;
-                  }
-                  setIsReportModalOpen(true);
-                }}
-                style={{ 
-                  cursor: 'pointer', 
-                  fontSize: '2rem',
-                  transition: 'color 0.3s ease'  // 색상 변경 시 부드러운 전환 효과
-                }}
-                className="report-icon"
-                title="신고하기"
-              />
-              <span>신고</span>
+
+            <div className="product-stats">
+              <div className="stat-item">
+                <Favorite style={{ fontSize: '1rem' }} />
+                <span>{favoriteCount}</span>
+              </div>
+
+              <div className="stat-item">
+                <VisibilityIcon style={{ fontSize: '1.5rem' }} />
+                <span>{viewCount}</span>
+              </div>
+
+              <div className="stat-item">
+                <AccessTimeFilledIcon style={{ fontSize: '1.5rem' }} />
+                <span>
+                  {(() => {
+                    const today = new Date();
+                    const regDate = new Date(item.dealRegDate);
+                    const diffTime = Math.floor((today - regDate) / (1000 * 60 * 60 * 24));
+                    return diffTime === 0 ? "금일" : `${diffTime}일 전`;
+                  })()}
+                </span>
+              </div>
+
+              <div className="stat-item report">
+                <div 
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      alert('로그인이 필요한 서비스입니다.');
+                      router.push('/user/login');
+                      return;
+                    }
+                    setIsReportModalOpen(true);
+                  }}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '5px',
+                    cursor: 'pointer' 
+                  }}
+                >
+                  <ReportIcon />
+                  <span>신고</span>
+                </div>
+              </div>
             </div>
 
             <div className="status-buttons" style={{ textAlign: 'center', margin: '40px' }}>
@@ -383,8 +475,8 @@ function Page({ params }) {
           </div>
         </div>
 
-        {/* 수정하기 버튼은 판매자일 때만 표시 */}
-        {isSellerUser && (
+        {/* 수정하기 버튼은 판매자이고 판매중일 때만 표시 */}
+        {isSellerUser && dealStatus === '판매중' && (
           <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
             <Button
               variant="contained"
@@ -400,7 +492,27 @@ function Page({ params }) {
           <h5>판매자의 다른 상품</h5>
           <hr />
           <div className="product-grid">
-            {/* 상품 목록 컴포넌트들이 들어갈 자리 */}
+            {sellerOtherDeals.map((deal, index) => {
+              const file = sellerOtherFiles[index];
+              return (
+                <div key={deal.dealIdx} className="product-item">
+                  <Link href={`/deal/detail/${deal.dealIdx}`}>
+                    <img
+                      src={`${LOCAL_IMG_URL}/${file?.fileName}`}
+                      alt={deal.dealTitle}
+                      className="dealMain-image"
+                    />
+                    <div className="product-content">
+                      <div className="nick">{deal.dealSellerNick}</div>
+                      <div className="title">{deal.dealTitle}</div>
+                      <div className="price">
+                        {deal.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </div>
 
