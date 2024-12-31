@@ -22,6 +22,8 @@ export default function ProductSearchPage() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const { user, isAuthenticated } = useAuthStore();
 
+  const [favProducts, setFavProducts] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,6 +66,16 @@ export default function ProductSearchPage() {
 
     fetchData();
   }, [LOCAL_API_BASE_URL]);
+
+    // 찜 기능
+    useEffect(() => {
+      if(user == null) return
+      const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
+                        .then((res) => {
+                          console.log(res.data)
+                          setFavProducts(res.data.data)
+                        })
+    }, [user])
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -130,7 +142,6 @@ export default function ProductSearchPage() {
     setProducts(sortedProducts)
   }
 
-  // 찜 기능
 
 
   return (
@@ -157,7 +168,7 @@ export default function ProductSearchPage() {
         {/* </div> */}
 
         {/* 나의 거래 버튼 */}
-        {isAuthenticated && <Link href={`/deal/management/${user.userIdx}`} className="btn1">나의 거래</Link>}
+        {isAuthenticated && <Link href={`/deal/management`} className="btn1">나의 거래</Link>}
       </div>
 
       {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
@@ -193,32 +204,7 @@ export default function ProductSearchPage() {
         {filteredProducts.length > 0 ?
           filteredProducts
             .map((product) => (
-              <MainProductCard key={product.dealIdx} product={product} />
-
-              // <div className="product-card" key={product.dealIdx}>
-              //   <div className="card-content">
-              //     <Link href={`/deal/detail/${product.dealIdx}`}>
-              //       <img
-              //         src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"}
-              //         alt={product.title}
-              //         style={{ width: "180px", height: "200px" }} />
-              //       <div className="heart-icon" onClick={toggleFavorite}>
-              //         {isFavorite ? (
-              //           <span className="filled-heart">❤️</span>
-              //         ) : (
-              //           <span className="empty-heart">🤍</span>
-              //         )}
-              //       </div>
-              //       <div className="product-info">
-              //         <div className="seller-name">{product.dealSellerNick}</div>
-              //         <div className="product-name"> {product.dealTitle}</div>
-              //         <div className='product-price'>{product.dealPrice} 원 </div>
-              //         {/* vo 이름 다름 */}
-              //         <div className='favor'> 찜 {product.dealFavorCount} </div>
-              //       </div>
-              //     </Link>
-              //   </div>
-              // </div>
+              <MainProductCard key={product.dealIdx} product={product} favProducts = {favProducts}/>
             ))
           :
           <div>

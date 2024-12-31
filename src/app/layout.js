@@ -94,16 +94,16 @@ export default function RootLayout({ children }) {
   // 안 읽은 메시지 수 조회
   const [unReadMessages, setUnReadMessages] = useState('0');
 
-  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
-  useEffect(() => {
-    if (!user) return
-    const response = axios.get(`${LOCAL_API_BASE_URL}/chat/getUnReadMessages?userIdx=${user.userIdx}`)
-      .then((res) => {
-        console.log(res.data);
-        setUnReadMessages(res.data.data);
-      })
-      .catch((err) => console.log(err))
-  });
+  // const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
+  // useEffect(() => {
+  //   if (!user) return
+  //   const response = axios.get(`${LOCAL_API_BASE_URL}/chat/getUnReadMessages?userIdx=${user.userIdx}`)
+  //     .then((res) => {
+  //       console.log(res.data);
+  //       setUnReadMessages(res.data.data);
+  //     })
+  //     .catch((err) => console.log(err))
+  // });
 
   return (
     <html lang="en">

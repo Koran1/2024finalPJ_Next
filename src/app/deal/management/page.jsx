@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
-import useAuthStore from "../../../../../store/authStore";
 import "./management.css";
+import useAuthStore from "../../../../store/authStore";
 
-function Page({ params }) {
+function Page() {
 // 선택된 네비게이션 바 표시
-const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
+const [activeLink, setActiveLink] = useState("/deal/management/");
 
     // const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     // const [products, setProducts] = useState([]);
@@ -18,15 +18,14 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
     const [item, setItem] = useState([]);                 // 데이터 상태 
     const [loading, setLoading] = useState(true);           // 로딩 상태
     const [error, setError] = useState(null);               // 에러 상태
-    // const { isAuthenticated, token, user } = useAuthStore();       // 로그인 상태
+    const {  user } = useAuthStore();       // 로그인 상태
 
     useEffect(() => {
+        if(user == null ) return
         const fetchData = async () => {
             try {
                 setLoading(true); // 로딩 시작
-
-                const { userIdx } = await Promise.resolve(params);
-                const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${userIdx}`;
+                const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${user.userIdx}`;
 
                 // 데이터 가져오기
                 const response = await axios.get(API_URL);
@@ -47,7 +46,7 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
         };
 
         fetchData();
-    }, [params, LOCAL_API_BASE_URL]);
+    }, [user, LOCAL_API_BASE_URL]);
  
 
     const getActiveClass = (link) => (activeLink === link ? "active" : "");

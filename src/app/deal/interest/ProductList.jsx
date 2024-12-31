@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
+import axios from 'axios';
+import useAuthStore from '../../../../store/authStore';
 
 const ProductList = () => {
-  const products = [
-    { id: 1, name: '상품', seller:'판매자', description:'캠핑 용품 판매합니다. 새 상품입니다.', image: 'https://via.placeholder.com/150'},
-    { id: 2, name: '상품2', seller:'판매자', description:'캠핑 용품 판매합니다. 새 상품입니다.', image: 'https://via.placeholder.com/150'},
-    { id: 3, name: '상품3', image: 'https://via.placeholder.com/150' },
-    { id: 4, name: '상품4', image: 'https://via.placeholder.com/150' },
-    { id: 5, name: '상품5', image: 'https://via.placeholder.com/150' },
-    { id: 6, name: '상품6', image: 'https://via.placeholder.com/150' },
-  ];
+
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+  const {user} = useAuthStore();
+
+  const [products, setProducts] = useState([])
+  
+  useEffect(() => {
+    if(user == null) return
+    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
+                      .then((res) => {
+                        console.log(res.data)
+                        setProducts(res.data.data)
+
+                      })
+  }, [user])
+
 
   return (
       <div style={styles.list}>
           <div className="part" style={styles.rating}> 찜 {products.length}개</div>
       {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.dealIdx} product={product} />
         ))}
     </div>
   );

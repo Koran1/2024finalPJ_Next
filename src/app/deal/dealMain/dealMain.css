@@ -6,7 +6,7 @@
   justify-content: center;
 }
 
-.product-card {
+.product-card1 {
   width: 185px;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -16,11 +16,11 @@
   position: relative;
 }
 
-.card-content {
+.card-content1 {
   position: relative;
 }
 
-.product-image {
+.product-image1 {
   width: 100%;        /* 부모 요소의 가로폭을 가득 채우기 */
   height: 200px;       /* 세로 비율에 맞춰 자동으로 조정 */
   object-fit: cover;  /* 이미지 비율을 유지하면서 부모 요소에 맞게 잘리도록 설정 */
