@@ -35,10 +35,6 @@ const useAuthStore = create(
                 }
             },
 
-            // 상태를 초기화하는 기능 추가
-            reset: () => {
-                set({ user: null, token: null, isAuthenticated: false, expiresAt: null });
-            },
 
         }),
         {

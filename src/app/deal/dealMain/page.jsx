@@ -20,7 +20,7 @@ export default function ProductSearchPage() {
   const [error, setError] = useState(null);               // 에러 상태
 
   const [searchKeyword, setSearchKeyword] = useState('');
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,7 +131,7 @@ export default function ProductSearchPage() {
   }
 
   // 찜 기능
- 
+
 
   return (
     <div className="pd-reg-container">
@@ -157,7 +157,7 @@ export default function ProductSearchPage() {
         {/* </div> */}
 
         {/* 나의 거래 버튼 */}
-        <Link href={`/deal/management/${user.userIdx}`} className="btn1">나의 거래</Link>
+        {isAuthenticated && <Link href={`/deal/management/${user.userIdx}`} className="btn1">나의 거래</Link>}
       </div>
 
       {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
@@ -193,8 +193,8 @@ export default function ProductSearchPage() {
         {filteredProducts.length > 0 ?
           filteredProducts
             .map((product) => (
-              <MainProductCard key={product.dealIdx} product={product}/>
-              
+              <MainProductCard key={product.dealIdx} product={product} />
+
               // <div className="product-card" key={product.dealIdx}>
               //   <div className="card-content">
               //     <Link href={`/deal/detail/${product.dealIdx}`}>

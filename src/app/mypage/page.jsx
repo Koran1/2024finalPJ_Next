@@ -1,10 +1,13 @@
 import React from 'react';
+import MyPageList from './MyPageList';
+import { Box } from '@mui/material';
 
 function Page() {
     return (
-        <div>
+        <Box>
+            <MyPageList />
             <h2>This is MyPage</h2>
-        </div>
+        </Box>
     );
 }
 

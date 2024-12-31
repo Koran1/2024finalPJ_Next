@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { AddSideBar } from '../addSideBar';
+import { AddSideBar } from '../../../../components/add/notice/AddSideBar';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, TextField, Button } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';

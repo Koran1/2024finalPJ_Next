@@ -1,21 +1,22 @@
 import { FlagCircle, HelpOutline } from "@mui/icons-material";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-
+import AnnouncementIcon from '@mui/icons-material/Announcement';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 export const AddSideBar = () => {
     return (
         <>
             <List>
                 <ListItem component="a" href="/add/notice">
                     <ListItemIcon>
-                        <FlagCircle />
+                        <AnnouncementIcon />
                     </ListItemIcon>
-                    <ListItemText primary="공지사항" />
+                    <ListItemText secondary="공지사항" />
                 </ListItem>
                 <ListItem component="a" href="/add/faq">
                     <ListItemIcon>
-                        <HelpOutline />
+                        <QuestionAnswerIcon />
                     </ListItemIcon>
-                    <ListItemText primary="FAQ" />
+                    <ListItemText secondary="FAQ" />
                 </ListItem>
             </List >
         </>
