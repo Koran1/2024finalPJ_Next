@@ -9,35 +9,12 @@ import { Avatar, Badge, Button, Menu, MenuItem } from '@mui/material';
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
 import axios from 'axios';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
   // zustand 상태 가져오기
-  const { user, isAuthenticated, logout, expiresAt } = useAuthStore();
-
-  const router = useRouter();
-  const pathname = usePathname();
-
-  // useEffect(() => {
-
-  //   const protectedRoutes = ["/add/notice", "/deal/dealMain"];
-  //   const isProtectedRoute = protectedRoutes.includes(pathname);
-  //   console.log(pathname);
-  //   console.log('isProtectedRoute', isProtectedRoute);
-  //   console.log('!isAuthenticated', !isAuthenticated);
-  //   console.log(isExpired());
-
-  //   if (isProtectedRoute) {
-  //     if (isExpired()) {
-  //       alert("로그인이 필요한 서비스입니다.");
-  //       logout();
-  //       router.push("/user/login");
-  //     }
-  //   }
-
-  // }, [isAuthenticated, router]);
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   const handleLogout = () => {
     // zustand에 있는 함수 호출

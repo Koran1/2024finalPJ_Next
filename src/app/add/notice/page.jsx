@@ -4,6 +4,8 @@ import { AddSideBar } from '../../../../components/add/notice/AddSideBar';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination, TextField, Button } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import useAuthStore from '../../../../store/authStore';
 
 function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
@@ -44,7 +46,6 @@ function Page() {
 
     if (loading) {
         return <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
-
     }
 
     if (error) {

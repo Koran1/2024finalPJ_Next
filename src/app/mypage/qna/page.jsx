@@ -1,12 +1,12 @@
 'use client'
-import React, { useEffect } from 'react';
-import MyPageList from './MyPageList';
 import { Box } from '@mui/material';
-import useAuthStore from '../../../store/authStore';
+import React, { useEffect, useState } from 'react';
+import MyPageList from '../MyPageList';
 import { useRouter } from 'next/navigation';
+import useAuthStore from '../../../../store/authStore';
 
 function Page() {
-    // 로그인 확인
+    // 로그인 확인 절차
     const router = useRouter();
     const { isAuthenticated, isExpired, user } = useAuthStore();
 
@@ -21,11 +21,14 @@ function Page() {
 
     }, [user])
 
+    // QNA 정보 가져오기
+    const [userQna, setUserQna] = useState([]);
+
     return (
         <Box display='flex'>
             <MyPageList />
             <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
-                <h2>This is MyPage Main</h2>
+                <h1>Here is qna page</h1>
             </Box>
         </Box>
     );

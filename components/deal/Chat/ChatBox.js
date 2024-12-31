@@ -34,13 +34,14 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
 
     setLoading(true);
 
-    // if (isExpired() || !isAuthenticated) {
-    //   alert("로그인이 필요한 서비스입니다.");
-    //   router.push("/user/login");
-    // }
+    if (isExpired() || !isAuthenticated) {
+      alert("로그인이 필요한 서비스입니다.");
+      router.push("/user/login");
+      return;
+    }
 
     const userIdx = user.userIdx;
-    socketRef.current = socketRef.current = io(`http://localhost:8081`, {
+    socketRef.current = io(`http://localhost:8081`, {
       query: { room, token, userIdx },
     })
 
@@ -59,7 +60,6 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
 
     return () => {
       socketRef.current.disconnect();
-
     };
   }, [room, user, token]);
 

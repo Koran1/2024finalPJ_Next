@@ -1,12 +1,12 @@
 'use client'
-import React, { useEffect } from 'react';
-import MyPageList from './MyPageList';
 import { Box } from '@mui/material';
-import useAuthStore from '../../../store/authStore';
+import React, { useEffect } from 'react';
+import MyPageList from '../MyPageList';
 import { useRouter } from 'next/navigation';
+import useAuthStore from '../../../../store/authStore';
 
 function Page() {
-    // 로그인 확인
+    // 로그인 확인 절차
     const router = useRouter();
     const { isAuthenticated, isExpired, user } = useAuthStore();
 
@@ -20,12 +20,11 @@ function Page() {
         }
 
     }, [user])
-
     return (
         <Box display='flex'>
             <MyPageList />
             <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
-                <h2>This is MyPage Main</h2>
+                <h1>Here is Change User Infos</h1>
             </Box>
         </Box>
     );
