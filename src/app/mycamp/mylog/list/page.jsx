@@ -71,8 +71,8 @@ function Page() {
             <div className="mylog-navmenu-container">
                 {/* 상단 네비게이션바 */}
                 <Link href="/mycamp/plan"
-                        className={`btn1 ${getActiveClass('/mycamp/plan')}`}
-                        onClick={() => setNavMenu('/mycamp/plan')}
+                        className={`btn1 ${getActiveClass('/mylog/plan')}`}
+                        onClick={() => setNavMenu('/mylog/plan')}
                     >
                         캠핑플래너
                     </Link>

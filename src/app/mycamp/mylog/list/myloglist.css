@@ -31,6 +31,7 @@
 .mylog-list-header-container {
     margin-top: 20px; /* 헤더 상단 간격 */
     margin-bottom: 30px; /* 헤더 하단 간격 */
+    padding: 20px;
 }
 
 .mylog-list-table {
