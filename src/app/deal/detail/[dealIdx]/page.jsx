@@ -60,7 +60,7 @@ function Page({ params }) {
           if (files && files.length > 0) {
             // 메인 이미지 (fileOrder가 0인 이미지)
             const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
-              setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+            setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
 
             // 모든 이미지를 순서대로 정렬하여 작은 이미지 목록에 추가
             const smallImgs = files
@@ -79,10 +79,9 @@ function Page({ params }) {
         if (dealStatus === '판매완료' && !isSellerUser && user?.userIdx) {
           await checkSatisfactionRating();
         }
-
-      } catch (err) {
-        console.error("Error details:", err);
-        setError('상품 정보를 가져오는 중 오류가 발생했습니다.');
+      } catch (error) {
+        console.error('데이터 조회 실패:', error);
+        setError('데이터를 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);
       }
@@ -92,7 +91,7 @@ function Page({ params }) {
     if (dealIdx) {
       fetchData();
     }
-  }, [dealIdx, dealStatus, user?.userIdx]);
+  }, [dealIdx, dealStatus, user?.userIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL, isSellerUser]);
 
   // 좋아요 개수 조회 함수
   const getFavoriteCount = async () => {
@@ -498,9 +497,13 @@ function Page({ params }) {
                 <div key={deal.dealIdx} className="product-item">
                   <Link href={`/deal/detail/${deal.dealIdx}`}>
                     <img
-                      src={`${LOCAL_IMG_URL}/${file?.fileName}`}
+                      src={file?.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : '/default-product-image.jpg'}
                       alt={deal.dealTitle}
                       className="dealMain-image"
+                      onError={(e) => {
+                        e.target.src = '/default-product-image.jpg';
+                        e.target.onerror = null;
+                      }}
                     />
                     <div className="product-content">
                       <div className="nick">{deal.dealSellerNick}</div>
