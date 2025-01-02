@@ -7,11 +7,8 @@ import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 
 import './dealMain.css';
-<<<<<<< Updated upstream
 import { Box, Button, TextField } from '@mui/material';
 import MainProductCard from './MainProductCard';
-=======
->>>>>>> Stashed changes
 
 export default function ProductSearchPage() {
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
