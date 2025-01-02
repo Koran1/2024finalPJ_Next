@@ -171,9 +171,9 @@ function Page(props) {
                 >
                     캠핑플래너
                 </Link>
-                <Link href="/mylog/book"
-                    className={`btn1 ${getActiveClass('/mylog/book')}`}
-                    onClick={() => setNavMenu('/mylog/book')}
+                <Link href="/book/list"
+                    className={`btn1 ${getActiveClass('/book/list')}`}
+                    onClick={() => setNavMenu('/book/list')}
                 >
                     나의 예약
                 </Link>

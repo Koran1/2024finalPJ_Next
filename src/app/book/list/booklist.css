@@ -1,0 +1,29 @@
+.book-list-main-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px;
+    font-size: 130%;
+}
+
+.btn1 {
+    color: #767474;
+    font-size: 17px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn1:hover {
+    color: #3DBDFD;
+}
+  
+.btn1.active {
+    color: orange;
+}
+
+.book-navmenu-container {
+    margin-bottom: 20px;
+}
