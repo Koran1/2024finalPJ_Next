@@ -48,8 +48,30 @@
 
 .icon-section {
     display: flex;
-    gap: 15px;
-    font-size: 2em;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 75px;
+    /* 원하는 크기로 조정 */
+}
+
+.icon-item span {
+    font-size: 30px;
+    /* 아이콘 크기 */
+}
+
+.icon-item p {
+    margin-top: 5px;
+    font-size: 14px;
+    /* 텍스트 크기 */
+    color: #333;
+    /* 텍스트 색상 */
 }
 
 /* 설명 섹션 */
