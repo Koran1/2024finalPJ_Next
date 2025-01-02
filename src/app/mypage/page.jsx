@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 'use client'
 import React, { useEffect } from 'react';
 import MyPageList from './MyPageList';
@@ -5,13 +6,15 @@ import { Box } from '@mui/material';
 
 function Page() {
 
+=======
+import React from 'react';
+
+function Page() {
+>>>>>>> Stashed changes
     return (
-        <Box display='flex'>
-            <MyPageList />
-            <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
-                <h2>This is MyPage Main</h2>
-            </Box>
-        </Box>
+        <div>
+            <h2>This is MyPage</h2>
+        </div>
     );
 }
 

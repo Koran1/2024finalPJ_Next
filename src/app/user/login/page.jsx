@@ -1,5 +1,4 @@
 "use client";
-import './login.css'
 import { Avatar, FormControl, TextField, Stack, Button } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -113,29 +112,32 @@ function Page() {
     };
 
     return (
-        <div className='container-box' >
-            <FormControl className='fcontrol'>
+        <div>
+            <FormControl>
                 {/* 수직정렬 */}
                 <Stack direction="column" spacing={1} alignItems='center'>
                     <Avatar />
+<<<<<<< Updated upstream
                     <div className='p1'>로그인</div>
                     <TextField className='text-login' type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
                     <TextField className='text-login' type='password' label='패스워드' name='userPw' value={uvo.userPw} onChange={changeUvo} />
+=======
+                    <TextField type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
+                    <TextField type='password' label='패스워드' name='userPw' value={uvo.userPw} onChange={changeUvo} />
+>>>>>>> Stashed changes
                     <Button fullWidth variant='contained' disabled={isBtnChk} onClick={goServer}>Sign in</Button>
                 </Stack>
             </FormControl>
-            <Stack className="btn1"  direction="row" spacing={2} alignItems='center'>
-                <Link className="btn1" href='/user/login/findId'>아이디 찾기</Link>
-                <Link className="btn1" href='/user/login/findPw'>비밀번호 찾기</Link>
-                <Link className="btn1" href='/user/join'>회원가입</Link>
+            <Stack direction="row" spacing={2} alignItems='center'>
+                <Link href='/user/login/findId'>아이디 찾기</Link>
+                <Link href='/user/login/findPw'>비밀번호 찾기</Link>
+                <Link href='/user/join'>회원가입</Link>
             </Stack>
             <hr></hr>
-            {/* <div className='p2'>Social Login</div> */}
-            <Stack className="btn1"  direction="row" spacing={2} alignItems='center'>
-                <img src='/images/kakao_login_icon.png' onClick={handleKakaoLogin} style={{ width: '200px', height: '48px' }} />
-                <img src='/images/naver_icon.png' onClick={handleNaverLogin} style={{ width: '195px', height: '47px' }} />
-                {/* <img src='/images/kakao_login_large.png' onClick={handleKakaoLogin} style={{ width: '100px', height: '45px' }} />
-                <img src='/images/btnG_축약형.png' onClick={handleNaverLogin} style={{ width: '120px', height: '45px' }} /> */}
+            <h3>Social Login</h3>
+            <Stack direction="row" spacing={2} alignItems='center'>
+                <img src='/images/kakao_login_large.png' onClick={handleKakaoLogin} style={{ width: '90px', height: '45px' }} />
+                <img src='/images/btnG_축약형.png' onClick={handleNaverLogin} style={{ width: '90px', height: '45px' }} />
             </Stack>
         </div>
     );

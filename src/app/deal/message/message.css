@@ -7,9 +7,8 @@
 
 .pd-reg-container div {
   display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  /* 버튼 간의 간격 */
+  flex-wrap: wrap; 
+  gap: 30px; /* 버튼 간의 간격 */
 }
 
 .btn1 {
@@ -19,8 +18,7 @@
   text-decoration: none;
   border-radius: 5px;
   display: inline-block;
-  padding: 10px 20px;
-  /* 버튼의 내부 여백 추가 */
+  padding: 10px 20px; /* 버튼의 내부 여백 추가 */
 }
 
 .btn1:hover {
@@ -28,19 +26,15 @@
 }
 
 .btn1.active {
-  color: orange;
+  color: orange; 
 }
 
 .part {
   font-size: 16px;
-  text-align: right;
-  /* 텍스트 오른쪽 정렬 */
-  margin-top: 10px;
-  /* 버튼과의 간격 */
-  margin-left: auto;
-  /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
-  display: block;
-  /* 텍스트를 새로운 줄로 만듬 */
+  text-align: right; /* 텍스트 오른쪽 정렬 */
+  margin-top: 10px; /* 버튼과의 간격 */
+  margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
+  display: block; /* 텍스트를 새로운 줄로 만듬 */
 }
 
 .nav-links {
@@ -52,7 +46,7 @@
 .purchase-info {
   margin-top: 10px;
   font-size: 14px;
-
+  
 }
 
 /* 테이블 스타일 */
@@ -65,10 +59,8 @@
 
 .product-table thead {
   background-color: #f4f4f4;
-  border-top: 1px solid #333;
-  /* 위쪽 선 */
-  border-bottom: 1px solid #333;
-  /* 아래쪽 선 */
+  border-top: 1px solid #333; /* 위쪽 선 */
+  border-bottom: 1px solid #333; /* 아래쪽 선 */
 }
 
 .product-table th,
@@ -78,8 +70,7 @@
 }
 
 .product-table tbody tr {
-  border-bottom: 1px solid #ddd;
-  /* 각 행 아래에 선 */
+  border-bottom: 1px solid #ddd; /* 각 행 아래에 선 */
 }
 
 .product-table tbody tr:hover {
@@ -89,39 +80,4 @@
 .product-table img {
   border: 1px solid #ddd;
   border-radius: 5px;
-}
-
-
-.chat-tabs {
-  .react-tabs__tab-list {
-    border: none;
-    margin: 0;
-    height: 648px;
-    overflow-y: auto;
-    padding-right: 10px;
-
-    .react-tabs__tab {
-      display: block;
-      padding: 5px 0;
-      border-radius: 0;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      border-bottom: 1px solid #F7FAFF;
-
-      &:focus,
-      &:focus-visible {
-        outline: 0;
-
-        &:after {
-          background: transparent;
-        }
-      }
-
-      &.react-tabs__tab--selected {
-        background-color: #000000;
-        color: #ffffff;
-      }
-    }
-  }
 }

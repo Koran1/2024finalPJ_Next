@@ -5,10 +5,10 @@
   font-size: 130%;
 }
 
-.nav-links {
+.pd-reg-container div {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-wrap: wrap; 
+  gap: 30px; /* 버튼 간의 간격 */
 }
 
 .btn1 {

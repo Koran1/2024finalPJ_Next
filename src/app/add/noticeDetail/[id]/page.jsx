@@ -62,7 +62,7 @@ function Page({ params }) {
             }}
         >
             {/* Title */}
-            <Typography variant="h5" fontWeight="bold" mb={2} >
+            <Typography variant="h5" fontWeight="bold" mb={2}>
                 {noticeDetail.noticeSubject}
             </Typography>
 
@@ -81,17 +81,17 @@ function Page({ params }) {
 
             {/* Navigation Links */}
             <Box display="flex" flexDirection='column' justifyContent="space-between" mb={2}>
-                {noticeAfter ?
-                    <Link href={`/add/noticeDetail/${noticeAfter.noticeIdx}`} underline="none" color="primary">
-                        ▲ 다음 글  &nbsp;&nbsp;&nbsp;&nbsp; {noticeAfter.noticeSubject}
+                {noticePrev ?
+                    <Link href={`/add/noticeDetail/${noticePrev.noticeIdx}`} underline="none" color="primary">
+                        {noticePrev.noticeSubject}
                     </Link>
                     : <Typography variant="body2" color="text.secondary" >다음 글이 없습니다</Typography>}
                 <Link href="#" underline="none" color="primary">
-                    〓 현재 글 &nbsp; &nbsp;&nbsp;&nbsp;{noticeDetail.noticeSubject}
+                    {noticeDetail.noticeSubject}
                 </Link>
-                {noticePrev ?
-                    <Link href={`/add/noticeDetail/${noticePrev.noticeIdx}`} underline="none" color="primary">
-                        ▼ 이전 글  &nbsp;&nbsp;&nbsp;&nbsp; {noticePrev.noticeSubject}
+                {noticeAfter ?
+                    <Link href={`/add/noticeDetail/${noticeAfter.noticeIdx}`} underline="none" color="primary">
+                        {noticeAfter.noticeSubject}
                     </Link>
                     : <Typography variant="body2" color="text.secondary" >이전 글이 없습니다</Typography>
                 }

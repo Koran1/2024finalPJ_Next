@@ -1,22 +1,17 @@
 'use client'
+<<<<<<< Updated upstream
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { blue, lime, purple } from '@mui/material/colors';
+=======
+>>>>>>> Stashed changes
 import { Button, FormControl, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
+
 import React, { useState } from 'react';
 import './findid.css'
 
-
-
 function Page() {
-    const theme = createTheme({
-        palette: {
-            primary: blue,
-            secondary: purple,
-        },
-    });
-
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
     const [msg, setMsg] = useState("");
 
@@ -51,6 +46,7 @@ function Page() {
         <div>
             {!msg ? (
                 <>
+<<<<<<< Updated upstream
                     <div className="container-box-id">
                         <div className='p11'>아이디 찾기</div>
                         <div className='ex'>가입한 아이디와 이메일을 입력하세요</div>
@@ -67,8 +63,17 @@ function Page() {
 
                         <Link className="btn1" href='/user/login/findPw'>비밀번호 찾기</Link>
                         <Link className="btn1" href='/user/join'>회원가입</Link>
+=======
+                    <h2>아이디 찾기</h2>
+                    <FormControl>
+                        {/* 수직정렬 */}
+                        <Stack direction="column" spacing={1} alignItems='center'>
+                            <TextField type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
+                            <TextField type='text' label='이메일' name='userMail' value={uvo.userMail} onChange={changeUvo} />
+                            <Button fullWidth variant='contained' disabled={isBtnChk} onClick={searchId}>아이디 찾기</Button>
+>>>>>>> Stashed changes
                         </Stack>
-                    </div>
+                    </FormControl>
                 </>
             ) : (
                 <>

@@ -35,16 +35,16 @@ function Page({ params }) {
   const [sellerOtherFiles, setSellerOtherFiles] = useState([]);
   const [sellerScore, setSellerScore] = useState(0);
   const [sellerSatisfactions, setSellerSatisfactions] = useState([]);
-
+  
   // isSellerUser를 여기서 먼저 선언
   const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
-
+  
   // 상품 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
+        
         // 기존 데이터 조회
         const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
         const response = await axios.get(API_URL);
@@ -155,13 +155,13 @@ function Page({ params }) {
       try {
         if (item?.dealSellerUserIdx) {
           const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`);
-
+          
           if (response.data.success) {
             const score = parseFloat(response.data.data);
             const finalScore = isNaN(score) ? 5.0 : score;
             setSellerScore(finalScore);
           }
-        }
+        } 
       } catch (error) {
         console.error('판매자 평점 조회 실패:', error);
         setSellerScore(5.0);
@@ -244,19 +244,9 @@ function Page({ params }) {
       </div>
     );
   }
-  // 글 작성자와 현재 로그인한 사용자 비교 
-  const isOwner = isAuthenticated && String(user.userIdx) === String(item.dealSellerUserIdx);
-  // 로딩 완료 후
-
-  // 좋아요 버튼 클릭 시 좋아요 상태 변경
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-  };
-
-  // 채팅 버튼 클릭 시
-  const handleChat = () => {
-    router.push(`/deal/message?seller=${item.dealSellerUserIdx}`);
-  };
+  // // 글 작성자와 현재 로그인한 사용자 비교 
+  // const isOwner = isAuthenticated && String(user.m_id) === String(item.dealSellerUserIdx);
+  // // 로딩 완료 후
 
   return (
     <>
@@ -281,13 +271,13 @@ function Page({ params }) {
             {/* 메인 이미지 컨테이너 */}
             <div className="main-image-container">
               <img
-                src={mainImage} // 상태에 따른 메인 이미지
+                src={mainImage}
                 alt="상품 이미지"
                 className="product-image"
               />
               {item.dealview === 0 && (
                 <div className="inactive-notice">
-                  신고로 인해 본 게시물에 대한 게시가 중단되었습니다.
+                  신고로 인해 본 게시물에 대한 게시가 중단되었습니다. 
                   소명이 필요한 경우 아래 고객센터(이메일)로 소명 내용을 보내주시기 바랍니다.
                 </div>
               )}
@@ -317,12 +307,12 @@ function Page({ params }) {
               <span> {item.dealSellerNick}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <span style={{ fontWeight: 'bold', color: '#525050' }}>평점</span>
-              <Rating
-                value={sellerScore}
-                precision={0.5}
-                readOnly
+              <Rating 
+                value={sellerScore} 
+                precision={0.5} 
+                readOnly 
                 size="large"
-                sx={{
+                sx={{ 
                   '& .MuiRating-iconFilled': {
                     color: '#FFD700 !important'
                   },
@@ -335,9 +325,9 @@ function Page({ params }) {
                       fill: 'currentColor'
                     }
                   },
-                  marginLeft: '5px',
+                  marginLeft: '5px', 
                   marginRight: '5px',
-                  verticalAlign: 'middle'
+                  verticalAlign: 'middle' 
                 }}
               />
               <span style={{ verticalAlign: 'middle' }}>
@@ -346,7 +336,7 @@ function Page({ params }) {
 
               &nbsp;&nbsp;&nbsp;
               <div className="action-buttons">
-                <div
+                <div 
                   onClick={() => {
                     if (!isAuthenticated) {
                       alert('로그인이 필요한 서비스입니다.');
@@ -355,7 +345,7 @@ function Page({ params }) {
                     }
                     router.push('/deal/message');
                   }}
-                  style={{
+                  style={{ 
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -397,56 +387,65 @@ function Page({ params }) {
                 <span> {item.dealCount} 개(건)</span>
               </li>
             </ul>
-            <BookmarkIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
-            &nbsp;
-            <span>12</span>
-            &nbsp;&nbsp;&nbsp;
-            <VisibilityIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
-            &nbsp;
-            <span>35</span>
-            &nbsp;&nbsp;&nbsp;
-            <AccessTimeFilledIcon style={{ fontSize: '1.5rem', color: '#808080' }} />
-            &nbsp;
-            <span>
-              {(() => {
-                const today = new Date();
-                const regDate = new Date(item.dealRegDate);
-                const diffTime = Math.floor((today - regDate) / (1000 * 60 * 60 * 24));
-                return diffTime === 0 ? "금일" : `${diffTime}일 전`;
-              })()}
-            </span>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <ReportIcon
-              variant="contained"
-              className="report-btn"
-              style={{
-                marginRight: '10px',
-                fontSize: '2rem',
-                color: '#808080',
-                cursor: 'pointer'
-              }}
-              onClick={(e) => {
-                const currentColor = e.currentTarget.style.color;
-                if (currentColor === 'rgb(128, 128, 128)') {
-                  e.currentTarget.style.color = '#ff0000';
-                } else {
-                  e.currentTarget.style.color = '#808080';
-                }
-              }}
-            />
-            <span>신고</span>
+
+            <div className="product-stats">
+              <div className="stat-item" style={{ pointerEvents: 'none' }}>
+                <Favorite style={{ fontSize: '1rem' }} />
+                <span>{favoriteCount}</span>
+              </div>
+
+              <div className="stat-item">
+                <VisibilityIcon style={{ fontSize: '1.5rem' }} />
+                <span>{viewCount}</span>
+              </div>
+
+              <div className="stat-item">
+                <AccessTimeFilledIcon style={{ fontSize: '1.5rem' }} />
+                <span>
+                  {(() => {
+                    const today = new Date();
+                    const regDate = new Date(item.dealRegDate);
+                    const diffTime = Math.floor((today - regDate) / (1000 * 60 * 60 * 24));
+                    return diffTime === 0 ? "금일" : `${diffTime}일 전`;
+                  })()}
+                </span>
+              </div>
+
+              <div className="stat-item report">
+                <div 
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      alert('로그인이 필요한 서비스입니다.');
+                      router.push('/user/login');
+                      return;
+                    }
+                    setIsReportModalOpen(true);
+                  }}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '5px',
+                    cursor: 'pointer' 
+                  }}
+                >
+                  <ReportIcon />
+                  <span>신고</span>
+                </div>
+              </div>
+            </div>
 
             <div className="status-buttons" style={{ textAlign: 'center', margin: '40px' }}>
               <Button
                 variant="contained"
                 color={dealStatus === '판매중' ? 'primary' : 'default'}
                 className={`status-button ${dealStatus === '판매중' ? 'selling' : 'completed'}`}
-                style={{
+                style={{ 
                   cursor: isSellerUser ? 'pointer' : 'default'
                 }}
                 onClick={() => {
-                  const isSelling = dealStatus === '판매 중';
-
+                  if (!isSellerUser) return;
+                  
+                  const isSelling = dealStatus === '판매중';
                   if (isSelling) {
                     if (window.confirm("판매 완료 상태로 변경 됩니다.")) {
                       updateDealStatus('판매완료');
