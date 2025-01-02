@@ -396,13 +396,15 @@ function Page() {
 
   const handleVisibilityToggle = async () => {
     try {
-      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/visibility/${dealIdx}`, {
-        isHidden: !isHidden
+      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/active/${dealIdx}`, null, {
+        params: {
+          dealview: isHidden ? 1 : 0
+        }
       });
       
       if (response.data.success) {
         setIsHidden(!isHidden);
-        alert(isHidden ? '상품이 공개되었습니다.' : '상품이 숨김처리되었습니다.');
+        alert(isHidden ? '상품이 활성화되었습니다.' : '상품이 비활성화되었습니다.');
       }
     } catch (error) {
       console.error('상품 상태 변경 실패:', error);

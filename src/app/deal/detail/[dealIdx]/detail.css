@@ -498,3 +498,15 @@
 .product-details li span:last-child {
   font-weight: 500;  /* 값 텍스트는 medium 굵기 */
 }
+
+.inactive-notice {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}

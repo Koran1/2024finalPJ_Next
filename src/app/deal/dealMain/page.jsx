@@ -113,6 +113,17 @@ export default function ProductSearchPage() {
     router.push(`/deal/management/${user.userIdx}`);
   };
 
+  // 상품 목록 필터링
+  const filteredDeals = products.filter(deal => {
+    // 관리자나 판매자가 아닌 경우 dealview=0인 상품 제외
+    if (deal.dealview === 0 && 
+        user?.userIdx !== "25" && 
+        user?.userIdx !== deal.dealSellerUserIdx) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
@@ -159,7 +170,7 @@ export default function ProductSearchPage() {
       {/* 상품 목록 */}
       <div className="product-grid-wrapper">
         <div className="product-grid">
-          {products.map((product) => (
+          {filteredDeals.map((product) => (
             <div className="product-item" key={product.dealIdx}>
               <Link href={`/deal/detail/${product.dealIdx}`}>
                 <img 

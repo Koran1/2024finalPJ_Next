@@ -271,10 +271,16 @@ function Page({ params }) {
             {/* 메인 이미지 컨테이너 */}
             <div className="main-image-container">
               <img
-                src={mainImage} // 상태에 따른 메인 이미지
+                src={mainImage}
                 alt="상품 이미지"
                 className="product-image"
               />
+              {item.dealview === 0 && (
+                <div className="inactive-notice">
+                  신고로 인해 본 게시물에 대한 게시가 중단되었습니다. 
+                  소명이 필요한 경우 아래 고객센터(이메일)로 소명 내용을 보내주시기 바랍니다.
+                </div>
+              )}
             </div>
           </div>
 
