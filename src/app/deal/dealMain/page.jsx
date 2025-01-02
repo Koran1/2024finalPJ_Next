@@ -1,8 +1,11 @@
 "use client"
-
 import React from 'react';
 import Link from "next/link";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import useAuthStore from '../../../../store/authStore';
+import axios from 'axios';
+import { Button } from '@mui/material';
 
 import './dealMain.css';
 import axios from 'axios';
@@ -19,9 +22,12 @@ export default function ProductSearchPage() {
   const [error, setError] = useState(null);               // 에러 상태
 
   const [searchKeyword, setSearchKeyword] = useState('');
-  const { user, isAuthenticated } = useAuthStore();
 
   const [favProducts, setFavProducts] = useState([]);
+
+  // store - authStore 에 있는 정보를 사용한다.
+  const { user, isAuthenticated } = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,33 +39,34 @@ export default function ProductSearchPage() {
         const response = await axios.get(API_URL);
 
         if (response.data.success) {
-          console.log("setProducts: ", response.data.data);
+          // console.log("Response data:", response.data.data); // 데이터 확인용 로그
 
           const list = response.data.data.list;
           const file_list = response.data.data.file_list;
 
-          // Map over the list to create a new array with the updated structure
-          const resultProducts = list.map((k) => {
-            // Find the matching file from file_list
-            const matchingFile = file_list.find(file => file.fileTableIdx === k.dealIdx);
+          // 각 상품에 대해 첫 번째 이미지만 매칭
+          const resultProducts = list.map((product) => {
+            // 해당 상품의 모든 이미지 찾기
+            const productFiles = file_list.filter(file => file.fileTableIdx === product.dealIdx);
+            // fileOrder가 0인 메인 이미지 찾기
+            const mainImage = productFiles.find(file => file.fileOrder === 0);
 
-            // Return a new object with the additional field
             return {
-              ...k,  // Spread the original `k` object
-              deal01: matchingFile ? matchingFile.fileName : null // Add the `deal01` field
+              ...product,
+              deal01: mainImage ? mainImage.fileName : null
             };
           });
 
-          console.log(resultProducts);
+          // console.log("Processed products:", resultProducts); // 처리된 데이터 확인
           setProducts(resultProducts);
         } else {
-          setError("Failed to fetch product data.");
+          setError("데이터를 불러오는데 실패했습니다.");
         }
       } catch (err) {
-        console.error("Error fetching product data:", err);
-        setError("Failed to fetch product data.");
+        console.error("상품 데이터 조회 오류:", err);
+        setError("데이터를 불러오는데 실패했습니다.");
       } finally {
-        setLoading(false); // 로딩 종료
+        setLoading(false);
       }
     };
 
@@ -143,6 +150,39 @@ export default function ProductSearchPage() {
 
 
 
+  // 상품등록 페릭 핸들러
+  const handleWriteClick = (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push('/user/login');
+      return;
+    }
+    router.push('/deal/write');
+  };
+
+  // 나의거래 페릭 핸들러
+  const handleMyDealsClick = (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push('/user/login');
+      return;
+    }
+    router.push(`/deal/management/${user.userIdx}`);
+  };
+
+  // 상품 목록 필터링
+  const filteredDeals = products.filter(deal => {
+    // 관리자나 판매자가 아닌 경우 dealview=0인 상품 제외
+    if (deal.dealview === 0 &&
+      user?.userIdx !== "25" &&
+      user?.userIdx !== deal.dealSellerUserIdx) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
@@ -197,20 +237,34 @@ export default function ProductSearchPage() {
       <a onClick={sortByPrice}> 가격순 </a>
 
       {/* 상품 목록 */}
-      <div className="product-grid">
-
-        {/* 실제 상품 이미지 링크 시 삭제 */}
-        {filteredProducts.length > 0 ?
-          filteredProducts
-            .map((product) => (
-              <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
-            ))
-          :
-          <div>
-            검색 결과가 없습니다
-          </div>
-
-        }
+      <div className="product-grid-wrapper">
+        <div className="product-grid">
+          {filteredDeals.map((product) => (
+            <div className="product-item" key={product.dealIdx}>
+              <Link href={`/deal/detail/${product.dealIdx}`}>
+                <img
+                  className="dealMain-image"
+                  src={product.deal01
+                    ? `${LOCAL_IMG_URL}/${product.deal01}`
+                    : "/images/defaultImage.png"}
+                  alt={product.dealTitle}
+                  style={{ width: "180px", height: "200px" }}
+                  onError={(e) => {
+                    console.log("Image load error:", e);
+                    e.target.src = "/images/defaultImage.png";
+                  }}
+                />
+                <div className="product-content">
+                  <div className="nick">{product.dealSellerNick}</div>
+                  <div className="title">{product.dealTitle}</div>
+                  <div className='price'>
+                    {product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
 
       <br></br>
@@ -220,3 +274,33 @@ export default function ProductSearchPage() {
 
   );
 }
+
+const styles = {
+  card: {
+    position: 'relative',
+    width: '150px',
+    height: '200px',
+    border: '1px solid #ddd',
+    borderRadius: '10px',
+    overflow: 'hidden',
+    textAlign: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  heartIcon: {
+    position: 'absolute',
+    bottom: '10px',
+    left: '10px',
+    cursor: 'pointer',
+    fontSize: '24px',
+  },
+  filledHeart: {
+    color: 'red',
+  },
+  emptyHeart: {
+    color: 'gray',
+  },
+};

@@ -1,3 +1,4 @@
+// app/deal/interest/page.js
 "use client";
 
 import React, { useState } from "react";
@@ -9,15 +10,6 @@ import ProductList from "./ProductList";
 // 관심 목록 페이지
 
 function Page() {
-    // State to track active link
-    const [activeLink, setActiveLink] = useState('/deal/interest');
-
-    // Function to determine the active class
-    const getActiveClass = (link) => {
-        return activeLink === link ? 'active' : '';
-    };
-
-
     return (
         <div className="pd-reg-container">
             {/* 상단 네비게이션 */}
@@ -50,9 +42,9 @@ function Page() {
             </div>
 
             <hr />
-         
+
             <ProductList />
-            
+
         </div>
     );
 }

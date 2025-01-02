@@ -23,24 +23,32 @@
 }
 
 .small-image {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
+  width: 90px;
+  height: 90px;
+  object-fit: fill;
+  min-width: 100%;
+  min-height: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 .main-image-container {
-  width: 390px;
-  height: 390px;
+  width: 500px;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #fff;
 }
 
 .product-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  object-fit: fill;
+  min-width: 100%;
+  min-height: 100%;
 }
 
 .product-info {
@@ -49,10 +57,6 @@
 
 .like-btn {
   cursor: pointer;
-}
-
-.rating {
-  color: gold;
 }
 
 .report-btn {
@@ -65,8 +69,7 @@
 
 .product-header {
   display: flex;
-  justify-content: space-between;
-  align-items: start;
+  flex-direction: column;
   margin-bottom: 20px;
 }
 
@@ -83,21 +86,43 @@
   margin: 15px 0;
 }
 
+.seller-info span {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
 .action-buttons {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   margin: 20px 0;
 }
 
-.action-buttons button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.action-buttons > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: color 0.3s ease;
+}
+
+.action-buttons > div:hover .message-btn,
+.action-buttons > div:hover span {
+  color: #1565C0;
+}
+
+.action-buttons span {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #525050;
+  margin-top: -3px;
 }
 
 .message-btn {
   color: #1976d2;
+  margin-bottom: -2px;
 }
 
 .product-description {
@@ -144,4 +169,344 @@
 
 .deal-description {
   white-space: pre-wrap;
+}
+
+.report-icon-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.report-icon-container .MuiSvgIcon-root {
+  font-size: 1.5rem;
+  color: #525050;
+}
+
+.report-icon-container:hover .report-icon {
+  color: #FF0000;
+}
+
+.report-icon-container:hover span {
+  color: #FF0000;
+}
+
+.favorite-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.favorite-count {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* 판매 상태 버튼 스타일 */
+.status-button {
+  margin-right: 10px;
+  width: 150px;
+  height: 50px;
+}
+
+.status-button.selling {
+  background-color: #1976d2 !important;
+  color: #ffffff !important;
+}
+
+.status-button.completed {
+  background-color: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+/* 만족도 버튼 스타일 */
+.satisfaction-button {
+  margin-left: 50px;
+  width: 150px;
+  height: 50px;
+}
+
+/* 판매자의 다른 상품 스타일 */
+.seller-products .product-grid {
+  text-decoration: none; 
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 1px;
+  padding: 10px;
+  margin-top: 30px;
+  gap: 20px;
+  width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.seller-products .product-item {
+  width: calc((1200px - 100px) / 6);
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.seller-products .product-item a {
+  text-decoration: none;
+  color: black;
+  width: 180px;
+  display: block;
+}
+
+.seller-products .nick {
+  font-size: 16px;
+  font-weight: bold;
+  color: #525050;
+}
+
+.seller-products .title {
+  font-size: 17px;
+  font-weight: bold;
+  color: #525050;
+}
+
+.seller-products .price {
+  font-size: 18px;
+  font-weight: bold;
+  color: rgb(15, 15, 158);
+}
+
+.seller-products .dealMain-image {
+  width: 180px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.seller-products .product-content {
+  padding: 8px;
+  text-align: left;
+}
+
+.seller-products .product-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.seller-products .product-item:hover {
+  transform: translateY(-5px);
+}
+
+
+/* 상품 상세 정보 스타일 */
+.product-details li span:first-child {
+  font-weight: bold;
+  color: #525050;
+}
+
+/* 신고, 채팅 텍스트 스타일 */
+.report-icon-container span,
+.action-buttons span {
+  font-weight: bold;
+  color: #525050;
+}
+
+/* 섹션 제목 스타일 */
+.product-description h5,
+.seller-products h5,
+.seller-reviews h5 {
+  font-weight: bold;
+  /* 기존 크기 유지하면서 bold만 추가 */
+}
+
+/* 상품 상세 정보 리스트 간격 조정 */
+.product-details li {
+  margin-bottom: 10px;
+}
+
+/* 상품 통계 정보 컨테이너 수정 */
+.product-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 20px 0;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #525050;
+}
+
+.stat-item .MuiSvgIcon-root {
+  font-size: 1.5rem;
+  color: #525050;
+}
+
+/* 찜, 조회수, 경과일 텍스트 스타일 */
+.stat-item span {
+  color: #525050;
+  font-size: 1.2rem;  /* 텍스트 크기 조정 */
+  font-weight: 500;   /* 약간의 굵기 추가 */
+}
+
+/* 신고 텍스트는 기존 크기 유지 */
+.stat-item.report span {
+  color: #525050;
+  font-size: 1.2rem;  /* 텍스트 크기 조정 */
+  font-weight: 500;   /* 약간의 굵기 추가 */
+}
+
+/* 신고 버튼 우측 정렬 */
+.stat-item.report {
+  margin-left: auto;
+}
+
+.stat-item.report > div {
+  transition: color 0.3s ease;
+}
+
+.stat-item.report > div:hover .MuiSvgIcon-root,
+.stat-item.report > div:hover span {
+  color: #FF0000;
+}
+
+/* 타이틀과 찜 버튼 컨테이너 */
+.title-favorite-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.title-favorite-container h2 {
+  margin: 0;
+  flex-grow: 1;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+}
+
+.title-favorite-container h2:hover {
+  color: #000;
+}
+
+.favorite-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* 단순 표시용 stat-item 스타일 */
+.stat-item.display-only {
+  pointer-events: none;
+}
+
+.stat-item.display-only .MuiSvgIcon-root {
+  color: #525050;
+}
+
+.stat-item.display-only span {
+  color: #525050;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* 판매자 평점 스타일 - 위치와 정렬만 관리 */
+.seller-rating {
+  margin-left: 5px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+/* MUI Rating 컴포넌트의 별 아이콘 색상 직접 지정 */
+.MuiRating-root,
+.MuiRating-icon,
+.MuiRating-iconFilled,
+.MuiRating-iconEmpty {
+  color: #FFD700;
+}
+
+/* 채팅 버튼 스타일 */
+.chat-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.message-btn {
+  color: #1976d2;
+  font-size: 2.3rem;
+}
+
+/* 수정하기 버튼 컨테이너 */
+.edit-button-container {
+  text-align: right;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* 중복되는 스타일 제거 및 통합 */
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #525050;
+}
+
+.stat-item span,
+.stat-item.report span {
+  color: #525050;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* 불필요한 스타일 제거:
+.like-btn { ... }
+.rating { ... }
+.report-btn { ... }
+.icon-buttons { ... }
+.favorite-count { ... }
+*/
+
+/* 판매자 정보 텍스트 스타일 */
+.seller-info span:first-child,  /* 판매자 */
+.seller-info span:nth-child(4) {  /* 평점 */
+  font-weight: bold;
+  color: #525050;
+}
+
+/* 상품 상세 정보 스타일 */
+.product-details li span:first-child {  /* 상품상태, 배송비, 직거래, 판매수량 */
+  font-weight: bold;
+  color: #525050;
+}
+
+/* 기존 스타일 유지하면서 font-weight만 수정 */
+.seller-info span {
+  display: flex;
+  align-items: center;
+  font-weight: 500;  /* 기본 텍스트는 medium 굵기 */
+}
+
+.product-details li span:last-child {
+  font-weight: 500;  /* 값 텍스트는 medium 굵기 */
+}
+
+.inactive-notice {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
 }

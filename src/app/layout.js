@@ -14,7 +14,25 @@ import axios from 'axios';
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
   // zustand 상태 가져오기
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout, isExpired } = useAuthStore();
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+
+    const protectedRoutes = ["/add/notice", "/deal/dealMain"];
+    const isProtectedRoute = protectedRoutes.includes(pathname);
+
+    if (isProtectedRoute) {
+      if (isExpired()) {
+        alert("로그인이 필요한 서비스입니다.");
+        logout();
+        router.push("/user/login");
+      }
+    }
+
+  }, [isAuthenticated, router]);
 
   const handleLogout = () => {
     // zustand에 있는 함수 호출

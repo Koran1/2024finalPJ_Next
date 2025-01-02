@@ -64,18 +64,19 @@ function Page() {
                     alert(data.message);
                     const user = {
                         userIdx: data.data.userIdx,
-                        nickname: data.data.userNickname
+                        nickname: data.data.userNickname,
+                        // m_id: data.data.userIdx
                     }
+                    // 토큰과 사용자 정보 저장
                     login(user, data.jwtToken);
-                    router.push('/');       // 로그인 성공하면 home으로~
+                    router.push('/');
                 } else {
                     alert(data.message);
                     setUvo(initUvo);
                 }
             })
             .catch((error) => {
-                console.log('로그인 오류:', error);
-
+                console.error('로그인 오류:', error);
                 if (error?.response?.data?.message) {
                     alert(error.response.data.message);
                 } else if (error.request) {
@@ -96,6 +97,20 @@ function Page() {
     function handleNaverLogin() {
         window.location.href = "http://localhost:8080/oauth2/authorization/naver";
     }
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${API_URL}/login`, uvo);
+            if (response.data.success) {
+                const { token, user } = response.data;
+                useAuthStore.getState().login(token, user);  // 토큰과 사용자 정보 저장
+                router.push('/');
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+        }
+    };
 
     return (
         <div className='container-box' >

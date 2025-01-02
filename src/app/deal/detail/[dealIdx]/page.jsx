@@ -2,15 +2,17 @@
 import './detail.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Button } from '@mui/material';
+import { Button, Rating } from '@mui/material';
 import useAuthStore from '../../../../../store/authStore';
 import { useParams, useRouter } from 'next/navigation';
-import ForumIcon from '@mui/icons-material/Forum';
+import ChatIcon from '@mui/icons-material/Chat';
 import ReportIcon from '@mui/icons-material/Report';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import Favorite from './favorite/page';
+import ReportModal from './report/page';
+import SatisfactionModal from './satisfaction/page';
+import Link from 'next/link';
 
 function Page({ params }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -20,11 +22,22 @@ function Page({ params }) {
   const [error, setError] = useState(null);               // 에러 상태
   const { isAuthenticated, token, user } = useAuthStore(); // 로그인 상태
   const router = useRouter();
-  const [isLiked, setIsLiked] = useState(false);
-  const [mainImage, setMainImage] = useState(null); // 메인 이미지 상태
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
+  const [mainImage, setMainImage] = useState('');
   const [smallImages, setSmallImages] = useState([]); // 작은 이미지 상태
-  const [dealStatus, setDealStatus] = useState('판매 중'); // 판매 상태
+  const [dealStatus, setDealStatus] = useState(''); // 판매 상태
+  const [favoriteCount, setFavoriteCount] = useState(0);
+  const [viewCount, setViewCount] = useState(0);  // 조회수 상태 추가
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isSatisfactionModalOpen, setIsSatisfactionModalOpen] = useState(false);
+  const [hasSatisfactionRating, setHasSatisfactionRating] = useState(false); // 만족도 등록 여부 상태 추가
+  const [sellerOtherDeals, setSellerOtherDeals] = useState([]);
+  const [sellerOtherFiles, setSellerOtherFiles] = useState([]);
+  const [sellerScore, setSellerScore] = useState(0);
+  const [sellerSatisfactions, setSellerSatisfactions] = useState([]);
+
+  // isSellerUser를 여기서 먼저 선언
+  const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
 
   // 상품 데이터 가져오기
   useEffect(() => {
@@ -32,66 +45,149 @@ function Page({ params }) {
       try {
         setLoading(true);
 
+        // 기존 데이터 조회
         const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
-        console.log('Fetching URL:', API_URL);
-
         const response = await axios.get(API_URL);
         const data = response.data;
 
-        console.log('Response data:', data);
-
-        // API 응답이 성공적인 경우
         if (data.success) {
-          // 상품 정보를 상태에 저장
           setItem(data.data.deal);
+          setViewCount(data.data.viewCount);          // deal02 값으로 판매 상태 설정
+          setDealStatus(data.data.deal.deal02 || '판매중');  // 기본값은 '판매중'으로 설정
 
-          // 파일 목록 설정
+          // 이미지 처리 코드 추가
           const files = data.data.files;
-
-          // 파일이 존재하고 비어있지 않은 경우
           if (files && files.length > 0) {
-            // fileOrder가 '0'인 메인 이미지 찾기
-            const mainImgObj = files
-              .find(file => parseInt(file.fileOrder) === 0);
-            // 메인 이미지 URL 설정
-            if (mainImgObj) {
-              setMainImage(`${LOCAL_IMG_URL}/deal/${mainImgObj.fileName}`);
-            } else {
-              setError('메인 이미지가 누락되었습니다.');
-              return;
-            }
+            // 메인 이미지 (fileOrder가 0인 이미지)
+            const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
+            setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
 
-            // files 배열이 존재하고 비어있지 않은지 확인
-            if (files.length > 0) {
-              const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
-              if (mainImgObj) {
-                setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
-              }
-
-              const smallImgs = files
-                .filter(file => parseInt(file.fileOrder) >= 1 &&
-                  parseInt(file.fileOrder) <= 5 &&
-                  file.fileName)
-                .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
-                .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
-              setSmallImages(smallImgs);
-            }
+            // 모든 이미지를 순서대로 정렬하여 작은 이미지 목록에 추가
+            const smallImgs = files
+              .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
+              .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
+            setSmallImages(smallImgs);
           }
         } else {
           setError(data.message || '상품 정보를 불러올 수 없습니다.');
         }
-      } catch (err) {
-        console.error("Error details:", err);
-        setError('상품 정보를 가져오는 중 오류가 발생했습니다.');
+
+        // 좋아요 개수 조회
+        await getFavoriteCount();
+
+        // 만족도 등록 여부 확인
+        if (dealStatus === '판매완료' && !isSellerUser && user?.userIdx) {
+          await checkSatisfactionRating();
+        }
+      } catch (error) {
+        console.error('데이터 조회 실패:', error);
+        setError('데이터를 불러오는데 실패했습니다.');
       } finally {
         setLoading(false);
       }
     };
 
+    // dealIdx가 있을 때만 데이터 가져오기
     if (dealIdx) {
       fetchData();
     }
-  }, [dealIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
+  }, [dealIdx, dealStatus, user?.userIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL, isSellerUser]);
+
+  // 좋아요 개수 조회 함수
+  const getFavoriteCount = async () => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/favorite-count/${dealIdx}`);
+      if (response.data.success) {
+        setFavoriteCount(response.data.data);
+      }
+    } catch (error) {
+      console.error('찜하기 개수 조회 실패:', error);
+    }
+  };
+
+  // 좋아요 상태 변경 시 개수 업데이트를 위한 콜백
+  const handleFavoriteChange = () => {
+    getFavoriteCount();
+  };
+
+  // 초기 좋아요 개수 조회
+  useEffect(() => {
+    getFavoriteCount();
+  }, [dealIdx]);
+
+  // 만족도 등록 여부 확인 함수
+  const checkSatisfactionRating = async () => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction/${dealIdx}`, {
+        params: {
+          userIdx: user?.userIdx
+        }
+      });
+      setHasSatisfactionRating(response.data.exists);
+    } catch (error) {
+      console.error('만족도 확인 실패:', error);
+    }
+  };
+
+  // 판매자의 다른 상품 조회 함수
+  const fetchSellerOtherDeals = async () => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-other-deals/${dealIdx}`);
+      if (response.data.success) {
+        setSellerOtherDeals(response.data.data.deals);
+        setSellerOtherFiles(response.data.data.files);
+      }
+    } catch (error) {
+      console.error('판매자의 다른 상품 조회 실패:', error);
+    }
+  };
+
+  // useEffect에 추가
+  useEffect(() => {
+    if (dealIdx) {
+      fetchSellerOtherDeals();
+    }
+  }, [dealIdx]);
+
+  // 판매자 평점 조회
+  useEffect(() => {
+    const fetchSellerScore = async () => {
+      try {
+        if (item?.dealSellerUserIdx) {
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`);
+
+          if (response.data.success) {
+            const score = parseFloat(response.data.data);
+            const finalScore = isNaN(score) ? 5.0 : score;
+            setSellerScore(finalScore);
+          }
+        }
+      } catch (error) {
+        console.error('판매자 평점 조회 실패:', error);
+        setSellerScore(5.0);
+      }
+    };
+
+    fetchSellerScore();
+  }, [item?.dealSellerUserIdx]);
+
+  // 판매자 만족도 목록 조회
+  useEffect(() => {
+    const fetchSellerSatisfactions = async () => {
+      try {
+        if (item?.dealSellerUserIdx) {
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-satisfaction/${item.dealSellerUserIdx}`);
+          if (response.data.success) {
+            setSellerSatisfactions(response.data.data);
+          }
+        }
+      } catch (error) {
+        console.error('판매자 만족도 조회 실패:', error);
+      }
+    };
+
+    fetchSellerSatisfactions();
+  }, [item?.dealSellerUserIdx]);
 
   // item이 null일 경우 처리 추가
   if (!item) {
@@ -107,6 +203,32 @@ function Page({ params }) {
     // 수정페이지로 이동
     router.push(`/deal/update/${item.dealIdx}`)
   }
+
+  // 판매 상태 변경 함수
+  const updateDealStatus = async (newStatus) => {
+    try {
+      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/status/${dealIdx}`, null, {
+        params: {
+          status: newStatus
+        }
+      });
+
+      if (response.data.success) {
+        setDealStatus(newStatus);
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error('상태 변경 실패:', error);
+      alert('상태 변경에 실패했습니다.');
+    }
+  };
+
+  // 만족도 모달 닫힐 때 만족도 상태 다시 확인
+  const handleSatisfactionModalClose = () => {
+    setIsSatisfactionModalOpen(false);
+    checkSatisfactionRating(); // 모달이 닫힐 때 만족도 등록 여부 다시 확인
+  };
 
   // 로딩 중
   if (loading) {
@@ -163,21 +285,28 @@ function Page({ params }) {
                 alt="상품 이미지"
                 className="product-image"
               />
+              {item.dealview === 0 && (
+                <div className="inactive-notice">
+                  신고로 인해 본 게시물에 대한 게시가 중단되었습니다.
+                  소명이 필요한 경우 아래 고객센터(이메일)로 소명 내용을 보내주시기 바랍니다.
+                </div>
+              )}
             </div>
           </div>
 
           <div className="product-info">
             <div className="product-header">
-              <h3 style={{ fontWeight: 'bold' }}>{item.dealTitle}</h3>
-
-              <button
-                className="like-btn"
-                onClick={handleLike}
-                style={{ background: 'none', border: 'none' }}
-              >
-                <span>찜하기</span>
-                {isLiked ? <BookmarkIcon style={{ color: 'red', fontSize: '2rem' }} /> : <BookmarkBorderIcon style={{ fontSize: '2rem' }} />}
-              </button>
+              <div className="title-favorite-container">
+                <h2 style={{
+                  fontWeight: 'bold',
+                  marginBottom: '10px'
+                }}>
+                  {item.dealTitle}
+                </h2>
+                <div className="favorite-wrapper">
+                  <Favorite />
+                </div>
+              </div>
             </div>
             <hr />
 
@@ -185,25 +314,62 @@ function Page({ params }) {
 
             <div className="seller-info">
               <span>판매자</span>
-              <span> 냐옹이님 {item.dealSellerNick}</span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span>평점</span>
-              <span className="rating">★★★★★</span>
-              <span>4.8</span>
+              <span> {item.dealSellerNick}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span style={{ fontWeight: 'bold', color: '#525050' }}>평점</span>
+              <Rating
+                value={sellerScore}
+                precision={0.5}
+                readOnly
+                size="large"
+                sx={{
+                  '& .MuiRating-iconFilled': {
+                    color: '#FFD700 !important'
+                  },
+                  '& .MuiRating-iconEmpty': {
+                    color: '#C0C0C0 !important'
+                  },
+                  '& .MuiSvgIcon-root': {
+                    display: 'block',
+                    '& path': {
+                      fill: 'currentColor'
+                    }
+                  },
+                  marginLeft: '5px',
+                  marginRight: '5px',
+                  verticalAlign: 'middle'
+                }}
+              />
+              <span style={{ verticalAlign: 'middle' }}>
+                {sellerScore ? sellerScore.toFixed(1) : '5.0'}
+              </span>
 
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;
               <div className="action-buttons">
-                <span>채팅</span>
-                <ForumIcon
-                  variant="contained"
-                  className="message-btn"
-                  onClick={handleChat}
-                  // 여기에 상대방 userIdx 담아서...?
-
-                  style={{ cursor: 'pointer', fontSize: '2rem' }}
-                  title="채팅"
+                <div
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      alert('로그인이 필요한 서비스입니다.');
+                      router.push('/user/login');
+                      return;
+                    }
+                    router.push('/deal/message');
+                  }}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
                 >
-                </ForumIcon>
+                  <ChatIcon
+                    variant="contained"
+                    className="message-btn"
+                    style={{ fontSize: '2.3rem' }}
+                    title="채팅"
+                  />
+                  <span>채팅</span>
+                </div>
               </div>
             </div>
 
@@ -273,33 +439,53 @@ function Page({ params }) {
             <div className="status-buttons" style={{ textAlign: 'center', margin: '40px' }}>
               <Button
                 variant="contained"
-                color={dealStatus === '판매 중' ? 'primary' : 'default'}
-                style={{ marginRight: '10px', width: '150px', height: '50px', backgroundColor: dealStatus === '판매 중' ? '#1976d2' : '#808080' }}
+                color={dealStatus === '판매중' ? 'primary' : 'default'}
+                className={`status-button ${dealStatus === '판매중' ? 'selling' : 'completed'}`}
+                style={{
+                  cursor: isSellerUser ? 'pointer' : 'default'
+                }}
                 onClick={() => {
                   const isSelling = dealStatus === '판매 중';
 
                   if (isSelling) {
                     if (window.confirm("판매 완료 상태로 변경 됩니다.")) {
-                      setDealStatus('판매 완료');
+                      updateDealStatus('판매완료');
                     }
                   } else {
                     if (window.confirm("판매 중 상태로 변경됩니다.")) {
-                      setDealStatus('판매 중');
+                      updateDealStatus('판매중');
                     }
                   }
                 }}
+                disabled={!isSellerUser}
               >
-                {dealStatus}
+                {dealStatus === '판매중' ? '판매중' : '판매완료'}
               </Button>
-              <Button
-                variant="contained"
-                color="success"
-                style={{ marginLeft: '50px', width: '150px', height: '50px' }}
-                onClick={() => window.location.href = `${LOCAL_API_BASE_URL}/deal/satis/1`}
-                disabled={dealStatus === '판매 중'}
-              >
-                만족도
-              </Button>
+
+              {/* 판매 완료이고 판매자가 아닐 때만 만족도 버튼 표시 */}
+              {dealStatus === '판매완료' && !isSellerUser && isAuthenticated ? (
+                <Button
+                  variant="contained"
+                  color="success"
+                  className="satisfaction-button"
+                  onClick={() => setIsSatisfactionModalOpen(true)}
+                  disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
+                >
+                  {hasSatisfactionRating ? '만족도 등록 완료' : '만족도'}
+                </Button>
+              ) : dealStatus === '판매완료' && !isSellerUser && !isAuthenticated && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  className="satisfaction-button"
+                  onClick={() => {
+                    alert('로그인이 필요한 서비스입니다.');
+                    router.push('/user/login');
+                  }}
+                >
+                  만족도
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -310,21 +496,62 @@ function Page({ params }) {
           </div>
         </div>
 
-        <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
-          <Button
-            variant="contained"
-            color="darkgray"
-            onClick={handleUpdate}
-          >
-            수정하기
-          </Button>
-        </div>
+        {/* 수정하기 버튼은 판매자이고 판매중일 때만 표시 */}
+        {isSellerUser && dealStatus === '판매중' && (
+          <div className="edit-button-container">
+            <Button
+              variant="contained"
+              color="darkgray"
+              onClick={handleUpdate}
+            >
+              수정하기
+            </Button>
+          </div>
+        )}
+
+        {/* 관리자 수정 버튼 - admin만 볼 수 있음 */}
+        {user?.userIdx === "25" && (
+          <div className="edit-button-container">
+            <Button
+              variant="contained"
+              color="warning"  // 관리자용 버튼임을 구분하기 위해 다른 색상 사용
+              onClick={handleUpdate}
+              style={{ marginLeft: '10px' }}
+            >
+              관리자 수정
+            </Button>
+          </div>
+        )}
 
         <div className="seller-products">
           <h5>판매자의 다른 상품</h5>
           <hr />
           <div className="product-grid">
-            {/* 상품 목록 컴포넌트들이 들어갈 자리 */}
+            {sellerOtherDeals.map((deal, index) => {
+              const file = sellerOtherFiles[index];
+              return (
+                <div key={deal.dealIdx} className="product-item">
+                  <Link href={`/deal/detail/${deal.dealIdx}`}>
+                    <img
+                      src={file?.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : '/default-product-image.jpg'}
+                      alt={deal.dealTitle}
+                      className="dealMain-image"
+                      onError={(e) => {
+                        e.target.src = '/default-product-image.jpg';
+                        e.target.onerror = null;
+                      }}
+                    />
+                    <div className="product-content">
+                      <div className="nick">{deal.dealSellerNick}</div>
+                      <div className="title">{deal.dealTitle}</div>
+                      <div className="price">
+                        {deal.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -337,6 +564,17 @@ function Page({ params }) {
           </div>
         </div>
       </div>
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        dealTitle={item.dealTitle}
+        sellerNick={item.dealSellerNick}
+      />
+      <SatisfactionModal
+        isOpen={isSatisfactionModalOpen}
+        onClose={handleSatisfactionModalClose}
+        dealIdx={dealIdx}
+      />
     </>
   );
 }

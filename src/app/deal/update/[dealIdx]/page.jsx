@@ -3,12 +3,15 @@ import './update.css';
 import React, { useState, useEffect } from 'react';
 import { Button, TextareaAutosize } from '@mui/material';
 import { useRouter, useParams } from 'next/navigation';
+import axios from 'axios';
+import useAuthStore from '../../../../../store/authStore';
 
 function Page() {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const { dealIdx } = useParams();
   const router = useRouter();
+  const { user } = useAuthStore();
   const [images, setImages] = useState([]);
   const [initialImages, setInitialImages] = useState([]);
   const [formData, setFormData] = useState({
@@ -27,6 +30,7 @@ function Page() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [initialFormData, setInitialFormData] = useState(null);
   const [isModified, setIsModified] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   // 상품 정보 불러오기
   useEffect(() => {
@@ -40,7 +44,7 @@ function Page() {
             'Accept': 'application/json',
           },
         });
-        
+
         if (response.status === 302 || response.status === 401) {
           window.location.href = '/user/login';
           return;
@@ -49,17 +53,17 @@ function Page() {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         // JSON 파싱 간소화
         const data = await response.json();
-        console.log('Response data:', data);
+        // console.log('Response data:', data);
         if (!data || !data.success) {
           throw new Error('서버에서 데이터를 받지 못했습니다.');
         }
 
         // 데이터 경로 수정
         const dealData = data.data.deal || {};
-        
+
         setFormData({
           dealTitle: dealData.dealTitle || '',
           dealCategory: dealData.dealCategory || '기타 물품',
@@ -98,15 +102,15 @@ function Page() {
           setInitialImages(initialImgs);
         }
       } catch (error) {
-        console.error('상품 정보 불러오기 실패:', error);
+        console.error('상품 수정 불러오기 실패:', error);
         if (error.message.includes('Failed to fetch')) {
           alert('서버 연결에 실패했습니다. 로그인 상태를 확인해주세요.');
         } else {
-          alert(error.message || '상품 정보를 불러오는 중 오류가 발생했습니다.');
+          alert(error.message || '상품 수정 불러오는 중 오류가 발생했습니다.');
         }
       }
     };
-    
+
     if (dealIdx) {
       fetchDealData();
     }
@@ -114,9 +118,9 @@ function Page() {
 
   useEffect(() => {
     if (initialFormData && initialImages) {
-        const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialFormData);
-        const isImagesChanged = JSON.stringify(images) !== JSON.stringify(initialImages);
-        setIsModified(isFormChanged || isImagesChanged);
+      const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialFormData);
+      const isImagesChanged = JSON.stringify(images) !== JSON.stringify(initialImages);
+      setIsModified(isFormChanged || isImagesChanged);
     }
   }, [formData, initialFormData, images, initialImages]);
 
@@ -140,57 +144,61 @@ function Page() {
   const MAX_TOTAL_SIZE = 5 * 1024 * 1024; // 4MB
   const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // 이미지 파일 유효성 검사
     if (!file.type.startsWith('image/')) {
       alert('이미지 파일만 업로드 가능합니다.');
       return;
     }
 
-    // 개별 파일 크기 제한 검사
     if (file.size > MAX_FILE_SIZE) {
       alert('이미지 파일의 용량은 최대 1MB를 초과할 수 없습니다.');
       return;
     }
 
-    // 현재 이미지 크기 합계 계산
-    const currentTotalSize = images.reduce((total, img) => {
-      return total + (img ? img.file.size : 0);
-    }, 0);
-
-    // 새로운 파일 크기 합계 계산
-    const newTotalSize = currentTotalSize + file.size;
-
-    // 파일 크기 제한 검사
-    if (newTotalSize > MAX_TOTAL_SIZE) {
-      alert('이미지 파일 용량들의 합은 최대 5MB를 초과할 수 없습니다.');
-      return;
-    }
-
-    // 이미지 미리보기 URL 생성
-    const imageUrl = URL.createObjectURL(file);
-    
-    // input의 index 찾기
     const index = parseInt(e.target.id.split('-')[2]);
-    
-    // 이미지 배열 업데이트
-    setImages(prev => {
-      const newImages = [...prev];
-      newImages[index] = {
-        file: file,
-        preview: imageUrl
-      };
-      return newImages;
-    });
 
-    // FormData 업데이트
-    setFormData(prev => ({
-      ...prev,
-      file: file
-    }));
+    try {
+      // 기존 이미지가 있는 경우 삭제
+      if (images[index] && images[index].preview) {
+        const fileName = images[index].preview.split('/').pop();
+        await axios.delete(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file`, {
+          params: { fileName }
+        });
+      }
+
+      // 새 이미지로 업데이트
+      const imageUrl = URL.createObjectURL(file);
+      setImages(prev => {
+        const newImages = [...prev];
+        newImages[index] = {
+          file: file,
+          preview: imageUrl
+        };
+        return newImages;
+      });
+
+      // 파일 순서 재정렬
+      try {
+        await axios.put(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/reorder`);
+        console.log("파일 순서 재정렬 성공");
+      } catch (error) {
+        console.error("파일 순서 재정렬 실패:", error);
+        if (error.response) {
+          console.error("서버 응답:", error.response.data);
+        }
+      }
+
+      setIsModified(true);
+    } catch (error) {
+      console.error('이미지 업로드/삭제 중 오류:', error);
+      if (error.response) {
+        console.error("서버 응답:", error.response.data);
+      }
+      alert('이미지 처리 중 오류가 발생했습니다.');
+    }
   };
 
   const handleChange = (e) => {
@@ -221,55 +229,55 @@ function Page() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isFormComplete()) {
-      alert('모든 항목을 입력해주세요.');
-      return;
-    }
+    const formDataToSend = new FormData();
 
-    const submitData = new FormData();
+    // 기본 데이터 추가
     Object.keys(formData).forEach(key => {
-      submitData.append(key, formData[key]);
+      if (key !== 'file') formDataToSend.append(key, formData[key]);
     });
 
-    // 이미지 파일 추가
-    images.forEach((image) => {
-      if (image && image.file) {
-        submitData.append('file', image.file);
+    // 파일 액션 정보 생성
+    const fileOrders = {
+      deleted: [], // 삭제된 파일들
+    };
+
+    console.log('initialImages : ', initialImages);
+    // 삭제된 파일 확인
+    initialImages.forEach(img => {
+      console.log('img : ', img);
+      console.log('images : ', images);
+      if (!images.some(current => current && current.preview === img.preview)) {
+        fileOrders.deleted.push(img.preview);
+        console.log('fileOrders.deleted : ', img.preview);
       }
     });
-    
-    // 상품 수정
+
+
+    // 새로운 파일 또는 수정된 파일 추가
+    images.forEach((image, index) => {
+      if (image && image.file) {
+        formDataToSend.append('file', image.file);
+      }
+    });
+
+    formDataToSend.append('fileOrders', fileOrders.deleted);
+
     try {
       const response = await fetch(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}`, {
         method: 'PUT',
-        credentials: 'include', // 쿠키를 포함한 인증 정보 전송
-        body: submitData,
+        body: formDataToSend,
       });
 
-      if (response.status === 302 || response.status === 401) {
-        window.location.href = '/login';
-        return;
-      }
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({
-          message: '서버 응답 오류'
-        }));
-        alert(`상품 수정을 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
-        return;
-      }
-
-      const responseData = await response.json();
-
-      if (responseData.success) {
+      const data = await response.json();
+      if (data.success) {
         alert('상품이 성공적으로 수정되었습니다.');
-        router.push(`/deal/update/${dealIdx}`); // 수정된 경로로 이동
+        router.push(`/deal/detail/${dealIdx}`);
       } else {
-        alert('상품 수정에 실패했습니다.');
+        alert(data.message || '상품 수정에 실패했습니다.');
       }
     } catch (error) {
-      console.error(error);
-      alert('상품 등록 중 오류가 발생했습니다.');
+      console.error('상품 수정 중 오류 발생:', error);
+      alert('상품 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -321,7 +329,7 @@ function Page() {
       dealDirectContent: value === "직거래 불가" ? '' : prev.dealDirectContent
     }));
   };
-  
+
   const handleDirectContentChange = (e) => {
     const { value } = e.target;
 
@@ -338,41 +346,36 @@ function Page() {
   };
 
   const handleImageDelete = async (index) => {
+    const currentImageCount = images.filter(img => img !== null).length;
+
+    if (currentImageCount === 1 && images[index] !== null) {
+      alert("이미지 첨부는 필수 항목입니다. 이미지 변경은 가능합니다.");
+      return;
+    }
+
     try {
-        // 해당 input의 value를 초기화
-        const inputElement = document.getElementById(`image-upload-${index}`);
-        if (inputElement) {
-            inputElement.value = '';
-        }
-        
-        // 이미지 상태 업데이트
-        setImages(prev => {
-            const newImages = [...prev];
-            // 기존 이미지가 있었다면 DB 업데이트
-            if (newImages[index] && newImages[index].preview) {
-                const fileVo = {
-                    fileTableType: "2",
-                    fileTableIdx: dealIdx,
-                    fileName: null,  // null로 설정하여 fileActive를 0으로 만듦
-                    fileOrder: index
-                };
-                
-                // 서버에 업데이트 요청
-                fetch(`${LOCAL_API_BASE_URL}/deal/updateFile`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(fileVo)
-                }).catch(error => {
-                    console.error('파일 업데이트 중 오류 발생:', error);
-                });
-            }
-            newImages[index] = null;
-            return newImages;
+      if (images[index] && images[index].preview) {
+        const fileName = images[index].preview.split('/').pop();
+        const response = await axios.delete(`${LOCAL_API_BASE_URL}/deal/update/${dealIdx}/file`, {
+          params: { fileName }
         });
+
+        if (!response.data.success) {
+          console.error('파일 삭제 실패:', response.data.message);
+          return;
+        }
+      }
+
+      const newImages = [...images];
+      newImages[index] = null;
+      setImages(newImages);
+
     } catch (error) {
-        console.error('이미지 삭제 중 오류 발생:', error);
+      console.error('이미지 삭제 중 오류:', error);
+      if (error.response) {
+        console.error("서버 응답:", error.response.data);
+      }
+      alert('이미지 삭제 중 오류가 발생했습니다.');
     }
   };
 
@@ -391,24 +394,42 @@ function Page() {
     }));
   };
 
+  const handleVisibilityToggle = async () => {
+    try {
+      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/active/${dealIdx}`, null, {
+        params: {
+          dealview: isHidden ? 1 : 0
+        }
+      });
+
+      if (response.data.success) {
+        setIsHidden(!isHidden);
+        alert(isHidden ? '상품이 활성화되었습니다.' : '상품이 비활성화되었습니다.');
+      }
+    } catch (error) {
+      console.error('상품 상태 변경 실패:', error);
+      alert('상품 상태 변경에 실패했습니다.');
+    }
+  };
+
   return (
     <div className="pd-reg-container">
-      <h2 className="title">상품정보</h2>
+      <h2 className="title">상품정보 수정</h2>
       <br />
       <div className="image-upload-section">
         <h4>상품 이미지</h4>
         <hr />
         <div className="image-preview-container">
           {[...Array(5)].map((file, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="image-preview-box"
               style={{ cursor: 'pointer' }}
             >
-              <div 
+              <div
                 onClick={() => document.getElementById(`image-upload-${index}`).click()}
-                style={{ 
-                  width: '100%', 
+                style={{
+                  width: '100%',
                   height: '100%',
                   display: 'flex',
                   alignItems: 'center',
@@ -426,7 +447,7 @@ function Page() {
                 />
                 {images[index] ? (
                   <>
-                    <img 
+                    <img
                       src={images[index].preview}
                       alt={`상품 이미지 ${index + 1}`}
                       style={{
@@ -457,11 +478,11 @@ function Page() {
       <div className="form-group">
         <br />
         <h4>상품명</h4>
-        <input 
-          type="text" 
-          placeholder="상품명을 입력해 주세요" 
-          name="dealTitle" 
-          value={formData.dealTitle} 
+        <input
+          type="text"
+          placeholder="상품명을 입력해 주세요"
+          name="dealTitle"
+          value={formData.dealTitle}
           onChange={handleChange}
           onFocus={(e) => e.target.placeholder = ''}
           onBlur={(e) => e.target.placeholder = '상품명을 입력해 주세요'}
@@ -475,172 +496,172 @@ function Page() {
         <div className="category-options">
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="텐트/타프" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "텐트/타프"} 
+              <input
+                type="radio"
+                name="category"
+                value="텐트/타프"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "텐트/타프"}
               />
               텐트/타프
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="침구류" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "침구류"} 
+              <input
+                type="radio"
+                name="category"
+                value="침구류"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "침구류"}
               />
               침구류
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="취사도구" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "취사도구"} 
+              <input
+                type="radio"
+                name="category"
+                value="취사도구"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "취사도구"}
               />
               취사도구
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="식품/음료" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "식품/음료"} 
+              <input
+                type="radio"
+                name="category"
+                value="식품/음료"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "식품/음료"}
               />
               식품/음료
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="의류/신발" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "의류/신발"} 
+              <input
+                type="radio"
+                name="category"
+                value="의류/신발"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "의류/신발"}
               />
               의류/신발
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="디지털기기" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "디지털기기"} 
+              <input
+                type="radio"
+                name="category"
+                value="디지털기기"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "디지털기기"}
               />
               디지털기기
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="휴대용품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "휴대용품"} 
+              <input
+                type="radio"
+                name="category"
+                value="휴대용품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "휴대용품"}
               />
               휴대용품
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="위생용품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "위생용품"} 
+              <input
+                type="radio"
+                name="category"
+                value="위생용품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "위생용품"}
               />
               위생용품
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="안전/보안" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "안전/보안"} 
+              <input
+                type="radio"
+                name="category"
+                value="안전/보안"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "안전/보안"}
               />
               안전/보안
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="가방/스토리지" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "가방/스토리지"} 
+              <input
+                type="radio"
+                name="category"
+                value="가방/스토리지"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "가방/스토리지"}
               />
               가방/스토리지
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="난방/화로" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "난방/화로"} 
+              <input
+                type="radio"
+                name="category"
+                value="난방/화로"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "난방/화로"}
               />
               난방/화로
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="뷰티/미용" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "뷰티/미용" || !formData.dealCategory} 
+              <input
+                type="radio"
+                name="category"
+                value="뷰티/미용"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "뷰티/미용" || !formData.dealCategory}
               />
               뷰티/미용
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="취미/게임" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "취미/게임"} 
+              <input
+                type="radio"
+                name="category"
+                value="취미/게임"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "취미/게임"}
               />
               취미/게임
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="반려동물용품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "반려동물용품"} 
+              <input
+                type="radio"
+                name="category"
+                value="반려동물용품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "반려동물용품"}
               />
               반려동물용품
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="테이블/의자" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "테이블/의자"} 
+              <input
+                type="radio"
+                name="category"
+                value="테이블/의자"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "테이블/의자"}
               />
               테이블/의자
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="기타 물품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "기타 물품" || !formData.dealCategory} 
+              <input
+                type="radio"
+                name="category"
+                value="기타 물품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "기타 물품" || !formData.dealCategory}
               />
               기타 물품
             </label>
@@ -656,60 +677,60 @@ function Page() {
         <div className="state-options">
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="미개봉(미사용)" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "미개봉(미사용)" || !formData.dealStatus} 
+              <input
+                type="radio"
+                name="state"
+                value="미개봉(미사용)"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "미개봉(미사용)" || !formData.dealStatus}
               />
               미개봉(미사용) <span style={{ fontSize: '14px', color: 'gray' }}>사용하지 않은 미개봉 상품</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="사용감 없음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "사용감 없음"} 
+              <input
+                type="radio"
+                name="state"
+                value="사용감 없음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "사용감 없음"}
               />
               사용감 없음 <span style={{ fontSize: '14px', color: 'gray' }}>사용은 했지만 사용한 흔적이나 얼룩이 없음</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="사용감 적음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "사용감 적음"} 
+              <input
+                type="radio"
+                name="state"
+                value="사용감 적음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "사용감 적음"}
               />
-              사용감 적음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 약간 있음</span>
+              사용감 적음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 약 있음</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="사용감 많음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "사용감 많음"} 
+              <input
+                type="radio"
+                name="state"
+                value="사용감 많음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "사용감 많음"}
               />
               사용감 많음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 많음</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="고장/파손 있음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "고장/파손 있음"} 
+              <input
+                type="radio"
+                name="state"
+                value="고장/파손 있음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "고장/파손 있음"}
               />
               수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 상이 있으나 수리/수선하면 쓸 수 있음</span>
             </label>
@@ -720,8 +741,8 @@ function Page() {
 
       <div className="form-group">
         <h4>상품설명</h4>
-        <TextareaAutosize 
-          className="description-textarea" 
+        <TextareaAutosize
+          className="description-textarea"
           placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
@@ -807,22 +828,22 @@ function Page() {
         <hr />
         <div className="package-options">
           <label>
-            <input 
-              type="radio" 
-              name="package" 
-              value="배송비 포함" 
-              onChange={e => handlePackageChange(e.target.value)} 
-              checked={formData.dealPackage === "배송비 포함" || !formData.dealPackage} 
+            <input
+              type="radio"
+              name="package"
+              value="배송비 포함"
+              onChange={e => handlePackageChange(e.target.value)}
+              checked={formData.dealPackage === "배송비 포함" || !formData.dealPackage}
             />
             배송비 포함
           </label>
           <label>
-            <input 
-              type="radio" 
-              name="package" 
-              value="배송비 별도" 
-              onChange={e => handlePackageChange(e.target.value)} 
-              checked={formData.dealPackage === "배송비 별도"} 
+            <input
+              type="radio"
+              name="package"
+              value="배송비 별도"
+              onChange={e => handlePackageChange(e.target.value)}
+              checked={formData.dealPackage === "배송비 별도"}
             />
             배송비 별도
           </label>
@@ -835,19 +856,19 @@ function Page() {
         <hr />
         <div className="direct-options">
           <label>
-            <input 
-              type="radio" 
-              name="direct" 
-              value="직거래 가능" 
-              onChange={(e) => handleDirectChange(e.target.value)} 
-              checked={formData.dealDirect === "직거래 가능"} 
+            <input
+              type="radio"
+              name="direct"
+              value="직거래 가능"
+              onChange={(e) => handleDirectChange(e.target.value)}
+              checked={formData.dealDirect === "직거래 가능"}
             />
             직거래 가능
           </label>
           <div className="form-group">
-            <input 
-              type="text" 
-              placeholder="직거래 가능지역을 입력해 주세요" 
+            <input
+              type="text"
+              placeholder="직거래 가능지역을 입력해 주세요"
               name="dealDirectContent"
               value={formData.dealDirectContent}
               onChange={handleDirectContentChange}
@@ -856,16 +877,16 @@ function Page() {
                   e.target.blur();
                 }
               }}
-              disabled={formData.dealDirect === "직거래 불가"} 
+              disabled={formData.dealDirect === "직거래 불가"}
             />
           </div>
           <label>
-            <input 
-              type="radio" 
-              name="direct" 
-              value="직거래 불가" 
-              onChange={e => handleDirectChange(e.target.value)} 
-              checked={formData.dealDirect === "직거래 불가"} 
+            <input
+              type="radio"
+              name="direct"
+              value="직거래 불가"
+              onChange={e => handleDirectChange(e.target.value)}
+              checked={formData.dealDirect === "직거래 불가"}
             />
             직거래 불가
           </label>
@@ -921,25 +942,41 @@ function Page() {
       </h6>
 
       <div className="button-group">
-        <Button 
-          className={`submit-btn ${isModified ? 'submit-btn-enabled' : 'submit-btn-disabled'}`} 
-          variant="contained" 
-          disabled={!isModified} 
-          onClick={handleSubmit} 
-          sx={{ 
-            mt: 2, 
-            width: '180px', 
-            fontSize: '20px', 
-            bgcolor: isModified ? 'primary.main' : 'action.disabledBackground', 
-            '&:hover': { bgcolor: isModified ? 'primary.dark' : 'action.disabledBackground' }, 
-            boxShadow: '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)' 
+        <Button
+          className={`submit-btn ${isModified ? 'submit-btn-enabled' : 'submit-btn-disabled'}`}
+          variant="contained"
+          disabled={!isModified}
+          onClick={handleSubmit}
+          sx={{
+            mt: 2,
+            width: '180px',
+            fontSize: '20px',
+            bgcolor: isModified ? 'primary.main' : 'action.disabledBackground',
+            '&:hover': { bgcolor: isModified ? 'primary.dark' : 'action.disabledBackground' },
+            boxShadow: '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)'
           }}>수정</Button>
         &nbsp;&nbsp;&nbsp;
-        <Button 
-          className="cancel-btn" 
-          variant="contained" 
-          onClick={handleCancel} 
+        <Button
+          className="cancel-btn"
+          variant="contained"
+          onClick={handleCancel}
           sx={{ mt: 2, width: '180px', fontSize: '20px' }}>취소</Button>
+
+
+        {/* 관리자 임시 버튼, 향후 관리자 페이지 작성 시 관리자idx 25 삭제 필요 */}
+        {user?.userIdx === "25" && (
+          <>
+            &nbsp;&nbsp;&nbsp;
+            <Button
+              variant="contained"
+              color={isHidden ? "success" : "error"}
+              onClick={handleVisibilityToggle}
+              sx={{ mt: 2, width: '180px', fontSize: '20px' }}
+            >
+              {isHidden ? 'Active' : 'Inactive'}
+            </Button>
+          </>
+        )}
       </div>
       <br /><br />
     </div>

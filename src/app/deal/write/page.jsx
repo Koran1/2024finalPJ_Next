@@ -3,12 +3,13 @@ import './write.css';
 import React, { useState, useEffect } from 'react';
 import { Button, TextareaAutosize } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import useAuthStore from '../../../../store/authStore';
 
 function Page() {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-  // const { isAuthenticated, token } = useAuthStore();
-  // const router = useRouter();
   const router = useRouter();
+  const { isAuthenticated, token, user } = useAuthStore();
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
     dealTitle: '',
@@ -24,6 +25,15 @@ function Page() {
     priceOption: '나눔'
   });
   const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 로그인 상태 확인
+    if (!isAuthenticated || !token) {
+      alert('로그인이 필요합니다.');
+      router.push('/user/login');
+      return;
+    }
+  }, [isAuthenticated, token, router]);
 
   useEffect(() => {
     const checkFormValidity = () => {
@@ -126,56 +136,91 @@ function Page() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!isAuthenticated || !token) {
+      alert('로그인이 필요합니다.');
+      router.push('/user/login');
+      return;
+    }
+
     if (!isFormComplete()) {
       alert('모든 항목을 입력해주세요.');
       return;
     }
 
     const submitData = new FormData();
-    // formData에서 file 속성 제외하고 나머지 데이터만 추가
+
+    // 판매자 정보 추가 (user 객체에서 정보 가져오기)
+    if (user && user.userIdx && user.nickname) {
+      submitData.append('dealSellerUserIdx', user.userIdx);
+      submitData.append('dealSellerNick', user.nickname);
+    } else {
+      alert('사용자 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    // 기본 데이터 추가
     Object.keys(formData).forEach(key => {
-      if (key !== 'file') {  // file 속성 제외
+      if (key !== 'file' && key !== 'priceOption') {
         submitData.append(key, formData[key]);
       }
     });
 
-    // 이미지 파일들만 따로 추가
-    images.forEach((image) => {
-      if (image && image.file) {  // null 체크 추가
+    // 이미지 파일 추가
+    let hasFiles = false;
+    images.forEach((image, index) => {
+      if (image && image.file) {
         submitData.append('file', image.file);
+        hasFiles = true;
       }
     });
 
-    // 디버깅을 위해 FormData 내용 확인
-    console.log('Submit Data:', Object.fromEntries(submitData));
-
-    // 상품 등록 API 호출
-    const response = await fetch(`${LOCAL_API_BASE_URL}/deal/write`, {
-      method: 'POST',
-      body: submitData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        message: '서버 응답 오류'
-      }));
-      alert(`상품 등록에 실패했습니다: ${errorData.message || '알 수 없는 오류'}`);
-      return; // 오류 발생 시 함수 종료
-    }
-
-    const responseData = await response.json();
-    const dealIdx = responseData.data; // dealIdx를 가져옴
-
-    if (!dealIdx) {
-      alert('상품 등록에 실패했습니다. 다시 시도해 주세요.');
+    if (!hasFiles) {
+      alert('최소 1개 이상의 상품 이미지를 등록해주세요.');
       return;
     }
 
-    if (responseData.success) {
-        alert('상품이 성공적으로 등록되었습니다.');
-        router.push(`/deal/detail/${dealIdx}`); // 상대 경로로 수정
-    } else {
-        alert('상품 등록에 실패했습니다.');
+    try {
+      const response = await axios.post(
+        `${LOCAL_API_BASE_URL}/deal/write`,
+        submitData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      console.log('서버 응답:', response.data);  // 응답 데이터 확인
+
+      if (response.data.success) {
+        const dealIdx = response.data.data;
+        if (dealIdx) {
+          alert('상품이 성공적으로 등록되었습니다.');
+          router.push(`/deal/detail/${dealIdx}`);
+        } else {
+          alert('상품 등록은 완료되었으나, 상세 페이지로 이동할 수 없습니다.');
+          router.push('/deal/dealMain');
+        }
+      } else {
+        alert(response.data.message || '상품 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('상품 등록 중 오류 발생:', error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          useAuthStore.getState().logout();  // 401 에러 시 로그아웃 처리
+          alert('로그인이 필요하거나 세션이 만료되었습니다.');
+          router.push('/user/login');
+          return;
+        }
+        console.log('에러 응답:', error.response.data);
+        alert(`상품 등록 실패: ${error.response.data.message || '서버 오류가 발생했습니다.'}`);
+      } else if (error.request) {
+        alert('서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.');
+      } else {
+        alert('요청 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -643,7 +688,11 @@ function Page() {
               placeholder="상품 가격을 입력해 주세요"
               name="dealPrice"
               value={formData.dealPrice}
-              onChange={e => handlePriceChange(e.target.value)}
+              onChange={e => {
+                // 소수점 제거 및 음수 입력 방지
+                const value = Math.max(0, Math.floor(Number(e.target.value)));
+                handlePriceChange(value.toString());
+              }}
               onFocus={(e) => {
                 if (e.target.value === '0') {
                   setFormData(prev => ({
@@ -666,6 +715,9 @@ function Page() {
                   e.target.blur();
                 }
               }}
+              onWheel={(e) => e.target.blur()}
+              min="0"
+              step="1" // 정수 단위로만 입력 가능하도록 설정
               disabled={formData.priceOption === "나눔"}
             />
           </div>
@@ -814,14 +866,19 @@ function Page() {
             fontSize: '20px', 
             bgcolor: isFormComplete() ? 'primary.main' : 'action.disabledBackground', 
             '&:hover': { bgcolor: isFormComplete() ? 'primary.dark' : 'action.disabledBackground' }, 
-            boxShadow: '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)' 
+            boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)'
           }}>등록</Button>
         &nbsp;&nbsp;&nbsp;
         <Button 
           className="cancel-btn" 
           variant="contained" 
           onClick={handleCancel} 
-          sx={{ mt: 2, width: '180px', fontSize: '20px' }}>취소</Button>
+          sx={{ 
+            mt: 2, 
+            width: '180px', 
+            fontSize: '20px',
+            boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)'
+          }}>취소</Button>
       </div>
       <br /><br />
     </div>
