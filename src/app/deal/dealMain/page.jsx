@@ -7,6 +7,7 @@ import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 
 import './dealMain.css';
+<<<<<<< Updated upstream
 import { Box, Button, TextField } from '@mui/material';
 
 export default function ProductSearchPage() {

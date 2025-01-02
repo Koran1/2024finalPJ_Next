@@ -8,6 +8,7 @@ import useAuthStore from '../../store/authStore';
 import { Avatar, Badge, Button } from '@mui/material';
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
+<<<<<<< Updated upstream
 import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 
