@@ -2,9 +2,13 @@
   margin-top: 50px;
   display: grid;
   justify-content: center;
-  align-content: center;
   align-items: center;
   min-height: 500px;
+  margin-bottom: 50px;
+}
+
+.text1 {
+  
 }
 
 .p1 {
@@ -26,6 +30,11 @@
   font-weight: bold;
 }
 
+.center {
+  align-items: center;
+}
+
+
 .fcontrol {
   max-width: 1280px;
   margin: 0 auto;
@@ -35,8 +44,8 @@
   margin-bottom: 50px;
 }
 
-.text-login{
-  width: 300px;
+.textf{
+  width: 363px;
 }
 
 

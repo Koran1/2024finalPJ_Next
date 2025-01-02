@@ -5,6 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { useState } from 'react';
 import { Box, Button, Modal, Typography } from '@mui/material';
+import './join.css'
 
 function Page() {
     const [chked, setChked] = useState({
@@ -52,46 +53,49 @@ function Page() {
 
     return (
         <>
-            <Typography variant='h5' align='center' sx={{ mb: 2 }}>
-                회원가입을 위해서 약관 내용에 먼저 동의해 주세요
-            </Typography>
+            <div className='container-box'>
 
-            <FormGroup>
-                <Box sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
-                    <FormControlLabel control={<Checkbox checked={chkAll} onChange={toggleChked} name='chkAll' />} label="전체 동의하기" />
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, mt: 1 }}>
-                    <FormControlLabel required control={<Checkbox checked={chkbox1} onChange={handleChange} name='chkbox1' />}
-                        label="(필수) Campers 이용약관 동의" />
-                    <Button size='small' variant='outlined' onClick={() => handleOpenModal("joinTerms1")}>전체 보기</Button>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, mt: 1 }}>
-                    <FormControlLabel required control={<Checkbox checked={chkbox2} onChange={handleChange} name='chkbox2' />}
-                        label="(필수) Campers 개인정보 수집 및 이용 동의" />
-                    <Button size='small' variant='outlined' onClick={() => handleOpenModal("joinTerms2")}>전체 보기</Button>
-                </Box>
-            </FormGroup>
-            <Button variant='contained' disabled={!chkAll} href='/user/join/userJoin'>회원가입</Button>
+                <Typography className='p1' variant='h5' align='center' sx={{ mb: 2 }}>
+                    회원가입을 위해서 약관 내용에 먼저 동의해 주세요
+                </Typography>
 
-            <Modal open={openModal === "joinTerms1"} onClose={handleCloseModal}>
-                <Box sx={modalStyle}>
-                    <Box textAlign='right' mt={2}>
-                        <Button variant='contained' onClick={handleCloseModal}>X</Button>
+                <FormGroup>
+                    <Box sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+                        <FormControlLabel control={<Checkbox checked={chkAll} onChange={toggleChked} name='chkAll' />} label="전체 동의하기" />
                     </Box>
-                    <h3>이용약관 동의1</h3>
-                    <p>content</p>
-                </Box>
-            </Modal>
-
-            <Modal open={openModal === "joinTerms2"} onClose={handleCloseModal}>
-                <Box sx={modalStyle}>
-                    <Box textAlign='right' mt={2}>
-                        <Button variant='contained' onClick={handleCloseModal}>X</Button>
+                    <Box sx={{ display: 'flex', alignItems: 'center', p: 1, mt: 1 }}>
+                        <FormControlLabel required control={<Checkbox checked={chkbox1} onChange={handleChange} name='chkbox1' />}
+                            label="(필수) Campers 이용약관 동의" />
+                        <Button size='small' variant='outlined' onClick={() => handleOpenModal("joinTerms1")}>전체 보기</Button>
                     </Box>
-                    <h3>이용약관 동의2</h3>
-                    <p>content222222222</p>
-                </Box>
-            </Modal>
+                    <Box sx={{ display: 'flex', alignItems: 'center', p: 1, mt: 1 }}>
+                        <FormControlLabel required control={<Checkbox checked={chkbox2} onChange={handleChange} name='chkbox2' />}
+                            label="(필수) Campers 개인정보 수집 및 이용 동의" />
+                        <Button size='small' variant='outlined' onClick={() => handleOpenModal("joinTerms2")}>전체 보기</Button>
+                    </Box>
+                </FormGroup>
+                <Button variant='contained' disabled={!chkAll} href='/user/join/userJoin'>회원가입</Button>
+
+                <Modal open={openModal === "joinTerms1"} onClose={handleCloseModal}>
+                    <Box sx={modalStyle}>
+                        <Box textAlign='right' mt={2}>
+                            <Button variant='contained' onClick={handleCloseModal}>X</Button>
+                        </Box>
+                        <h3>이용약관 동의1</h3>
+                        <p>content</p>
+                    </Box>
+                </Modal>
+
+                <Modal open={openModal === "joinTerms2"} onClose={handleCloseModal}>
+                    <Box sx={modalStyle}>
+                        <Box textAlign='right' mt={2}>
+                            <Button variant='contained' onClick={handleCloseModal}>X</Button>
+                        </Box>
+                        <h3>이용약관 동의2</h3>
+                        <p>content222222222</p>
+                    </Box>
+                </Modal>
+            </div>
         </>
     )
 }

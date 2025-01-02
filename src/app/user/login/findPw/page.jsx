@@ -3,8 +3,9 @@ import { Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
 import React, { useState } from 'react';
+import './findpw.css'
+
 
 function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
@@ -124,16 +125,16 @@ function Page() {
             .catch(err => console.error(err))
     }
     return (
-        <div>
+        <div className='container-box-pw'> 
             {!userIdx ? (
                 <>
-                    <h2>비밀번호 찾기</h2>
+                    <div className='p11'>비밀번호 찾기</div>
 
-                    <FormControl>
+                    <FormControl  className='fcontrol' >
                         <Stack direction="column" spacing={1} alignItems='center'>
-                            <TextField type='text' label='이름' name='userName' value={uvo.userName} onChange={changeUvo} />
-                            <TextField type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
-                            <TextField type='text' label='전화번호' name='userPhone' value={uvo.userPhone} onChange={changeUvo} />
+                            <TextField className='textf' type='text' label='이름' name='userName' value={uvo.userName} onChange={changeUvo} />
+                            <TextField className='textf' type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
+                            <TextField className='textf' type='text' label='전화번호' name='userPhone' value={uvo.userPhone} onChange={changeUvo} />
 
                             <Box>
                                 <TextField type='text' label='이메일' name='userMail'
@@ -146,11 +147,11 @@ function Page() {
                                 <TextField type='text' label='인증번호 확인'
                                     disabled={!mailNum} name="chkMailNum" value={chkMailNum}
                                     onChange={(e) => setChkMailNum(e.target.value)} />
-                                <Button disabled={!mailNum} variant='contained'
+                                <Button  disabled={!mailNum} variant='contained'
                                     sx={{ ml: 2 }} onClick={handleMailChk}>인증번호 확인</Button>
                             </Box>
 
-                            <Button variant='contained' disabled={isBtnChk} onClick={searchPw}>비밀번호 찾기</Button>
+                            <Button className='btn_sub' variant='contained' disabled={isBtnChk} onClick={searchPw}>비밀번호 찾기</Button>
                         </Stack>
                     </FormControl>
                 </>

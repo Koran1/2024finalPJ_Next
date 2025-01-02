@@ -1,11 +1,11 @@
 'use client'
-import './findid.css'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { blue, lime, purple } from '@mui/material/colors';
 import { Button, FormControl, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import './findid.css'
 
 
 
@@ -51,8 +51,9 @@ function Page() {
         <div>
             {!msg ? (
                 <>
-                    <div className="container-box">
+                    <div className="container-box-id">
                         <div className='p11'>아이디 찾기</div>
+                        <div className='ex'>가입한 아이디와 이메일을 입력하세요</div>
                         <FormControl className='fcontrol' >
                             {/* 수직정렬 */}
                             <Stack direction="column" spacing={1} alignItems='center'>
