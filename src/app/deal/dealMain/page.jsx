@@ -14,7 +14,6 @@ export default function ProductSearchPage() {
   const [selectedCategories, setSelectedCategories] = useState('전체'); // 선택된 카테고리 상태
 
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-  // const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const [products, setProducts] = useState([]);                 // 데이터 상태 
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
@@ -67,15 +66,15 @@ export default function ProductSearchPage() {
     fetchData();
   }, [LOCAL_API_BASE_URL]);
 
-    // 찜 기능
-    useEffect(() => {
-      if(user == null) return
-      const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
-                        .then((res) => {
-                          console.log(res.data)
-                          setFavProducts(res.data.data)
-                        })
-    }, [user])
+  // 찜 기능
+  useEffect(() => {
+    if (user == null) return
+    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
+      .then((res) => {
+        console.log(res.data)
+        setFavProducts(res.data.data)
+      })
+  }, [user])
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -204,7 +203,7 @@ export default function ProductSearchPage() {
         {filteredProducts.length > 0 ?
           filteredProducts
             .map((product) => (
-              <MainProductCard key={product.dealIdx} product={product} favProducts = {favProducts}/>
+              <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
             ))
           :
           <div>

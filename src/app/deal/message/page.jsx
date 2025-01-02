@@ -42,15 +42,17 @@ function Page() {
             router.push("/user/login"); // Redirect to login page
             return
         }
-        console.log('otherUserIdx : ' + otherUser);
-        axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}`)
-            .then((res) => {
-                console.log(res.data.data)
-                setChatList(res.data.data.chatList);
-                setUserList(res.data.data.userList);
-                setRecentChat(res.data.data.recentChat);
-            })
-            .catch((err) => console.log(err))
+        else {
+            console.log('otherUserIdx : ' + otherUser);
+            axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}`)
+                .then((res) => {
+                    console.log(res.data.data)
+                    setChatList(res.data.data.chatList);
+                    setUserList(res.data.data.userList);
+                    setRecentChat(res.data.data.recentChat);
+                })
+                .catch((err) => console.log(err))
+        }
 
     }, [user]);
 
@@ -111,22 +113,28 @@ function Page() {
 
                             <TabList >
                                 {
-                                    chatList.map((chat) => {
-                                        return (
-                                            <Tab style={{
-                                                border: "1px solid #E8E8F7",
-                                                borderRadius: "10px",
-                                                padding: "10px 15px",
-                                            }}
-                                                key={chat.chatRoom}
-                                                value={chat.chatRoom}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "space-between",
-                                                    }}
+                                    chatList
+                                        .sort((a, b) => {
+                                            const isAOtherUser = a.userIdx === otherUser;
+                                            const isBOtherUser = b.userIdx === otherUser;
+
+                                            if (isAOtherUser && !isBOtherUser) return -1;   // a가 상대방이면 a를 먼저
+                                            if (!isAOtherUser && isBOtherUser) return 1;    // b가 상대방이면 b를 먼저
+
+                                            // 둘 다 아닌 경우
+                                            const aChatTime = recentChat.find((rec) => rec.chatRoom === a.chatRoom).chatTime;
+                                            const bChatTime = recentChat.find((rec) => rec.chatRoom === b.chatRoom).chatTime;
+                                            return new Date(bChatTime) - new Date(aChatTime);
+                                        })
+                                        .map((chat) => {
+                                            return (
+                                                <Tab style={{
+                                                    border: "1px solid #E8E8F7",
+                                                    borderRadius: "10px",
+                                                    padding: "10px 15px",
+                                                }}
+                                                    key={chat.chatRoom}
+                                                    value={chat.chatRoom}
                                                 >
                                                     <Box
                                                         sx={{
@@ -137,77 +145,91 @@ function Page() {
                                                     >
                                                         <Box
                                                             sx={{
-                                                                position: "relative",
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "space-between",
                                                             }}
                                                         >
-                                                            <Avatar src="/images/tree-2.jpg" />
+                                                            <Box
+                                                                sx={{
+                                                                    position: "relative",
+                                                                }}
+                                                            >
+                                                                <Avatar src="/images/tree-2.jpg" />
+                                                            </Box>
+
+                                                            <Box className="ml-1">
+                                                                <Typography
+                                                                    as="h4"
+                                                                    fontSize="13px"
+                                                                    fontWeight="500"
+                                                                    mb="5px"
+                                                                >
+                                                                    {/* // 여기에 보낸 사람 이름 */}
+                                                                    {userList.map((user) => {
+                                                                        if (chat.userIdx === user.userIdx) {
+                                                                            return user.userNickname
+                                                                        }
+                                                                    })}
+                                                                </Typography>
+
+                                                                {/* // 여기에 메세지 가장 최근 내용 */}
+                                                                <Typography fontSize="12px">
+                                                                    {recentChat.map((rec) => {
+                                                                        if (rec.chatRoom === chat.chatRoom) {
+                                                                            const msg = rec.chatMessage;
+                                                                            if (msg) {
+                                                                                return msg.length > 15 ? msg.substring(0, 15) + '...' : msg;
+                                                                            } else {
+                                                                                return '첫 대화를 시작해보세요!'
+                                                                            }
+                                                                        }
+                                                                    })}
+                                                                </Typography>
+                                                            </Box>
                                                         </Box>
 
-                                                        <Box className="ml-1">
+                                                        <Box textAlign="right">
                                                             <Typography
-                                                                as="h4"
-                                                                fontSize="13px"
-                                                                fontWeight="500"
-                                                                mb="5px"
+                                                                sx={{
+                                                                    color: "#A9A9C8",
+                                                                    fontSize: "11px",
+                                                                }}
                                                             >
-                                                                {/* // 여기에 보낸 사람 이름 */}
-                                                                {userList.map((user) => {
-                                                                    if (chat.userIdx === user.userIdx) {
-                                                                        return user.userNickname
-                                                                    }
-                                                                })}
-                                                            </Typography>
-
-                                                            {/* // 여기에 메세지 가장 최근 내용 */}
-                                                            <Typography fontSize="12px">
+                                                                {/* // 여기에 메세지 시간 */}
                                                                 {recentChat.map((rec) => {
                                                                     if (rec.chatRoom === chat.chatRoom) {
-                                                                        const msg = rec.chatMessage;
-                                                                        if (msg) {
-                                                                            return msg.length > 15 ? msg.substring(0, 15) + '...' : msg;
+                                                                        const msgTime = rec.chatTime;
+                                                                        if (msgTime) {
+                                                                            const todayDate = new Date().getDay();
+
+                                                                            // 오늘 날짜이면 시간만 표시
+                                                                            if (todayDate === new Date(msgTime).getDay()) {
+                                                                                const ampm = msgTime.substring(11, 13) > 11 ? 'PM' : 'AM';
+                                                                                return msgTime.substring(11, 16) + ' ' + ampm;
+                                                                            } else {
+                                                                                return msgTime.substring(5, 7) + '.' + msgTime.substring(8, 16);
+                                                                            }
                                                                         } else {
-                                                                            return '첫 대화를 시작해보세요!'
+                                                                            return ''
                                                                         }
                                                                     }
                                                                 })}
                                                             </Typography>
+
+                                                            <Box className="mr-10px">
+                                                                <Badge
+                                                                    badgeContent={chat.unReadCount} // 여기에 메세지 개수
+                                                                    color="primary"
+                                                                    className="for-dark-text-white"
+                                                                ></Badge>
+                                                            </Box>
                                                         </Box>
                                                     </Box>
+                                                </Tab>
 
-                                                    <Box textAlign="right">
-                                                        <Typography
-                                                            sx={{
-                                                                color: "#A9A9C8",
-                                                                fontSize: "11px",
-                                                            }}
-                                                        >
-                                                            {/* // 여기에 메세지 시간 */}
-                                                            {recentChat.map((rec) => {
-                                                                if (rec.chatRoom === chat.chatRoom) {
-                                                                    const msg = rec.chatTime;
-                                                                    if (msg) {
-                                                                        const ampm = msg.substring(11, 13) > 11 ? 'PM' : 'AM';
-                                                                        return msg.substring(11, 16) + ' ' + ampm;
-                                                                    } else {
-                                                                        return ''
-                                                                    }
-                                                                }
-                                                            })}
-                                                        </Typography>
-
-                                                        <Box className="mr-10px">
-                                                            <Badge
-                                                                badgeContent={chat.unReadCount} // 여기에 메세지 개수
-                                                                color="primary"
-                                                                className="for-dark-text-white"
-                                                            ></Badge>
-                                                        </Box>
-                                                    </Box>
-                                                </Box>
-                                            </Tab>
-
-                                        )
-                                    })
+                                            )
+                                        })
                                 }
 
 

@@ -1,0 +1,25 @@
+.right-replay-box {
+  position: relative;
+}
+
+.right-replay-box .hover-caption {
+  background: #fff;
+  box-shadow: 0px 10px 10px rgba(50, 110, 189, 0.2);
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+  visibility: hidden;
+  transition: 0.1s;
+  position: absolute;
+  left: 0;
+  top: 30px;
+}
+
+.right-replay-box:hover .hover-caption {
+  visibility: visible;
+}
+
+
+[dir=rtl] .right-replay-box .hover-caption {
+  right: auto;
+  left: 0;
+}

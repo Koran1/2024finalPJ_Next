@@ -6,7 +6,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import useAuthStore from "../../../store/authStore";
 import { useRouter } from "next/navigation";
-
+import './chat.css';
 
 const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
 
@@ -43,6 +43,8 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
     const userIdx = user.userIdx;
     socketRef.current = io(`http://localhost:8081`, {
       query: { room, token, userIdx },
+      reconnection: true,
+      reconnectionDelay: 1000, // 1 second
     })
 
     socketRef.current.connect();
@@ -167,32 +169,6 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
                   }}
                   className="ml-1"
                 >
-                  {/* Replay Dropdown */}
-                  <Box>
-                    <div className="left-replay-box">
-                      <IconButton size="small">
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
-
-                      <div className="hover-caption">
-                        <List sx={{ display: "inline" }}>
-                          <ListItem disablePadding>
-                            <ListItemButton sx={{ padding: "1px 15px" }}>
-                              <DeleteOutlineIcon
-                                fontSize="small"
-                                sx={{ mt: "-4px" }}
-                                className="mr-5px"
-                              />
-                              <ListItemText
-                                primary="Delete"
-                                primaryTypographyProps={{ fontSize: "12px" }}
-                              />
-                            </ListItemButton>
-                          </ListItem>
-                        </List>
-                      </div>
-                    </div>
-                  </Box>
 
                   <Box className="mr-1" style={{ marginRight: "10px" }}>
                     <Typography
@@ -262,13 +238,13 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
                         <List sx={{ display: "inline" }}>
                           <ListItem disablePadding>
                             <ListItemButton sx={{ padding: "1px 15px" }}>
-                              <DeleteOutlineIcon
+                              <ReportProblemIcon
                                 fontSize="small"
                                 sx={{ mt: "-4px" }}
                                 className="mr-5px"
                               />
                               <ListItemText
-                                primary="Delete"
+                                primary="신고"
                                 primaryTypographyProps={{ fontSize: "12px" }}
                               />
                             </ListItemButton>
