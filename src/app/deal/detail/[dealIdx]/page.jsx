@@ -292,7 +292,12 @@ function Page({ params }) {
           <div className="product-info">
             <div className="product-header">
               <div className="title-favorite-container">
-                <h2>{item.dealTitle}</h2>
+                <h2 style={{
+                  fontWeight: 'bold',
+                  marginBottom: '10px'
+                }}>
+                  {item.dealTitle}
+                </h2>
                 <div className="favorite-wrapper">
                   <Favorite />
                 </div>

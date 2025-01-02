@@ -95,7 +95,7 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
         dealSatisBuyerUserIdx: user.userIdx,
         dealSatisBuyerNick: user.nickname,
         dealSatisBuyerContent: content,
-        dealSatisBuyerScore: rating
+        dealSatisSellerScore: rating
       };
 
       const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/satisfaction`, satisfactionData);
