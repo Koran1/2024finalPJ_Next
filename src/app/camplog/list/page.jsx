@@ -12,7 +12,6 @@ import useAuthStore from '../../../../store/authStore'; // authStore 가져오�
 
 function Page(props) {
     const { user } = useAuthStore(); // authStore에서 사용자 정보 가져오기
-    console.log("로그인된 userIdx:", user?.userIdx);
     const [selectedSearch, setSelectedSearch] = useState("all"); // 검색어 옵션 박스
     const [keyword, setKeyword] = useState(""); // 키워드 검색
     const [totalCount, setTotalCount] = useState(0); // 검색 결과 개수
@@ -59,12 +58,12 @@ function Page(props) {
         getCamplogList();
     }, [selectedSearch, sortOption, page, size]);
 
-    camplogList.forEach((list) => {
-        console.log("logIdx:", list.logIdx);
-        console.log("reportStatus:", list.reportStatus, "타입:", typeof list.reportStatus);
-        console.log("reporterUserIdx:", list.reporterUserIdx, "타입:", typeof list.reporterUserIdx);
-        console.log("loggedInUserIdx:", user?.userIdx, "타입:", typeof user?.userIdx);
-    });
+    // camplogList.forEach((list) => {
+    //     console.log("logIdx:", list.logIdx);
+    //     console.log("reportStatus:", list.reportStatus, "타입:", typeof list.reportStatus);
+    //     console.log("reporterUserIdx:", list.reporterUserIdx, "타입:", typeof list.reporterUserIdx);
+    //     console.log("loggedInUserIdx:", user?.userIdx, "타입:", typeof user?.userIdx);
+    // });
 
     // 정렬 함수
     const handleSort = (option) => {
@@ -196,16 +195,33 @@ function Page(props) {
                     공감순
                 </span>
             </div>
-
+            
+            {/* 리스트 영역 */}
             <div className="camplog-list-container">
                 {camplogList.length === 0 ? (
                     <p>등록된 캠핑로그가 없습니다.</p>
                 ) : (
                     camplogList.map((list) => {
-                        const isReportedByLoggedInUser = list.reportStatus === "0" && list.reporterUserIdx === user?.userIdx;
-                        const isReportedForEveryone = list.reportStatus === "1";
+                        const userStatus0 = list.reporterUserIds ? list.reporterUserIds.split(',') : [];
+                        const currUserStatus0 = userStatus0.includes(String(user?.userIdx));
+                        const status1 = list.reportStatus === "1";
+                      
+                        // reportStatus = 1인 경우, 아예 리스트에서 안 보이게 하기!
+                        if (status1) {
+                            return null;
+                        }
 
-                        if (isReportedByLoggedInUser || isReportedForEveryone) {
+                        // reportStatus = 0인 경우, 신고자만 피신고자 신고 글입니다 처리
+                        if (currUserStatus0) {
+                            return (
+                                <div key={list.logIdx} className="camplog-list-item reported">
+                                    신고된 후기 글입니다.
+                                </div>
+                            );
+                        }
+
+                        // reportCount > 10 일 때, 모든 사람한테 신고 글입니다 처리
+                        if (list.reportCount > 10) {
                             return (
                                 <div key={list.logIdx} className="camplog-list-item reported">
                                     신고된 후기 글입니다.
