@@ -8,7 +8,6 @@ import axios from 'axios';
 
 import './dealMain.css';
 import { Box, Button, TextField } from '@mui/material';
-import MainProductCard from './MainProductCard';
 
 export default function ProductSearchPage() {
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
@@ -35,8 +34,8 @@ export default function ProductSearchPage() {
         const response = await axios.get(API_URL);
 
         if (response.data.success) {
-          // console.log("Response data:", response.data.data); // 데이터 확인용 로그
-          
+          console.log("Response data:", response.data.data); // 데이터 확인용 로그
+
           const list = response.data.data.list;
           const file_list = response.data.data.file_list;
 
@@ -46,7 +45,7 @@ export default function ProductSearchPage() {
             const productFiles = file_list.filter(file => file.fileTableIdx === product.dealIdx);
             // fileOrder가 0인 메인 이미지 찾기
             const mainImage = productFiles.find(file => file.fileOrder === 0);
-            
+
             return {
               ...product,
               deal01: mainImage ? mainImage.fileName : null
@@ -117,9 +116,9 @@ export default function ProductSearchPage() {
   // 상품 목록 필터링
   const filteredDeals = products.filter(deal => {
     // 관리자나 판매자가 아닌 경우 dealview=0인 상품 제외
-    if (deal.dealview === 0 && 
-        user?.userIdx !== "25" && 
-        user?.userIdx !== deal.dealSellerUserIdx) {
+    if (deal.dealview === 0 &&
+      user?.userIdx !== "25" &&
+      user?.userIdx !== deal.dealSellerUserIdx) {
       return false;
     }
     return true;
@@ -174,9 +173,9 @@ export default function ProductSearchPage() {
           {filteredDeals.map((product) => (
             <div className="product-item" key={product.dealIdx}>
               <Link href={`/deal/detail/${product.dealIdx}`}>
-                <img 
+                <img
                   className="dealMain-image"
-                  src={product.deal01 
+                  src={product.deal01
                     ? `${LOCAL_IMG_URL}/${product.deal01}`
                     : "/images/defaultImage.png"}
                   alt={product.dealTitle}

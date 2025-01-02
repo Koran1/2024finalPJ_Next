@@ -10,8 +10,6 @@ import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
@@ -94,6 +92,15 @@ export default function RootLayout({ children }) {
   //   useAuthStore.getState().hydrate();
   // }, []);
 
+  if (pathname.startsWith("/admin")) {
+    return (
+      <html lang="en">
+        <body>
+          {children}
+        </body>
+      </html>
+    )
+  }
   return (
     <html lang="en">
       <body>
