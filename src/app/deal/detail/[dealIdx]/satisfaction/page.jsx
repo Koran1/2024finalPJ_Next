@@ -5,6 +5,7 @@ import axios from 'axios';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import useAuthStore from '../../../../../../store/authStore';
+import { Rating } from '@mui/material';
 
 function SatisfactionModal({ isOpen, onClose, dealIdx }) {
   const [rating, setRating] = useState(0);
@@ -141,31 +142,30 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
         </div>
         <div className="satisfaction-form">
           <div className="stars-container">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className="star"
-                onClick={() => setRating(star)}
-              >
-                {star <= rating ? (
-                  <StarIcon 
-                    sx={{ 
-                      fontSize: '2.4em', 
-                      color: '#FFD700',
-                      cursor: 'pointer'
-                    }} 
-                  />
-                ) : (
-                  <StarBorderIcon 
-                    sx={{ 
-                      fontSize: '2.4em', 
-                      color: '#ccc',
-                      cursor: 'pointer'
-                    }} 
-                  />
-                )}
-              </span>
-            ))}
+            <Rating
+              name="rating"
+              value={rating}
+              precision={0.5}
+              size="large"
+              onChange={(event, newValue) => {
+                setRating(newValue);
+              }}
+              sx={{ 
+                fontSize: '2.4rem',
+                '& .MuiRating-iconFilled': {
+                  color: '#FFD700 !important'
+                },
+                '& .MuiRating-iconEmpty': {
+                  color: '#C0C0C0 !important'
+                },
+                '& .MuiSvgIcon-root': {
+                  display: 'block',
+                  '& path': {
+                    fill: 'currentColor'
+                  }
+                }
+              }}
+            />
           </div>
           <div className="form-group">
             <label>구매 후기</label>

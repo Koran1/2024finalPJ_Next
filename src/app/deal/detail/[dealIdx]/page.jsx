@@ -154,15 +154,28 @@ function Page({ params }) {
     const fetchSellerScore = async () => {
       try {
         if (item?.dealSellerUserIdx) {
-          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`, {
-            withCredentials: false
-          });
+          console.log('1. 판매자 ID 확인:', item.dealSellerUserIdx);
+          console.log('2. 요청 URL:', `${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`);
+          
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`);
+          console.log('3. API 응답 전체:', response);
+          console.log('4. API 응답 데이터:', response.data);
+          
           if (response.data.success) {
-            setSellerScore(Number(response.data.data || 0));
+            const score = parseFloat(response.data.data);
+            console.log('5. 파싱된 평점:', score);
+            console.log('6. 평점이 숫자인지 확인:', !isNaN(score));
+            
+            const finalScore = isNaN(score) ? 5.0 : score;
+            console.log('7. 최종 설정될 평점:', finalScore);
+            setSellerScore(finalScore);
           }
+        } else {
+          console.log('판매자 ID가 없음');
         }
       } catch (error) {
         console.error('판매자 평점 조회 실패:', error);
+        setSellerScore(5.0);
       }
     };
 
@@ -301,17 +314,25 @@ function Page({ params }) {
                 size="small"
                 sx={{ 
                   '& .MuiRating-iconFilled': {
-                    color: '#FFD700'
+                    color: '#FFD700 !important'
                   },
                   '& .MuiRating-iconEmpty': {
-                    color: '#e0e0e0'
+                    color: '#C0C0C0 !important'
+                  },
+                  '& .MuiSvgIcon-root': {
+                    display: 'block',
+                    '& path': {
+                      fill: 'currentColor'
+                    }
                   },
                   marginLeft: '5px', 
                   marginRight: '5px',
                   verticalAlign: 'middle' 
                 }}
               />
-              <span style={{ verticalAlign: 'middle' }}>{sellerScore.toFixed(1)}</span>
+              <span style={{ verticalAlign: 'middle' }}>
+                {sellerScore ? sellerScore.toFixed(1) : '5.0'}
+              </span>
 
               &nbsp;&nbsp;&nbsp;
               <div className="action-buttons">
