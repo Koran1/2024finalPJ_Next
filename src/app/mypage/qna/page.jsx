@@ -9,8 +9,7 @@ import Link from 'next/link';
 
 function Page() {
     // 로그인 확인 절차
-    const router = useRouter();
-    const { isAuthenticated, isExpired, user } = useAuthStore();
+    const { user } = useAuthStore();
 
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
 
@@ -20,28 +19,23 @@ function Page() {
 
     useEffect(() => {
         if (!user) return
-        console.log('유저 로그인 확인')
-        if (!isAuthenticated || isExpired()) {
-            alert("로그인이 필요한 서비스입니다.");
-            router.push("/user/login"); // Redirect to login page
-            return
-        }
+
         // QNA 정보 가져오기
-        else {
-            setLoading(true);
-            axios.get(`${LOCAL_API_BASE_URL}/add/getQnas?userIdx=${user.userIdx}`)
-                .then(res => {
-                    if (res.data.success) {
-                        console.log(res.data)
-                        setUserQna(res.data.data)
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                    setError('Failed to load page')
-                })
-                .finally(() => setLoading(false))
-        }
+
+        setLoading(true);
+        axios.get(`${LOCAL_API_BASE_URL}/add/getQnas?userIdx=${user.userIdx}`)
+            .then(res => {
+                if (res.data.success) {
+                    console.log(res.data)
+                    setUserQna(res.data.data)
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                setError('Failed to load page')
+            })
+            .finally(() => setLoading(false))
+
     }, [user])
 
     // QNA 정보 가져오기

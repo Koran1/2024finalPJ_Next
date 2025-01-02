@@ -1,8 +1,7 @@
 'use client'
 import { Box, Button, FormControl, Stack, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MyPageList from '../MyPageList';
-import { useRouter } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
@@ -10,20 +9,8 @@ import { postcodeScriptUrl } from 'react-daum-postcode/lib/loadPostcode';
 
 function Page() {
 
+    const { user } = useAuthStore();
 
-    // 로그인 확인 절차
-    const router = useRouter();
-    const { isAuthenticated, isExpired, user } = useAuthStore();
-
-    useEffect(() => {
-        if (!user) return
-        console.log('유저 로그인 확인')
-        if (!isAuthenticated || isExpired()) {
-            alert("로그인이 필요한 서비스입니다.");
-            router.push("/user/login"); // Redirect to login page
-            return
-        }
-    }, [user])
 
     const initUvo = {
         userIdx: "",

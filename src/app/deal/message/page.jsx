@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import "./message.css";
-import { alpha, Avatar, Badge, Box, Card, Grid2, InputBase, styled, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Card, Grid2, styled, Typography } from "@mui/material";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import ChatBox from "../../../../components/deal/Chat/ChatBox";
 import useAuthStore from "../../../../store/authStore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
 
@@ -22,7 +22,7 @@ function Page() {
         return activeLink === link ? 'active' : '';
     };
 
-    const { isAuthenticated, isExpired, user } = useAuthStore();
+    const { user } = useAuthStore();
     // 판매자 정보(idx) 가져오기
     const otherUser = useSearchParams().get('seller');
 
@@ -30,29 +30,19 @@ function Page() {
     const [userList, setUserList] = useState([]);
     const [recentChat, setRecentChat] = useState([]);
 
-    // 로그인 확인 절차
-    const router = useRouter();
 
     // 전체 채팅 정보 가져오기
     useEffect(() => {
-        if (user == null) return;
-        console.log('유저 로그인 확인')
-        if (!isAuthenticated || isExpired()) {
-            alert("로그인이 필요한 서비스입니다.");
-            router.push("/user/login"); // Redirect to login page
-            return
-        }
-        else {
-            console.log('otherUserIdx : ' + otherUser);
-            axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}`)
-                .then((res) => {
-                    console.log(res.data.data)
-                    setChatList(res.data.data.chatList);
-                    setUserList(res.data.data.userList);
-                    setRecentChat(res.data.data.recentChat);
-                })
-                .catch((err) => console.log(err))
-        }
+
+        console.log('otherUserIdx : ' + otherUser);
+        axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}`)
+            .then((res) => {
+                console.log(res.data.data)
+                setChatList(res.data.data.chatList);
+                setUserList(res.data.data.userList);
+                setRecentChat(res.data.data.recentChat);
+            })
+            .catch((err) => console.log(err))
 
     }, [user]);
 

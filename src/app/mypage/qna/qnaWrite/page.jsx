@@ -1,6 +1,6 @@
 'use client'
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableRow, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MyPageList from '../../MyPageList';
 import useAuthStore from '../../../../../store/authStore';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import axios from 'axios';
 function Page() {
 
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-    const { isAuthenticated, isExpired, user } = useAuthStore();
+    const { user } = useAuthStore();
     const router = useRouter();
 
     const initQna = {
@@ -62,16 +62,6 @@ function Page() {
 
         }
     }
-
-    useEffect(() => {
-        if (!user) return
-        console.log('유저 로그인 확인')
-        if (!isAuthenticated || isExpired()) {
-            alert("로그인이 필요한 서비스입니다.");
-            router.push("/user/login"); // Redirect to login page
-            return
-        }
-    }, [user])
 
     return (
         <Box display='flex'>

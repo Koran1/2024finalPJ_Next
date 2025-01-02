@@ -8,31 +8,40 @@ import useAuthStore from '../../store/authStore';
 import { Avatar, Badge, Button, Menu, MenuItem } from '@mui/material';
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
   // zustand 상태 가져오기
-  const { isAuthenticated, logout, isExpired } = useAuthStore();
+  const { isAuthenticated, user, logout, isExpired } = useAuthStore();
 
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
 
-    const protectedRoutes = ["/add/notice", "/deal/dealMain"];
+    const protectedRoutes = [
+      // deal 관련 페이지
+      "/deal/interest", "/deal/management", "/deal/purchase", "/deal/rating", "/deal/report", "/deal/update", "/deal/write",
+
+      // mycamp 관련 페이지
+      "/mycamp",
+
+      // mypage 관련 페이지
+      "/mypage", "/mypage/changePw", "/mypage/changeUserInfo", "/mypage/mycomments", "/mypage/qna",
+    ];
     const isProtectedRoute = protectedRoutes.includes(pathname);
 
     if (isProtectedRoute) {
-      if (isExpired()) {
+      if (isExpired() || !isAuthenticated || !user) {
         alert("로그인이 필요한 서비스입니다.");
         logout();
         router.push("/user/login");
       }
     }
 
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, router]);
 
   const handleLogout = () => {
     // zustand에 있는 함수 호출

@@ -5,12 +5,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
-import { Button } from '@mui/material';
 
 import './dealMain.css';
-import axios from 'axios';
 import { Box, Button, TextField } from '@mui/material';
-import useAuthStore from '../../../../store/authStore';
 import MainProductCard from './MainProductCard';
 
 export default function ProductSearchPage() {
