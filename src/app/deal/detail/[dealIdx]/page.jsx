@@ -154,25 +154,14 @@ function Page({ params }) {
     const fetchSellerScore = async () => {
       try {
         if (item?.dealSellerUserIdx) {
-          console.log('1. 판매자 ID 확인:', item.dealSellerUserIdx);
-          console.log('2. 요청 URL:', `${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`);
-          
           const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`);
-          console.log('3. API 응답 전체:', response);
-          console.log('4. API 응답 데이터:', response.data);
           
           if (response.data.success) {
             const score = parseFloat(response.data.data);
-            console.log('5. 파싱된 평점:', score);
-            console.log('6. 평점이 숫자인지 확인:', !isNaN(score));
-            
             const finalScore = isNaN(score) ? 5.0 : score;
-            console.log('7. 최종 설정될 평점:', finalScore);
             setSellerScore(finalScore);
           }
-        } else {
-          console.log('판매자 ID가 없음');
-        }
+        } 
       } catch (error) {
         console.error('판매자 평점 조회 실패:', error);
         setSellerScore(5.0);
@@ -310,13 +299,13 @@ function Page({ params }) {
             <div className="seller-info">
               <span>판매자</span>
               <span> {item.dealSellerNick}</span>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <span>평점</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span style={{ fontWeight: 'bold', color: '#525050' }}>평점</span>
               <Rating 
                 value={sellerScore} 
-                precision={0.1} 
+                precision={0.5} 
                 readOnly 
-                size="small"
+                size="large"
                 sx={{ 
                   '& .MuiRating-iconFilled': {
                     color: '#FFD700 !important'
@@ -394,7 +383,7 @@ function Page({ params }) {
             </ul>
 
             <div className="product-stats">
-              <div className="stat-item">
+              <div className="stat-item" style={{ pointerEvents: 'none' }}>
                 <Favorite style={{ fontSize: '1rem' }} />
                 <span>{favoriteCount}</span>
               </div>
@@ -502,13 +491,27 @@ function Page({ params }) {
 
         {/* 수정하기 버튼은 판매자이고 판매중일 때만 표시 */}
         {isSellerUser && dealStatus === '판매중' && (
-          <div className="edit-button-container" style={{ textAlign: 'right', marginTop: '20px', marginBottom: '20px' }}>
+          <div className="edit-button-container">
             <Button
               variant="contained"
               color="darkgray"
               onClick={handleUpdate}
             >
               수정하기
+            </Button>
+          </div>
+        )}
+
+        {/* 관리자 수정 버튼 - admin만 볼 수 있음 */}
+        {user?.userIdx === "25" && (
+          <div className="edit-button-container">
+            <Button
+              variant="contained"
+              color="warning"  // 관리자용 버튼임을 구분하기 위해 다른 색상 사용
+              onClick={handleUpdate}
+              style={{ marginLeft: '10px' }}
+            >
+              관리자 수정
             </Button>
           </div>
         )}

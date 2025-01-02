@@ -145,7 +145,7 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
             <Rating
               name="rating"
               value={rating}
-              precision={0.5}
+              precision={1}
               size="large"
               onChange={(event, newValue) => {
                 setRating(newValue);

@@ -34,7 +34,7 @@ export default function ProductSearchPage() {
         const response = await axios.get(API_URL);
 
         if (response.data.success) {
-          console.log("Response data:", response.data.data); // 데이터 확인용 로그
+          // console.log("Response data:", response.data.data); // 데이터 확인용 로그
           
           const list = response.data.data.list;
           const file_list = response.data.data.file_list;
@@ -52,7 +52,7 @@ export default function ProductSearchPage() {
             };
           });
 
-          console.log("Processed products:", resultProducts); // 처리된 데이터 확인
+          // console.log("Processed products:", resultProducts); // 처리된 데이터 확인
           setProducts(resultProducts);
         } else {
           setError("데이터를 불러오는데 실패했습니다.");

@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextareaAutosize } from '@mui/material';
 import { useRouter, useParams } from 'next/navigation';
 import axios from 'axios';
+import useAuthStore from '../../../../../store/authStore';
 
 function Page() {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const { dealIdx } = useParams();
   const router = useRouter();
+  const { user } = useAuthStore();
   const [images, setImages] = useState([]);
   const [initialImages, setInitialImages] = useState([]);
   const [formData, setFormData] = useState({
@@ -28,6 +30,7 @@ function Page() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [initialFormData, setInitialFormData] = useState(null);
   const [isModified, setIsModified] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   // 상품 정보 불러오기
   useEffect(() => {
@@ -53,7 +56,7 @@ function Page() {
         
         // JSON 파싱 간소화
         const data = await response.json();
-        console.log('Response data:', data);
+        // console.log('Response data:', data);
         if (!data || !data.success) {
           throw new Error('서버에서 데이터를 받지 못했습니다.');
         }
@@ -346,7 +349,7 @@ function Page() {
     const currentImageCount = images.filter(img => img !== null).length;
     
     if (currentImageCount === 1 && images[index] !== null) {
-        alert("이미지 첨부는 필수 항목입니다");
+        alert("이미지 첨부는 필수 항목입니다. 이미지 변경은 가능합니다.");
         return;
     }
 
@@ -389,6 +392,22 @@ function Page() {
       ...prev,
       dealPrice: value
     }));
+  };
+
+  const handleVisibilityToggle = async () => {
+    try {
+      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/visibility/${dealIdx}`, {
+        isHidden: !isHidden
+      });
+      
+      if (response.data.success) {
+        setIsHidden(!isHidden);
+        alert(isHidden ? '상품이 공개되었습니다.' : '상품이 숨김처리되었습니다.');
+      }
+    } catch (error) {
+      console.error('상품 상태 변경 실패:', error);
+      alert('상품 상태 변경에 실패했습니다.');
+    }
   };
 
   return (
@@ -940,6 +959,22 @@ function Page() {
           variant="contained" 
           onClick={handleCancel} 
           sx={{ mt: 2, width: '180px', fontSize: '20px' }}>취소</Button>
+        
+
+        {/* 관리자 임시 버튼, 향후 관리자 페이지 작성 시 관리자idx 25 삭제 필요 */}
+        {user?.userIdx === "25" && (
+          <>
+            &nbsp;&nbsp;&nbsp;
+            <Button 
+              variant="contained" 
+              color={isHidden ? "success" : "error"}
+              onClick={handleVisibilityToggle}
+              sx={{ mt: 2, width: '180px', fontSize: '20px' }}
+            >
+              {isHidden ? 'Active' : 'Inactive'}
+            </Button>
+          </>
+        )}
       </div>
       <br /><br />
     </div>

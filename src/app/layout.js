@@ -23,10 +23,6 @@ export default function RootLayout({ children }) {
 
     const protectedRoutes = ["/add/notice", "/deal/dealMain"];
     const isProtectedRoute = protectedRoutes.includes(pathname);
-    console.log(pathname);
-    console.log('isProtectedRoute', isProtectedRoute);
-    console.log('!isAuthenticated', !isAuthenticated);
-    console.log(isExpired());
 
     if (isProtectedRoute) {
       if (isExpired()) {

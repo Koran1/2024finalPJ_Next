@@ -404,7 +404,7 @@
 
 /* 단순 표시용 stat-item 스타일 */
 .stat-item.display-only {
-  pointer-events: none;  /* 클릭 이벤트 비활성화 */
+  pointer-events: none;
 }
 
 .stat-item.display-only .MuiSvgIcon-root {
