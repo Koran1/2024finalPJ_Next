@@ -29,6 +29,7 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "socketio": "^1.0.0",
+    "styled-components": "^6.1.13",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
