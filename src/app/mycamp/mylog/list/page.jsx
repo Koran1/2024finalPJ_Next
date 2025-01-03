@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import "./myloglist.css";
-import { Pagination } from "@mui/material";
+import { Grid2, Pagination } from "@mui/material";
 import ImageIcon from '@mui/icons-material/Image';
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -71,81 +71,87 @@ function Page() {
             <div className="mylog-navmenu-container">
                 {/* 상단 네비게이션바 */}
                 <Link href="/mycamp/plan"
-                        className={`btn1 ${getActiveClass('/mylog/plan')}`}
-                        onClick={() => setNavMenu('/mylog/plan')}
-                    >
-                        캠핑플래너
-                    </Link>
-                    <Link href="/mycamp/book"
-                        className={`btn1 ${getActiveClass('/mylog/book')}`}
-                        onClick={() => setNavMenu('/mylog/book')}
-                    >
-                        나의 예약
-                    </Link>
-                    <Link href="/mycamp/mylog/list"
-                        className={`btn1 ${getActiveClass('/mylog/list')}`}
-                        onClick={() => setNavMenu('/mylog/list')}
-                    >
-                        나의 캠핑로그
-                    </Link>
-                    <Link href="/camp/favCamp"
-                        className={`btn1 ${getActiveClass('/mylog/favcamp')}`}
-                        onClick={() => setNavMenu('/mylog/favcamp')}
-                    >
-                        위시리스트
-                    </Link>
+                    className={`btn1 ${getActiveClass('/mylog/plan')}`}
+                    onClick={() => setNavMenu('/mylog/plan')}
+                >
+                    캠핑플래너
+                </Link>
+                <Link href="/book/list"
+                    className={`btn1 ${getActiveClass('/book/list')}`}
+                    onClick={() => setNavMenu('/book/list')}
+                >
+                    나의 예약
+                </Link>
+                <Link href="/mycamp/mylog/list"
+                    className={`btn1 ${getActiveClass('/mylog/list')}`}
+                    onClick={() => setNavMenu('/mylog/list')}
+                >
+                    나의 캠핑로그
+                </Link>
+                <Link href="/camp/favCamp"
+                    className={`btn1 ${getActiveClass('/mylog/favcamp')}`}
+                    onClick={() => setNavMenu('/mylog/favcamp')}
+                >
+                    위시리스트
+                </Link>
             </div>
 
-            {/* 헤더 제목 영역 */}
-            <div className="mylog-list-header-container">
-                <p style={{ fontSize: "35px", fontWeight: "bold" }}>내 캠핑로그 관리</p>
-            </div>
+            <Grid2 container spacing={0}>
+                <Grid2 size={2} />
+                <Grid2 size={8}>
+                    {/* 헤더 제목 영역 */}
+                    <div className="mylog-list-header-container">
+                        <p style={{ fontSize: "35px", fontWeight: "bold" }}>내 캠핑로그 관리</p>
+                    </div>
 
-            {/* 마이 로그 리스트 영역 */}
-            <div className="mylog-list-table-container">
-                <table className="mylog-list-table">
-                    <thead>
-                        <tr>
-                            <th>제목</th>
-                            <th>작성일자</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {mylogList.length === 0 ? (
-                            <tr>
-                                <td colSpan="2" style={{ textAlign: "center", padding: "100px", fontWeight: "bold", fontSize: "20px" }}>
-                                    등록된 캠핑로그가 없습니다.
-                                </td>
-                            </tr>
-                        ) : (
-                            mylogList.map((list) => (
-                                <tr key={list.logIdx}>
-                                    <td style={{ textAlign: "left"}}>
-                                        <Link href={`/mycamp/mylog/detal/${list.logIdx}`}>
-                                            {list.logTitle}&nbsp;
-                                            {list.fileIdx ? <ImageIcon style={{ color: "#4D88FF" }} /> : null}&nbsp;
-                                            {list.commentCount && list.commentCount > 0 ? (
-                                                <span style={{ color: "#FE4949", fontWeight: "bold" }}>[{list.commentCount}]</span>) : null}
-                                        </Link>
-                                    </td>
-                                    <td>{list.logRegDate.substring(0, 10)}</td>
+                    {/* 마이 로그 리스트 영역 */}
+                    <div className="mylog-list-table-container">
+                        <table className="mylog-list-table">
+                            <thead>
+                                <tr>
+                                    <th>제목</th>
+                                    <th>작성일자</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                            </thead>
+                            <tbody>
+                                {mylogList.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="2" style={{ textAlign: "center", padding: "100px", fontWeight: "bold", fontSize: "20px" }}>
+                                            등록된 캠핑로그가 없습니다.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    mylogList.map((list) => (
+                                        <tr key={list.logIdx}>
+                                            <td style={{ textAlign: "left" }}>
+                                                <Link href={`/mycamp/mylog/detal/${list.logIdx}`}>
+                                                    {list.logTitle}&nbsp;
+                                                    {list.fileIdx ? <ImageIcon style={{ color: "#4D88FF" }} /> : null}&nbsp;
+                                                    {list.commentCount && list.commentCount > 0 ? (
+                                                        <span style={{ color: "#FE4949", fontWeight: "bold" }}>[{list.commentCount}]</span>) : null}
+                                                </Link>
+                                            </td>
+                                            <td>{list.logRegDate.substring(0, 10)}</td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
 
-            {/* 페이징 영역 */}
-            <div className="mylog-list-pagination">
-                <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={(event, value) => {
-                        if (value !== page) setPage(value);
-                    }}
-                />
-            </div>
+                    {/* 페이징 영역 */}
+                    <div className="mylog-list-pagination">
+                        <Pagination
+                            count={totalPages}
+                            page={page}
+                            onChange={(event, value) => {
+                                if (value !== page) setPage(value);
+                            }}
+                        />
+                    </div>
+                </Grid2>
+                <Grid2 size={2} />
+            </Grid2>
         </div>
     );
 }
