@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useState } from 'react';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { postcodeScriptUrl } from 'react-daum-postcode/lib/loadPostcode';
-import './userjoin.css'
+import './join.css'
 
 function Page(props) {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
@@ -206,36 +206,36 @@ function Page(props) {
     }
 
     return (
-        <div>
-            <FormControl>
+        <div className='container-box'>
+            <div className='p1'> 회원가입 </div>
+            <FormControl >
                 {/* 수직정렬 */}
                 <Stack direction="column" spacing={1} alignItems='center'>
-                    <Avatar />
-
-                    <TextField error={idError || uvo.userId && !idPass} type='text' label='아이디'
+                    {/* <Avatar /> */}
+                    <TextField className='textf' error={idError || uvo.userId && !idPass} type='text' label='아이디'
                         name='userId' value={uvo.userId} onChange={changeUvo}
                         placeholder='대소문자와 숫자로 구성 4~15자'
                         helperText={!uvo.userId ? "" : idError ? "올바르지 못한 아이디입니다"
                             : idHelper ? idHelper : "중복검사 중..."
                         } />
 
-                    <TextField error={pwError} type='password' label='패스워드'
+                    <TextField className='textf' error={pwError && uvo.userPw} type='password' label='패스워드'
                         name='userPw' value={uvo.userPw} onChange={changeUvo}
                         placeholder='특수, 대소문자 1개씩 포함, 공백 불가, 6~15자'
                         helperText={!uvo.userPw ? "" : pwError ? "올바르지 못한 비밀번호입니다" :
                             "사용 가능한 비밀번호 입니다!"
                         } />
 
-                    <TextField type='text' label='이 름' name='userName'
+                    <TextField className='textf' type='text' label='이 름' name='userName'
                         value={uvo.userName} onChange={changeUvo} />
 
-                    <TextField error={uvo.userNickname && !nickPass}
+                    <TextField className='textf' error={uvo.userNickname && !nickPass}
                         type='text' label='닉네임'
                         name='userNickname' value={uvo.userNickname}
                         helperText={uvo.userNickname && (nickHelper ? nickHelper : "중복검사 중...")} onChange={changeUvo} />
 
                     <Box>
-                        <TextField error={uvo.userMail && !mailDupl || mailError}
+                        <TextField error={uvo.userMail && (!mailDupl || mailError)}
                             type='text' label='이메일'
                             name='userMail' value={uvo.userMail}
                             helperText={uvo.userMail && (mailError ? "올바르지 못한 이메일입니다"
@@ -253,7 +253,7 @@ function Page(props) {
                             sx={{ ml: 2 }} onClick={handleMailChk}>인증번호 확인</Button>
                     </Box>
 
-                    <TextField error={uvo.userPhone && !phonePass || phoneError} type='text' label='전화번호'
+                    <TextField className='textf' error={uvo.userPhone && !phonePass || phoneError} type='text' label='전화번호'
                         name='userPhone' value={uvo.userPhone}
                         helperText={
                             !uvo.userPhone ? "" : phoneError ? "올바르지 못한 전화번호입니다"

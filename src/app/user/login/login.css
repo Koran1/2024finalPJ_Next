@@ -2,7 +2,6 @@
   margin-top: 50px;
   display: grid;
   justify-content: center;
-  align-content: center;
   align-items: center;
   min-height: 500px;
 }
@@ -35,7 +34,7 @@
   margin-bottom: 50px;
 }
 
-.text-login{
+.textf {
   width: 300px;
 }
 
