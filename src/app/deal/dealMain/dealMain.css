@@ -1,3 +1,15 @@
+.deal-search-bar{
+  width: 400px;
+  margin-right: 10px;
+  margin-left: 300px;
+}
+
+.search-text{
+  color: #2F3438;
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .product-grid {
   text-decoration: none;
   display: flex;
@@ -159,6 +171,7 @@
   margin: 5px;
   transition: all 0.3s ease;
   font-family: "Do Hyeon, sans-serif";
+  margin-left: 10px;
 }
 
 .btn1:hover {
