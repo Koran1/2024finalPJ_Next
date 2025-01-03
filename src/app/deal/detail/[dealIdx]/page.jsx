@@ -35,22 +35,23 @@ function Page({ params }) {
   const [sellerOtherFiles, setSellerOtherFiles] = useState([]);
   const [sellerScore, setSellerScore] = useState(0);
   const [sellerSatisfactions, setSellerSatisfactions] = useState([]);
-  
+
   // isSellerUser를 여기서 먼저 선언
   const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
-  
+
   // 상품 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // 기존 데이터 조회
         const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
         const response = await axios.get(API_URL);
         const data = response.data;
 
         if (data.success) {
+          console.log(data);
           setItem(data.data.deal);
           setViewCount(data.data.viewCount);          // deal02 값으로 판매 상태 설정
           setDealStatus(data.data.deal.deal02 || '판매중');  // 기본값은 '판매중'으로 설정
@@ -60,12 +61,12 @@ function Page({ params }) {
           if (files && files.length > 0) {
             // 메인 이미지 (fileOrder가 0인 이미지)
             const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
-            setMainImage(`${LOCAL_IMG_URL}/${mainImgObj.fileName}`);
+            setMainImage(`${LOCAL_IMG_URL}/deal/${mainImgObj.fileName}`);
 
             // 모든 이미지를 순서대로 정렬하여 작은 이미지 목록에 추가
             const smallImgs = files
               .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
-              .map(file => `${LOCAL_IMG_URL}/${file.fileName}`);
+              .map(file => `${LOCAL_IMG_URL}/deal/${file.fileName}`);
             setSmallImages(smallImgs);
           }
         } else {
@@ -155,13 +156,13 @@ function Page({ params }) {
       try {
         if (item?.dealSellerUserIdx) {
           const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-score/${item.dealSellerUserIdx}`);
-          
+
           if (response.data.success) {
             const score = parseFloat(response.data.data);
             const finalScore = isNaN(score) ? 5.0 : score;
             setSellerScore(finalScore);
           }
-        } 
+        }
       } catch (error) {
         console.error('판매자 평점 조회 실패:', error);
         setSellerScore(5.0);
@@ -259,7 +260,7 @@ function Page({ params }) {
               {smallImages.map((src, index) => (
                 <img
                   key={index}
-                  src={src}
+                  src={src || '/default-product-image.jpg'}
                   alt={`작은 이미지 ${index + 1}`}
                   className="small-image"
                   onClick={() => setMainImage(src)}
@@ -271,16 +272,16 @@ function Page({ params }) {
             {/* 메인 이미지 컨테이너 */}
             <div className="main-image-container">
               <img
-                src={mainImage}
+                src={mainImage || '/default-product-image.jpg'}
                 alt="상품 이미지"
                 className="product-image"
               />
-              {/* {item.dealview === 0 && (
+              {item.dealview === 0 && (
                 <div className="inactive-notice">
-                  신고로 인해 본 게시물에 대한 게시가 중단되었습니다. 
+                  신고로 인해 본 게시물에 대한 게시가 중단되었습니다.
                   소명이 필요한 경우 아래 고객센터(이메일)로 소명 내용을 보내주시기 바랍니다.
                 </div>
-              )} */}
+              )}
             </div>
           </div>
 
@@ -307,12 +308,12 @@ function Page({ params }) {
               <span> {item.dealSellerNick}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <span style={{ fontWeight: 'bold', color: '#525050' }}>평점</span>
-              <Rating 
-                value={sellerScore} 
-                precision={0.5} 
-                readOnly 
+              <Rating
+                value={sellerScore}
+                precision={0.5}
+                readOnly
                 size="large"
-                sx={{ 
+                sx={{
                   '& .MuiRating-iconFilled': {
                     color: '#FFD700 !important'
                   },
@@ -325,9 +326,9 @@ function Page({ params }) {
                       fill: 'currentColor'
                     }
                   },
-                  marginLeft: '5px', 
+                  marginLeft: '5px',
                   marginRight: '5px',
-                  verticalAlign: 'middle' 
+                  verticalAlign: 'middle'
                 }}
               />
               <span style={{ verticalAlign: 'middle' }}>
@@ -336,7 +337,7 @@ function Page({ params }) {
 
               &nbsp;&nbsp;&nbsp;
               <div className="action-buttons">
-                <div 
+                <div
                   onClick={() => {
                     if (!isAuthenticated) {
                       alert('로그인이 필요한 서비스입니다.');
@@ -345,7 +346,7 @@ function Page({ params }) {
                     }
                     router.push('/deal/message');
                   }}
-                  style={{ 
+                  style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -412,7 +413,7 @@ function Page({ params }) {
               </div>
 
               <div className="stat-item report">
-                <div 
+                <div
                   onClick={() => {
                     if (!isAuthenticated) {
                       alert('로그인이 필요한 서비스입니다.');
@@ -421,11 +422,11 @@ function Page({ params }) {
                     }
                     setIsReportModalOpen(true);
                   }}
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: '5px',
-                    cursor: 'pointer' 
+                    cursor: 'pointer'
                   }}
                 >
                   <ReportIcon />
@@ -439,12 +440,12 @@ function Page({ params }) {
                 variant="contained"
                 color={dealStatus === '판매중' ? 'primary' : 'default'}
                 className={`status-button ${dealStatus === '판매중' ? 'selling' : 'completed'}`}
-                style={{ 
+                style={{
                   cursor: isSellerUser ? 'pointer' : 'default'
                 }}
                 onClick={() => {
                   if (!isSellerUser) return;
-                  
+
                   const isSelling = dealStatus === '판매중';
                   if (isSelling) {
                     if (window.confirm("판매 완료 상태로 변경 됩니다.")) {
@@ -508,7 +509,7 @@ function Page({ params }) {
           </div>
         )}
 
-        {/* 관리자 수정 버튼 - admin만 볼 수 있음, admin 페이지 생성 시 삭제 */}
+        {/* 관리자 수정 버튼 - admin만 볼 수 있음 */}
         {user?.userIdx === "25" && (
           <div className="edit-button-container">
             <Button
@@ -532,7 +533,7 @@ function Page({ params }) {
                 <div key={deal.dealIdx} className="product-item">
                   <Link href={`/deal/detail/${deal.dealIdx}`}>
                     <img
-                      src={file?.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : '/default-product-image.jpg'}
+                      src={file?.fileName ? `${LOCAL_IMG_URL}/deal/${file.fileName}` : '/default-product-image.jpg'}
                       alt={deal.dealTitle}
                       className="dealMain-image"
                       onError={(e) => {

@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
     const protectedRoutes = [
       // deal 관련 페이지
       "/deal/interest", "/deal/management", "/deal/purchase", "/deal/rating", "/deal/report", "/deal/update", "/deal/write",
-
+      "/deal/message",
       // mycamp 관련 페이지
       "/mycamp",
 
@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
         router.push("/user/login");
       }
     }
-  }, [isAuthenticated, user, isExpired, router, pathname]);
+  }, [user, pathname]);
 
   const handleLogout = () => {
     // zustand에 있는 함수 호출

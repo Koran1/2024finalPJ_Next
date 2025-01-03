@@ -17,11 +17,12 @@ function Page({ onFavoriteChange }) {
 
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
-        params: { 
+        params: {
           userIdx: user.userIdx,
-          dealIdx 
+          dealIdx
         }
       });
+      console.log("Like status response:", response.data.data);
       setIsLiked(response.data.data);
     } catch (error) {
       console.error("Failed to fetch like status:", error);
@@ -68,8 +69,8 @@ function Page({ onFavoriteChange }) {
     <button
       className="like-btn"
       onClick={handleLike}
-      style={{ 
-        background: 'none', 
+      style={{
+        background: 'none',
         border: 'none',
         fontSize: '2rem',
         cursor: 'pointer'

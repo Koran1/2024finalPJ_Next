@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
+import axios from 'axios';
+import useAuthStore from '../../../../store/authStore';
 
 const ProductList = () => {
-  const products = [
-    { id: 1, name: '상품1', image: 'https://via.placeholder.com/150' },
-    { id: 2, name: '상품2', image: 'https://via.placeholder.com/150' },
-    { id: 3, name: '상품3', image: 'https://via.placeholder.com/150' },
-    { id: 4, name: '상품3', image: 'https://via.placeholder.com/150' },
-    { id: 5, name: '상품3', image: 'https://via.placeholder.com/150' },
-    { id: 6, name: '상품3', image: 'https://via.placeholder.com/150' },
-  ];
+
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+  const {user} = useAuthStore();
+
+  const [products, setProducts] = useState([])
+  
+  useEffect(() => {
+    if(user == null) return
+    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
+                      .then((res) => {
+                        console.log(res.data)
+                        setProducts(res.data.data)
+
+                      })
+  }, [user])
+
 
   return (
       <div style={styles.list}>
-          <div className="part" style={styles.rating}> 평점 {products.length}개</div>
+          <div className="part" style={styles.rating}> 찜 {products.length}개</div>
       {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.dealIdx} product={product} />
         ))}
     </div>
   );
@@ -24,8 +34,7 @@ const ProductList = () => {
 const styles = {
   list: {
     display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
+    gap: '10px',
   },
   rating: {
     width: '100%',         // 전체 가로폭을 차지하도록 설정

@@ -19,7 +19,7 @@ const useAuthStore = create(
             // 로그아웃 처리
             logout: () => {
                 set({ user: null, token: null, isAuthenticated: false, expiresAt: null });
-
+                console.log("로그아웃 되었습니다");
                 // 추가로 로컬 스토리지에서 삭제 (보안 강화)
                 localStorage.removeItem("auth-storage");
             },

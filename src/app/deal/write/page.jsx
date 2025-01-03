@@ -27,15 +27,6 @@ function Page() {
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    // 컴포넌트 마운트 시 로그인 상태 확인
-    if (!isAuthenticated || !token) {
-      alert('로그인이 필요합니다.');
-      router.push('/user/login');
-      return;
-    }
-  }, [isAuthenticated, token, router]);
-
-  useEffect(() => {
     const checkFormValidity = () => {
       // 폼 유효성 검사
       const { dealTitle, dealDescription, dealPrice, dealCount, dealDirect, dealDirectContent } = formData;
@@ -87,10 +78,10 @@ function Page() {
 
     // 이미지 미리보기 URL 생성
     const imageUrl = URL.createObjectURL(file);
-    
+
     // input의 index 찾기
     const index = parseInt(e.target.id.split('-')[2]);
-    
+
     // 이미지 배열 업데이트
     setImages(prev => {
       const newImages = [...prev];
@@ -272,7 +263,7 @@ function Page() {
       dealDirectContent: value === "직거래 불가" ? '' : prev.dealDirectContent
     }));
   };
-  
+
   const handleDirectContentChange = (e) => {
     const { value } = e.target;
 
@@ -294,7 +285,7 @@ function Page() {
     if (inputElement) {
       inputElement.value = '';
     }
-    
+
     // 이미지 상태 업데이트
     setImages(prev => {
       const newImages = [...prev];
@@ -327,15 +318,15 @@ function Page() {
         <hr />
         <div className="image-preview-container">
           {[...Array(5)].map((file, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="image-preview-box"
               style={{ cursor: 'pointer' }}
             >
-              <div 
+              <div
                 onClick={() => document.getElementById(`image-upload-${index}`).click()}
-                style={{ 
-                  width: '100%', 
+                style={{
+                  width: '100%',
                   height: '100%',
                   display: 'flex',
                   alignItems: 'center',
@@ -353,7 +344,7 @@ function Page() {
                 />
                 {images[index] ? (
                   <>
-                    <img 
+                    <img
                       src={images[index].preview}
                       alt={`상품 이미지 ${index + 1}`}
                       style={{
@@ -384,11 +375,11 @@ function Page() {
       <div className="form-group">
         <br />
         <h4>상품명</h4>
-        <input 
-          type="text" 
-          placeholder="상품명을 입력해 주세요" 
-          name="dealTitle" 
-          value={formData.dealTitle} 
+        <input
+          type="text"
+          placeholder="상품명을 입력해 주세요"
+          name="dealTitle"
+          value={formData.dealTitle}
           onChange={handleChange}
           onFocus={(e) => e.target.placeholder = ''}
           onBlur={(e) => e.target.placeholder = '상품명을 입력해 주세요'}
@@ -402,172 +393,172 @@ function Page() {
         <div className="category-options">
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="텐트/타프" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "텐트/타프"} 
+              <input
+                type="radio"
+                name="category"
+                value="텐트/타프"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "텐트/타프"}
               />
               텐트/타프
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="침구류" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "침구류"} 
+              <input
+                type="radio"
+                name="category"
+                value="침구류"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "침구류"}
               />
               침구류
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="취사도구" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "취사도구"} 
+              <input
+                type="radio"
+                name="category"
+                value="취사도구"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "취사도구"}
               />
               취사도구
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="식품/음료" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "식품/음료"} 
+              <input
+                type="radio"
+                name="category"
+                value="식품/음료"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "식품/음료"}
               />
               식품/음료
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="의류/신발" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "의류/신발"} 
+              <input
+                type="radio"
+                name="category"
+                value="의류/신발"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "의류/신발"}
               />
               의류/신발
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="디지털기기" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "디지털기기"} 
+              <input
+                type="radio"
+                name="category"
+                value="디지털기기"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "디지털기기"}
               />
               디지털기기
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="휴대용품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "휴대용품"} 
+              <input
+                type="radio"
+                name="category"
+                value="휴대용품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "휴대용품"}
               />
               휴대용품
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="위생용품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "위생용품"} 
+              <input
+                type="radio"
+                name="category"
+                value="위생용품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "위생용품"}
               />
               위생용품
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="안전/보안" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "안전/보안"} 
+              <input
+                type="radio"
+                name="category"
+                value="안전/보안"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "안전/보안"}
               />
               안전/보안
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="가방/스토리지" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "가방/스토리지"} 
+              <input
+                type="radio"
+                name="category"
+                value="가방/스토리지"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "가방/스토리지"}
               />
               가방/스토리지
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="난방/화로" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "난방/화로"} 
+              <input
+                type="radio"
+                name="category"
+                value="난방/화로"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "난방/화로"}
               />
               난방/화로
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="뷰티/미용" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "뷰티/미용" || !formData.dealCategory} 
+              <input
+                type="radio"
+                name="category"
+                value="뷰티/미용"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "뷰티/미용" || !formData.dealCategory}
               />
               뷰티/미용
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="취미/게임" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "취미/게임"} 
+              <input
+                type="radio"
+                name="category"
+                value="취미/게임"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "취미/게임"}
               />
               취미/게임
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="반려동물용품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "반려동물용품"} 
+              <input
+                type="radio"
+                name="category"
+                value="반려동물용품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "반려동물용품"}
               />
               반려동물용품
             </label>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="테이블/의자" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "테이블/의자"} 
+              <input
+                type="radio"
+                name="category"
+                value="테이블/의자"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "테이블/의자"}
               />
               테이블/의자
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="category" 
-                value="기타 물품" 
-                onChange={e => handleCategoryChange(e.target.value)} 
-                checked={formData.dealCategory === "기타 물품" || !formData.dealCategory} 
+              <input
+                type="radio"
+                name="category"
+                value="기타 물품"
+                onChange={e => handleCategoryChange(e.target.value)}
+                checked={formData.dealCategory === "기타 물품" || !formData.dealCategory}
               />
               기타 물품
             </label>
@@ -583,60 +574,60 @@ function Page() {
         <div className="state-options">
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="미개봉(미사용)" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "미개봉(미사용)" || !formData.dealStatus} 
+              <input
+                type="radio"
+                name="state"
+                value="미개봉(미사용)"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "미개봉(미사용)" || !formData.dealStatus}
               />
               미개봉(미사용) <span style={{ fontSize: '14px', color: 'gray' }}>사용하지 않은 미개봉 상품</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="사용감 없음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "사용감 없음"} 
+              <input
+                type="radio"
+                name="state"
+                value="사용감 없음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "사용감 없음"}
               />
               사용감 없음 <span style={{ fontSize: '14px', color: 'gray' }}>사용은 했지만 사용한 흔적이나 얼룩이 없음</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="사용감 적음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "사용감 적음"} 
+              <input
+                type="radio"
+                name="state"
+                value="사용감 적음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "사용감 적음"}
               />
               사용감 적음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 약간 있음</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="사용감 많음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "사용감 많음"} 
+              <input
+                type="radio"
+                name="state"
+                value="사용감 많음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "사용감 많음"}
               />
               사용감 많음 <span style={{ fontSize: '14px', color: 'gray' }}>눈에 띄는 사용 흔적이나 얼룩이 많음</span>
             </label>
           </p>
           <p>
             <label>
-              <input 
-                type="radio" 
-                name="state" 
-                value="고장/파손 있음" 
-                onChange={e => handleStateChange(e.target.value)} 
-                checked={formData.dealStatus === "고장/파손 있음"} 
+              <input
+                type="radio"
+                name="state"
+                value="고장/파손 있음"
+                onChange={e => handleStateChange(e.target.value)}
+                checked={formData.dealStatus === "고장/파손 있음"}
               />
               수리/수선 필요 <span style={{ fontSize: '14px', color: 'gray' }}>일부 기능 이상이나 외관 손상이 있으나 수리/수선하면 쓸 수 있음</span>
             </label>
@@ -647,8 +638,8 @@ function Page() {
 
       <div className="form-group">
         <h4>상품설명</h4>
-        <TextareaAutosize 
-          className="description-textarea" 
+        <TextareaAutosize
+          className="description-textarea"
           placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
@@ -741,22 +732,22 @@ function Page() {
         <hr />
         <div className="package-options">
           <label>
-            <input 
-              type="radio" 
-              name="package" 
-              value="배송비 포함" 
-              onChange={e => handlePackageChange(e.target.value)} 
-              checked={formData.dealPackage === "배송비 포함" || !formData.dealPackage} 
+            <input
+              type="radio"
+              name="package"
+              value="배송비 포함"
+              onChange={e => handlePackageChange(e.target.value)}
+              checked={formData.dealPackage === "배송비 포함" || !formData.dealPackage}
             />
             배송비 포함
           </label>
           <label>
-            <input 
-              type="radio" 
-              name="package" 
-              value="배송비 별도" 
-              onChange={e => handlePackageChange(e.target.value)} 
-              checked={formData.dealPackage === "배송비 별도"} 
+            <input
+              type="radio"
+              name="package"
+              value="배송비 별도"
+              onChange={e => handlePackageChange(e.target.value)}
+              checked={formData.dealPackage === "배송비 별도"}
             />
             배송비 별도
           </label>
@@ -769,19 +760,19 @@ function Page() {
         <hr />
         <div className="direct-options">
           <label>
-            <input 
-              type="radio" 
-              name="direct" 
-              value="직거래 가능" 
-              onChange={(e) => handleDirectChange(e.target.value)} 
-              checked={formData.dealDirect === "직거래 가능"} 
+            <input
+              type="radio"
+              name="direct"
+              value="직거래 가능"
+              onChange={(e) => handleDirectChange(e.target.value)}
+              checked={formData.dealDirect === "직거래 가능"}
             />
             직거래 가능
           </label>
           <div className="form-group">
-            <input 
-              type="text" 
-              placeholder="직거래 가능지역을 입력해 주세요" 
+            <input
+              type="text"
+              placeholder="직거래 가능지역을 입력해 주세요"
               name="dealDirectContent"
               value={formData.dealDirectContent}
               onChange={handleDirectContentChange}
@@ -790,16 +781,16 @@ function Page() {
                   e.target.blur();
                 }
               }}
-              disabled={formData.dealDirect === "직거래 불가"} 
+              disabled={formData.dealDirect === "직거래 불가"}
             />
           </div>
           <label>
-            <input 
-              type="radio" 
-              name="direct" 
-              value="직거래 불가" 
-              onChange={e => handleDirectChange(e.target.value)} 
-              checked={formData.dealDirect === "직거래 불가"} 
+            <input
+              type="radio"
+              name="direct"
+              value="직거래 불가"
+              onChange={e => handleDirectChange(e.target.value)}
+              checked={formData.dealDirect === "직거래 불가"}
             />
             직거래 불가
           </label>
@@ -855,27 +846,27 @@ function Page() {
       </h6>
 
       <div className="button-group">
-        <Button 
-          className={`submit-btn ${isFormComplete() ? 'submit-btn-enabled' : 'submit-btn-disabled'}`} 
-          variant="contained" 
-          disabled={!isFormComplete()} 
-          onClick={handleSubmit} 
-          sx={{ 
-            mt: 2, 
-            width: '180px', 
-            fontSize: '20px', 
-            bgcolor: isFormComplete() ? 'primary.main' : 'action.disabledBackground', 
-            '&:hover': { bgcolor: isFormComplete() ? 'primary.dark' : 'action.disabledBackground' }, 
+        <Button
+          className={`submit-btn ${isFormComplete() ? 'submit-btn-enabled' : 'submit-btn-disabled'}`}
+          variant="contained"
+          disabled={!isFormComplete()}
+          onClick={handleSubmit}
+          sx={{
+            mt: 2,
+            width: '180px',
+            fontSize: '20px',
+            bgcolor: isFormComplete() ? 'primary.main' : 'action.disabledBackground',
+            '&:hover': { bgcolor: isFormComplete() ? 'primary.dark' : 'action.disabledBackground' },
             boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)'
           }}>등록</Button>
         &nbsp;&nbsp;&nbsp;
-        <Button 
-          className="cancel-btn" 
-          variant="contained" 
-          onClick={handleCancel} 
-          sx={{ 
-            mt: 2, 
-            width: '180px', 
+        <Button
+          className="cancel-btn"
+          variant="contained"
+          onClick={handleCancel}
+          sx={{
+            mt: 2,
+            width: '180px',
             fontSize: '20px',
             boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)'
           }}>취소</Button>

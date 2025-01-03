@@ -7,20 +7,6 @@ import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 
 function Page() {
-    // 로그인 확인 절차
-    const router = useRouter();
-    const { isAuthenticated, isExpired, user } = useAuthStore();
-
-    useEffect(() => {
-        if (!user) return
-        console.log('유저 로그인 확인')
-        if (!isAuthenticated || isExpired()) {
-            alert("로그인이 필요한 서비스입니다.");
-            router.push("/user/login"); // Redirect to login page
-            return
-        }
-
-    }, [user])
 
 
     const initUvo = {

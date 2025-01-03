@@ -8,11 +8,11 @@ import axios from 'axios';
 
 import './dealMain.css';
 import { Box, Button, TextField } from '@mui/material';
+import MainProductCard from './MainProductCard';
 
 export default function ProductSearchPage() {
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
-  const [selectedCategories, setSelectedCategories] = useState([]); // 선택된 카테고리 상태
-  // const [products, setProducts] = useState([]); // 검색 결과로 표시될 상품 리스트
+
+  const [selectedCategories, setSelectedCategories] = useState('전체'); // 선택된 카테고리 상태
 
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
@@ -20,10 +20,15 @@ export default function ProductSearchPage() {
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
 
+  // 검색어
+  const [searchKeyword, setSearchKeyword] = useState('');
+
   // store - authStore 에 있는 정보를 사용한다.
   const { user, isAuthenticated } = useAuthStore();
-  const router = useRouter();
 
+  const [favProducts, setFavProducts] = useState([]);
+
+  // dealMain 로딩
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,8 +56,6 @@ export default function ProductSearchPage() {
               deal01: mainImage ? mainImage.fileName : null
             };
           });
-
-          // console.log("Processed products:", resultProducts); // 처리된 데이터 확인
           setProducts(resultProducts);
         } else {
           setError("데이터를 불러오는데 실패했습니다.");
@@ -68,87 +71,113 @@ export default function ProductSearchPage() {
     fetchData();
   }, [LOCAL_API_BASE_URL]);
 
+
+  // 찜 목록
+  useEffect(() => {
+    if (user == null) return
+    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
+      .then((res) => {
+        console.log(res.data)
+        setFavProducts(res.data.data)
+      })
+  }, [user])
+
+
+  // 로딩 & 에러 처리
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-
   // 카테고리 선택 토글 함수
   const toggleCategory = (category) => {
-    if (selectedCategories.includes(category)) {
-      setSelectedCategories(selectedCategories.filter((cat) => cat !== category));
-    }
+    setSelectedCategories(category)
+  }
+
+  const filteredProducts = products.filter((prod) =>
+    selectedCategories === '전체' || prod.dealCategory === selectedCategories
+  );
+
+  // 검색어 핸들러
+  const handleKeyword = (e) => setSearchKeyword(e.target.value);
+
+  // 검색 제출 핸들러
+  const handleSearch = () => {
+    // 여기에서 서버단으로
+    const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainSearch`
+    const response = axios.get(`${API_URL}?searchKeyword=${searchKeyword}`)
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.success) {
+          setProducts(res.data.data);
+          console.log(res.data.message)
+        } else {
+          console.log(res.data.message)
+        }
+      })
+      .catch((err) => console.log(err))
+  }
+
+  // 정렬 필터 
+  // 1.최신순
+  const sortByRegDate = () => {
+    const sortedProducts = [...products]
+      .sort((a, b) =>
+        new Date(b.dealRegDate) - new Date(a.dealRegDate)
+      )
+    console.log(sortedProducts);
+    setProducts(sortedProducts)
+  }
+
+  // 2. 조회순
+  const sortByUserViewCount = () => {
+    const sortedProducts = [...products]
+      .sort((a, b) =>
+        b.dealUserViewCount - a.dealUserViewCount
+      )
+    console.log(sortedProducts);
+    setProducts(sortedProducts)
+  }
+
+  // 3. 가격순
+  const sortByPrice = () => {
+    const sortedProducts = [...products]
+      .sort((a, b) =>
+        b.dealPrice - a.dealPrice
+      )
+    console.log(sortedProducts);
+    setProducts(sortedProducts)
+  }
 
 
-    // 검색 제출 핸들러
-    const handleSearchSubmit = async (e) => {
-      e.preventDefault(); // 폼 제출 기본 동작 방지
-
-      // 검색 API 호출 (임시: 실제 API URL 및 로직 추가 필요)
-      const response = await fetch(`/api/products?search=${searchTerm}&categories=${selectedCategories.join(",")}`);
-      const data = await response.json();
-
-      setProducts(data); // 검색 결과 업데이트
-    };
-  };
-
-  // 상품등록 페릭 핸들러
-  const handleWriteClick = (e) => {
-    e.preventDefault();
-    if (!isAuthenticated) {
-      alert('로그인이 필요한 서비스입니다.');
-      router.push('/user/login');
-      return;
-    }
-    router.push('/deal/write');
-  };
-
-  // 나의거래 페릭 핸들러
-  const handleMyDealsClick = (e) => {
-    e.preventDefault();
-    if (!isAuthenticated) {
-      alert('로그인이 필요한 서비스입니다.');
-      router.push('/user/login');
-      return;
-    }
-    router.push(`/deal/management/${user.userIdx}`);
-  };
-
-  // 상품 목록 필터링
-  const filteredDeals = products.filter(deal => {
-    // 관리자나 판매자가 아닌 경우 dealview=0인 상품 제외
-    if (deal.dealview === 0 &&
-      user?.userIdx !== "25" &&
-      user?.userIdx !== deal.dealSellerUserIdx) {
-      return false;
-    }
-    return true;
-  });
 
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
       <div>
-
-        <form className="search-box" action="" method="get">
-          <input className="search-txt" type='text' name='' placeholder='상품검색'></input>
-          <button className="search-btn" type="submit">
+        <Box>
+          <TextField
+            variant="outlined"
+            placeholder="검색어를 입력하세요..."
+            value={searchKeyword}
+            onChange={handleKeyword}
+            sx={{ mb: 2 }}
+          />
+          <Button variant='outlined' onClick={handleSearch}>
             <img src="../images/search_icon.png" alt="Search" className="icon" />
-          </button>
-        </form>
+          </Button>
+        </Box>
 
 
-        <a href="/deal/write" className="btn1" onClick={handleWriteClick}>
-          상품 등록
-        </a>
+        {/* 상품 등록 버튼 */}
+        <Link href="/deal/write" className="btn1">상품 등록</Link>
 
-        <a href="#" className="btn1" onClick={handleMyDealsClick}>
-          나의 거래
-        </a>
+
+        {/* 나의 거래 버튼 */}
+        {isAuthenticated && <Link href={`/deal/management`} className="btn1">나의 거래</Link>}
       </div>
 
       {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
       {/* 검색 상품 개수 */}
-      <div className="part">상품 {products.length || 0}개</div>
+      <div className="part">상품 {filteredProducts.length || 0}개</div>
 
       {/* 카테고리 필터 */}
       <div className="categories">
@@ -160,40 +189,22 @@ export default function ProductSearchPage() {
           <button
             key={category}
             className={`category ${selectedCategories.includes(category) ? 'active' : ''}`}
-            onClick={() => toggleCategory(category)}
-          >
+            onClick={() => toggleCategory(category)}>
             {category}
           </button>
         ))}
       </div>
 
+      <a onClick={sortByRegDate}> 최신순 </a>
+      <a onClick={sortByUserViewCount}> 조회순 </a>
+      <a onClick={sortByPrice}> 가격순 </a>
+
       {/* 상품 목록 */}
       <div className="product-grid-wrapper">
         <div className="product-grid">
-          {filteredDeals.map((product) => (
-            <div className="product-item" key={product.dealIdx}>
-              <Link href={`/deal/detail/${product.dealIdx}`}>
-                <img
-                  className="dealMain-image"
-                  src={product.deal01
-                    ? `${LOCAL_IMG_URL}/${product.deal01}`
-                    : "/images/defaultImage.png"}
-                  alt={product.dealTitle}
-                  style={{ width: "180px", height: "200px" }}
-                  onError={(e) => {
-                    console.log("Image load error:", e);
-                    e.target.src = "/images/defaultImage.png";
-                  }}
-                />
-                <div className="product-content">
-                  <div className="nick">{product.dealSellerNick}</div>
-                  <div className="title">{product.dealTitle}</div>
-                  <div className='price'>
-                    {product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
-                  </div>
-                </div>
-              </Link>
-            </div>
+          {filteredProducts.map((product) => (
+            <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
+
           ))}
         </div>
       </div>

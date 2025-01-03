@@ -3,13 +3,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
-import useAuthStore from "../../../../../store/authStore";
 import "./management.css";
-import Navigation from "../../../../../components/deal/Navigation";
+import useAuthStore from "../../../../store/authStore";
 
-function Page({ params }) {
+function Page() {
 // 선택된 네비게이션 바 표시
-const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
+const [activeLink, setActiveLink] = useState("/deal/management");
 
     // const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     // const [products, setProducts] = useState([]);
@@ -19,16 +18,14 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
     const [item, setItem] = useState([]);                 // 데이터 상태 
     const [loading, setLoading] = useState(true);           // 로딩 상태
     const [error, setError] = useState(null);               // 에러 상태
-    const { user } = useAuthStore();
-    // const { isAuthenticated, token, user } = useAuthStore();       // 로그인 상태
+    const {  user } = useAuthStore();       // 로그인 상태
 
     useEffect(() => {
+        if(user == null ) return
         const fetchData = async () => {
             try {
                 setLoading(true); // 로딩 시작
-
-                const { userIdx } = await Promise.resolve(params);
-                const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${userIdx}`;
+                const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${user.userIdx}`;
 
                 // 데이터 가져오기
                 const response = await axios.get(API_URL);
@@ -49,7 +46,7 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
         };
 
         fetchData();
-    }, [params, LOCAL_API_BASE_URL]);
+    }, [user, LOCAL_API_BASE_URL]);
  
 
     const getActiveClass = (link) => (activeLink === link ? "active" : "");
@@ -63,13 +60,33 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
     return (
             <>
         <div className="pd-reg-container">
-            <Navigation />
+            
+            <div className="nav-links">
+                <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>상품 관리</Link>
+                <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>구매 내역</Link>
+                <Link href="/deal/interest"
+                    className={`btn1 ${getActiveClass('/deal/interest')}`}
+                    onClick={() => setActiveLink('/deal/interest')}>
+                    관심 목록
+                </Link>
+                <Link href="/deal/rating"
+                    className={`btn1 ${getActiveClass('/deal/rating')}`}
+                    onClick={() => setActiveLink('/deal/rating')}>
+                    나의 평점
+                </Link>
+                <Link href="/deal/message"
+                    className={`btn1 ${getActiveClass('/deal/message')}`}
+                    onClick={() => setActiveLink('/deal/message')}>
+                    쪽지 목록
+                </Link>
+                {/* ... 다른 링크들 */}
+            </div>
             <hr />
             <div className="purchase-info">
                 <div className="part">상품 {item.length}개</div>
             </div>
 
-            {/* <h1>상품 상세 정보</h1> */}
+            <h1>상품 상세 정보</h1>
             {item.length > 0 ? (
             <table className="product-table">
                 <thead>
@@ -82,18 +99,22 @@ const [activeLink, setActiveLink] = useState("/deal/management/${userIdx}");
                     </tr>
                 </thead>
                 <tbody>
-                     { item.map((k)=>{
+                     { item.map((k, idx)=>{
                         return(
 
-                            <tr key={k.dealSellerUserIdx}>
+                            <tr key={idx}>
                             <td>
-                                <Link href={`/product/${k.dealIdx}`}>
-                                    {/* <img src={product.image} alt={product.dealTitle} width="50" height="50" /> */}
+                                <Link href={`/deal/detail/${k.dealIdx}`}>
+                                    <img src={`${LOCAL_IMG_URL}/deal/${k.deal01}`} alt={k.dealTitle} width="50" height="50" />
                                 </Link>
                             </td>
-                            <td>{k.dealTitle}</td>
                             <td>
-                                {/* <Link href={`/detail/${product.dealIdx}`} style={{ textDecoration: "none" }}>{product.name}</Link> */}
+                                {k.dealStatus}
+                            </td>
+                            <td>
+                                <Link href={`/deal/detail/${k.dealIdx}`} style={{ textDecoration: "none" }}>
+                                    {k.dealTitle}
+                                </Link>
                             </td>
                             <td>{k.dealPrice}</td>
                             <td>{k.dealRegDate}</td>
