@@ -115,7 +115,7 @@ export default function RootLayout({ children }) {
         <header data-bs-theme="dark" style={{ height: '38px' }}>
           <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark" >
             <div className="container-fluid">
-              <a className="navbar-brand" href="/" style={{ fontSize: '250%', fontFamily: "'Jaro', sans-serif", marginRight: '50px' }}>CAMPERS</a>
+              <a className="navbar-brand" href="/" style={{ fontSize: '200%', fontFamily: "'Jaro', sans-serif", marginRight: '50px', marginLeft: '20px', marginBottom:'4px' }}>CAMPERS</a>
               <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" >
                 <span className="navbar-toggler-icon"></span>
               </button>
@@ -135,10 +135,10 @@ export default function RootLayout({ children }) {
                   <>
                     <Badge badgeContent={unReadMessages} color="primary" >
                       <Link href='/deal/message'>
-                        <MailOutline style={{ color: 'white', width: '40px', height: '40px' }} />
+                        <MailOutline style={{ color: 'white', width: '40px', height: '40px', marginRight:'22px' }} />
                       </Link>
                     </Badge>
-                    <Avatar onClick={handlePhotoClick} src="/images/kitten-3.jpg" style={{ marginRight: '30px', width: '50px', height: '50px', }} />
+                    <Avatar className='avatar' onClick={handlePhotoClick} src="/images/kitten-3.jpg" style={{ marginRight: '20px', width: '38px', height: '38px', }} />
                     <Menu
                       anchorEl={photo}
                       anchorOrigin={{ vertical: "bottom", horizontal: 'center' }}
@@ -146,8 +146,9 @@ export default function RootLayout({ children }) {
                       open={Boolean(photo)}
                       onClose={() => setPhoto(null)}
                     >
-                      <MenuItem><Link href={"/mycamp/plan "}>나의캠핑</Link></MenuItem>
-                      <MenuItem ><Link href={"/mypage"}>마이페이지</Link></MenuItem>
+                      {/* 글로벌 css에 있음 */}
+                      <MenuItem><Link className='nav-menu' href={"/mycamp/plan "}>나의캠핑</Link></MenuItem>
+                      <MenuItem ><Link className='nav-menu' href={"/mypage"}>마이페이지</Link></MenuItem>
                       <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
                     </Menu></>
                 ) : (

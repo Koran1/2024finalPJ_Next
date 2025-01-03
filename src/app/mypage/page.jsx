@@ -8,8 +8,8 @@ function Page() {
     return (
         <Box display='flex'>
             <MyPageList />
-            <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
-                <h2>This is MyPage Main</h2>
+            <Box flexGrow={1} p={2} m={1} sx={{ border: '3px solid lightblue', borderRadius:'10px' }}>
+                <div className='mypage-field'>This is MyPage Main</div>
             </Box>
         </Box>
     );

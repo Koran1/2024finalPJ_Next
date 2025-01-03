@@ -90,9 +90,9 @@ function Page() {
         <Box display='flex'>
             <MyPageList />
             <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
-                <h1>비밀번호 확인</h1>
+                <div className='page-text'>비밀번호 확인</div>
                 <Box>
-                    <TextField type='password' name='userPw'
+                    <TextField  className='pp1' type='password' name='userPw'
                         label='비밀번호'
                         value={uvo.userPw}
                         disabled={isPwChecked}

@@ -154,19 +154,19 @@ export default function ProductSearchPage() {
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
-      <div>
+      <div className='deal-main-nav'>
         <Box>
-          <TextField
+          <TextField className='deal-search-bar'
             variant="outlined"
-            placeholder="검색어를 입력하세요..."
+            placeholder="검색어를 입력하세요"
             value={searchKeyword}
             onChange={handleKeyword}
             sx={{ mb: 2 }}
           />
-          <Button variant='outlined' onClick={handleSearch}>
-            <img src="../images/search_icon.png" alt="Search" className="icon" />
+          <Button style={{ borderRadius:'10px' , backgroundColor:'beige' , height:'56px', width:'50px'}} variant='outlined' onClick={handleSearch}>
+            <div className='search-text'>검색</div>
+            {/* <img style={{height:'50px', width:'50px'}} src="../images/search_icon.png" alt="Search" className="icon" /> */}
           </Button>
-        </Box>
 
 
         {/* 상품 등록 버튼 */}
@@ -175,6 +175,7 @@ export default function ProductSearchPage() {
 
         {/* 나의 거래 버튼 */}
         {isAuthenticated && <Link href={`/deal/management`} className="btn1">나의 거래</Link>}
+        </Box>
       </div>
 
       {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
