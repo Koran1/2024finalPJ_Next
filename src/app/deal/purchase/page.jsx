@@ -4,44 +4,28 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import "./purchase.css";
+import useAuthStore from "../../../../store/authStore";
+import { Box } from "@mui/material";
 
 // 구매 내역 페이지
 
-function Page({ params }) {
+function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+    const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [item, setItem] = useState(null);                 // 데이터 상태
     const [loading, setLoading] = useState(true);           // 로딩 상태
     const [error, setError] = useState(null);               // 에러 상태
 
-
-    const [products, setProducts] = useState([
-        {
-            id: 1,
-            image: "/images/sample1.jpg",
-            name: "상품 1",
-            status: "판매중",
-            price: "10,000원",
-            lastModified: new Date(),
-        },
-        {
-            id: 2,
-            image: "/images/sample2.jpg",
-            name: "상품 2",
-            status: "판매완료",
-            price: "20,000원",
-            lastModified: new Date(),
-        },
-    ]);
+    const { user } = useAuthStore();
 
     useEffect(() => {
+        if (user == null) return;
         const fetchData = async () => {
             try {
                 setLoading(true); // 로딩 시작
                 console.log("Fetching data...");
-                console.log("params:", params);
 
-                const { userIdx } = await Promise.resolve(params);
-                const API_URL = `${LOCAL_API_BASE_URL}/deal/purchase/${userIdx}`;
+                const API_URL = `${LOCAL_API_BASE_URL}/deal/purchase/${user.userIdx}`;
 
                 // 데이터 가져오기
                 const response = await axios.get(API_URL);
@@ -62,7 +46,7 @@ function Page({ params }) {
         };
 
         fetchData();
-    }, [params, LOCAL_API_BASE_URL]);
+    }, [user, LOCAL_API_BASE_URL]);
 
     // State to track active link
     const [activeLink, setActiveLink] = useState('/deal/purchase');
@@ -73,7 +57,8 @@ function Page({ params }) {
     };
 
 
-    // 구매 내역 페이지
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="pd-reg-container">
@@ -110,10 +95,26 @@ function Page({ params }) {
             {/* 구매 정보는 별도의 줄로 배치 */}
             <hr />
             <div className="purchase-info">
-                <div className="part">구매 {products.length}개</div>
+                <div className="part">구매 {item.length}개</div>
+                {item.length > 0 ?
+
+                    item.map((product) => (
+                        <Box key={product.dealIdx}>
+                            <Link href={`/deal/detail/${product.dealIdx}`}>
+                                <img src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"} alt={product.dealTitle} className="product-image2" />
+                                <div >{product.dealSellerNick}</div>
+                                <div >{product.dealTitle}</div>
+                                <div >{product.dealPrice}</div>
+                                <div >{product.dealDescription}</div>
+                            </Link>
+                        </Box>
+                    ))
+                    :
+                    <h2>구매한 상품이 없습니다.</h2>
+                }
             </div>
 
-            
+
         </div>
 
     );
