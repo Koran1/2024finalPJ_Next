@@ -275,12 +275,12 @@ function Page({ params }) {
                 alt="상품 이미지"
                 className="product-image"
               />
-              {item.dealview === 0 && (
+              {/* {item.dealview === 0 && (
                 <div className="inactive-notice">
                   신고로 인해 본 게시물에 대한 게시가 중단되었습니다. 
                   소명이 필요한 경우 아래 고객센터(이메일)로 소명 내용을 보내주시기 바랍니다.
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 
@@ -508,7 +508,7 @@ function Page({ params }) {
           </div>
         )}
 
-        {/* 관리자 수정 버튼 - admin만 볼 수 있음 */}
+        {/* 관리자 수정 버튼 - admin만 볼 수 있음, admin 페이지 생성 시 삭제 */}
         {user?.userIdx === "25" && (
           <div className="edit-button-container">
             <Button

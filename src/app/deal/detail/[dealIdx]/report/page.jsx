@@ -92,12 +92,13 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick }) {
           <h2>신고하기</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
-          <hr />
+        <hr />
         <div className="report-form">
           <div className="form-group">
             <label>작성자</label>
             <span> {user.nickname}</span>
           </div>
+          <hr />
           <div className="form-group">
             <label>신고 사유</label>
             <div className="radio-group">
@@ -116,6 +117,7 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick }) {
               ))}
             </div>
           </div>
+          <hr />
           <div className="form-group">
             <label>상세 내용</label>
             <textarea
