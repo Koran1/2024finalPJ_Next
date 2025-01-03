@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation'
 function Page({ onFavoriteChange }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const [isLiked, setIsLiked] = useState(false);
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isExpired } = useAuthStore();
   const { dealIdx } = useParams();
   const router = useRouter();
 
@@ -34,7 +34,7 @@ function Page({ onFavoriteChange }) {
   }, [checkLikeStatus]);
 
   const handleLike = async () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || isExpired()) {
       alert('로그인이 필요한 서비스입니다.');
       router.push("/user/login");
       return;

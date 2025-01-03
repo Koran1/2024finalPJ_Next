@@ -3,14 +3,22 @@ import './dealMain.css';
 import Link from 'next/link';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 function MainProductCard({ product, favProducts }) {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [isFavorite, setIsFavorite] = useState(false);
-    const { user } = useAuthStore();
+    const { isAuthenticated, user, isExpired } = useAuthStore();
+    const router = useRouter();
 
     const toggleFavorite = (dealIdx) => {
+        if (!isAuthenticated || isExpired()) {
+            alert('로그인이 필요한 서비스입니다.');
+            router.push("/user/login");
+            return;
+        }
+
         if (!isFavorite) {
             const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainfavorite`
             const response = axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`)

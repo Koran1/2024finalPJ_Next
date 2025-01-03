@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from "next/link";
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 
@@ -27,6 +27,8 @@ export default function ProductSearchPage() {
   const { user, isAuthenticated } = useAuthStore();
 
   const [favProducts, setFavProducts] = useState([]);
+
+  const router = useRouter();
 
   // dealMain 로딩
   useEffect(() => {
@@ -81,6 +83,7 @@ export default function ProductSearchPage() {
         setFavProducts(res.data.data)
       })
   }, [user])
+
 
 
   // 로딩 & 에러 처리
@@ -148,7 +151,6 @@ export default function ProductSearchPage() {
   }
 
 
-
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
@@ -212,7 +214,7 @@ export default function ProductSearchPage() {
       <br></br>
       <div className="part">캠핑 후기</div>
 
-    </div>
+    </div >
 
   );
 }
