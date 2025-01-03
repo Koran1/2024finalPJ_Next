@@ -12,20 +12,20 @@ function Page({ region, setRegion, setSelectedSigungu, setSigunguList, setKeywor
         const width = 300;
         const height = 300;
 
-         // Select the SVG element and set its dimensions
+        // Select the SVG element and set its dimensions
         const svg = d3.select(svgRef.current)
             .attr('width', width)
             .attr('height', height);
 
         // Create a tooltip element
         const tooltip = d3.select(tooltipRef.current)
-        .style('position', 'absolute')
-        .style('background', 'white')
-        .style('border', '1px solid black')
-        .style('padding', '5px')
-        .style('border-radius', '5px')
-        .style('visibility', 'hidden');
-        
+            .style('position', 'absolute')
+            .style('background', 'white')
+            .style('border', '1px solid black')
+            .style('padding', '5px')
+            .style('border-radius', '5px')
+            .style('visibility', 'hidden');
+
         // Define a projection and path generator
         const projection = d3.geoMercator()
             .fitSize([width, height], geoData);
@@ -64,7 +64,7 @@ function Page({ region, setRegion, setSelectedSigungu, setSigunguList, setKeywor
                 setRegion(selectedRegion);
                 setSelectedSigungu("");
                 setSigunguList([]);
-                setKeyword(""); 
+                setKeyword("");
             });
     }, [region]);
 

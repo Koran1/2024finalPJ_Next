@@ -8,26 +8,6 @@ import axios from 'axios';
 
 function Page(props) {
 
-
-    // const plans = [
-    //     {
-    //         planIdx: 1,
-    //         date: "12.3~12.5",
-    //         camp: "충암 캠핑장",
-    //         title: "계획제목 1",
-    //         lastUpdated: "마지막 수정 1시간 전",
-    //         image: "",
-    //     },
-    //     {
-    //         planIdx: 2,
-    //         date: "12.14~12.15",
-    //         camp: "백리천 캠핑장",
-    //         title: "계획 제목2",
-    //         lastUpdated: "마지막 수정 5일 전",
-    //         image: "",
-    //     },
-    //     // 나머지 데이터 추가
-    // ];
     const { user } = useAuthStore();
     const userIdx = user?.userIdx;
     const [plans, setPlans] = useState([]);
@@ -54,9 +34,6 @@ function Page(props) {
         fetchData(); // Call the async function
     }, [userIdx]);
 
-    useEffect(() => {
-        console.log('plans:', plans);
-    }, [plans]);
 
     const formatUpdateDate = (updateDateStr) => {
         const updateDate = new Date(updateDateStr);
