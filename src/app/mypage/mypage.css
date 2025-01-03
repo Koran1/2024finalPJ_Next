@@ -1,0 +1,37 @@
+.mypage-title {
+    /* margin-top: 5px; */
+    margin-bottom: 5px;
+    margin-left: 22px;
+    color: #5a5555;
+}
+
+.mypage-field{
+    font-size: 17px;
+}
+
+.mypage-menu-1{
+    font-family: Pretendard Variable, Pretendard, -apple-system, 
+    BlinkMacSystemFont, system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 
+    sans-serif, Helvetica Neue, Apple SD Gothic Neo, Noto Sans KR, Malgun Gothic, 
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+}
+
+.page-text{
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+
+.pp1{
+    width: 300px;
+    margin-right: 10px;
+}
+
+.pp2{
+    width: 333px;
+    margin-right: 10px;
+}
+
+.btn-margin{
+    margin-bottom: 10px;
+}

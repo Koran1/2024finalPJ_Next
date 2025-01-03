@@ -99,11 +99,12 @@ function Page() {
 
     return (
         <div className='container-box' >
+            <div className='logo'>CAMPERS</div>
+            {/* <div className='p1'>Login</div> */}
             <FormControl className='fcontrol'>
                 {/* 수직정렬 */}
                 <Stack direction="column" spacing={1} alignItems='center'>
-                    <Avatar />
-                    <div className='p1'>로그인</div>
+                    {/* <Avatar /> */}
                     <TextField className='textf' type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
                     <TextField className='textf' type='password' label='패스워드' name='userPw' value={uvo.userPw} onChange={changeUvo} />
                     <Button fullWidth variant='contained' disabled={isBtnChk} onClick={goServer}>Sign in</Button>

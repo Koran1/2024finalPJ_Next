@@ -6,6 +6,8 @@ import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { postcodeScriptUrl } from 'react-daum-postcode/lib/loadPostcode';
+import '../mypage.css'
+
 
 function Page() {
 
@@ -86,10 +88,10 @@ function Page() {
         <Box display='flex' >
             <MyPageList />
             <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
-                <h1>회원 정보 수정</h1>
+                <div className='page-text'>회원 정보 수정</div>
                 {!isPwChecked ?
                     <Box>
-                        <TextField type='password' name='userPw'
+                        <TextField className='pp1' type='password' name='userPw'
                             label='비밀번호'
                             value={uvo.userPw}
                             onChange={changeUvo} />
@@ -100,28 +102,28 @@ function Page() {
 
                     :
                     <FormControl>
-                        <Stack direction="column" spacing={2} alignItems='center'>
+                        <Stack direction="column" spacing={2} alignItems='flex-start'>
 
                             <Box>
-                                <TextField type='text' name='userName'
+                                <TextField  className='pp2' type='text' name='userName'
                                     label='이름'
                                     value={uvo.userName}
                                     onChange={changeUvo} />
                             </Box>
                             <Box>
-                                <TextField type='text' name='userNickname'
+                                <TextField  className='pp2' type='text' name='userNickname'
                                     label='닉네임'
                                     value={uvo.userNickname}
                                     onChange={changeUvo} />
                             </Box>
                             <Box>
-                                <TextField type='text' name='userMail'
+                                <TextField className='pp2' type='text' name='userMail'
                                     label='이메일'
                                     value={uvo.userMail}
                                     onChange={changeUvo} />
                             </Box>
                             <Box>
-                                <TextField type='text' name='userPhone'
+                                <TextField className='pp2' type='text' name='userPhone'
                                     label='전화번호'
                                     value={uvo.userPhone}
                                     onChange={changeUvo} />

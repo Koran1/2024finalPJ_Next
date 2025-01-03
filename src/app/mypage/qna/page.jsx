@@ -62,7 +62,7 @@ function Page() {
         <Box display='flex'>
             <MyPageList />
             <Box flexGrow={1} p={2} m={1}>
-                <Button variant="contained" color="primary"
+                <Button className='btn-margin' variant="contained" color="primary"
                     href="/mypage/qna/qnaWrite">QNA 작성</Button>
 
                 <TableContainer component={Paper}>
