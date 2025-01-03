@@ -117,14 +117,9 @@ function Page() {
                 {/* 수직정렬 */}
                 <Stack direction="column" spacing={1} alignItems='center'>
                     <Avatar />
-<<<<<<< Updated upstream
                     <div className='p1'>로그인</div>
                     <TextField className='text-login' type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
                     <TextField className='text-login' type='password' label='패스워드' name='userPw' value={uvo.userPw} onChange={changeUvo} />
-=======
-                    <TextField type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
-                    <TextField type='password' label='패스워드' name='userPw' value={uvo.userPw} onChange={changeUvo} />
->>>>>>> Stashed changes
                     <Button fullWidth variant='contained' disabled={isBtnChk} onClick={goServer}>Sign in</Button>
                 </Stack>
             </FormControl>

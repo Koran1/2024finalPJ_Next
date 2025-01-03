@@ -8,11 +8,8 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import SearchIcon from "@mui/icons-material/Search";
 import ChatBox from "../../../../components/deal/Chat/ChatBox";
 import useAuthStore from "../../../../store/authStore";
-<<<<<<< Updated upstream
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
-=======
->>>>>>> Stashed changes
 
 // Search field style
 const Search = styled("div")(({ theme }) => ({
@@ -64,7 +61,6 @@ function Page() {
         return activeLink === link ? 'active' : '';
     };
 
-<<<<<<< Updated upstream
     const { user } = useAuthStore();
     // 판매자 정보(idx) 가져오기
     const otherUser = useSearchParams().get('seller');
@@ -89,8 +85,6 @@ function Page() {
 
     }, [user]);
 
-=======
->>>>>>> Stashed changes
 
 
     return (
