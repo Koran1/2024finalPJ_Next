@@ -20,7 +20,7 @@ function Page({ params }) {
   const [item, setItem] = useState([]);                 // 데이터 상태
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
-  const { isAuthenticated, token, user } = useAuthStore(); // 로그인 상태
+  const { isAuthenticated, isExpired, user } = useAuthStore(); // 로그인 상태
   const router = useRouter();
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
   const [mainImage, setMainImage] = useState('');
@@ -339,12 +339,16 @@ function Page({ params }) {
               <div className="action-buttons">
                 <div
                   onClick={() => {
-                    if (!isAuthenticated) {
+                    if (!isAuthenticated || isExpired()) {
                       alert('로그인이 필요한 서비스입니다.');
                       router.push('/user/login');
                       return;
                     }
-                    router.push('/deal/message');
+                    if (user.userIdx != item.dealSellerUserIdx) {
+                      router.push(`/deal/message?seller=${item.dealSellerUserIdx}&dealIdx=${item.dealIdx}`);
+                    } else {
+                      router.push(`/deal/message`)
+                    }
                   }}
                   style={{
                     display: 'flex',

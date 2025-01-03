@@ -61,7 +61,6 @@ function Page() {
                 const data = response.data;
                 if (data.success) {
                     console.log(data);
-                    alert(data.message);
                     const user = {
                         userIdx: data.data.userIdx,
                         nickname: data.data.userNickname

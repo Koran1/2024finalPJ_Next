@@ -10,8 +10,8 @@
   visibility: hidden;
   transition: 0.1s;
   position: absolute;
-  left: 0;
-  top: 30px;
+  left: -85px;
+  top: 35px;
 }
 
 .right-replay-box:hover .hover-caption {
@@ -21,5 +21,4 @@
 
 [dir=rtl] .right-replay-box .hover-caption {
   right: auto;
-  left: 0;
 }

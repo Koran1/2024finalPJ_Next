@@ -5,13 +5,6 @@
   font-size: 130%;
 }
 
-.pd-reg-container div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  /* 버튼 간의 간격 */
-}
-
 .btn1 {
   color: #767474;
   font-size: 20px;

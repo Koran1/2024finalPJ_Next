@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-
+    if (!user) return;
     const protectedRoutes = [
       // deal 관련 페이지
       "/deal/interest", "/deal/management", "/deal/purchase", "/deal/rating", "/deal/report", "/deal/update", "/deal/write",
@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
     const isProtectedRoute = protectedRoutes.includes(pathname);
 
     if (isProtectedRoute) {
-      if (isExpired() || !isAuthenticated || !user) {
+      if (isExpired() || !isAuthenticated) {
         alert("로그인이 필요한 서비스입니다.");
         logout();
         router.push("/user/login");
@@ -45,6 +45,7 @@ export default function RootLayout({ children }) {
   const handleLogout = () => {
     // zustand에 있는 함수 호출
     logout();
+    router.push('/')
     alert("로그아웃 되었습니다");
   }
 

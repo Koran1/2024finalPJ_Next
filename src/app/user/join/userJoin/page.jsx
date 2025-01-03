@@ -106,7 +106,6 @@ function Page(props) {
             setNickPass(false)
             setNickHelper("");
             checkDuplicate(name, value);
-
         }
         if (name === "userPhone") {
             setPhonePass(false)

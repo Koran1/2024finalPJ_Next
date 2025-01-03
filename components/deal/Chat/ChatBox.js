@@ -6,7 +6,6 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
@@ -16,15 +15,21 @@ import { io } from "socket.io-client";
 import useAuthStore from "../../../store/authStore";
 import { useRouter } from "next/navigation";
 import './chat.css';
+import axios from "axios";
+import Link from "next/link";
+import ReportModal from "@/app/deal/detail/[dealIdx]/report/page";
+import SatisfactionModal from "@/app/deal/detail/[dealIdx]/satisfaction/page";
 
-const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
-
+const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+  const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const socketRef = useRef();
   const router = useRouter();
   const { user, token, isExpired, isAuthenticated } = useAuthStore();
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [product, setProduct] = useState([]);
+  const [img, setImg] = useState("");
 
   useEffect(() => {
     if (!user || !token) {
@@ -65,6 +70,20 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
     };
   }, [room, user, token]);
 
+  // deal 정보 가져오기
+  useEffect(() => {
+    if (!dealIdx) return;
+    axios.get(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`)
+      .then((res) => {
+        console.log(res.data.data);
+        setProduct(res.data.data.deal);
+        setImg(res.data.data.files[0].fileName)
+      })
+      .catch((err) => console.log(err));
+
+    checkSatisfactionRating();
+  }, [dealIdx]);
+
   // 채팅 파트
   const [chat, setChat] = useState([]);
   const [message, setMessage] = useState("");
@@ -77,6 +96,57 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
       socketRef.current.emit("send_message", input);
     }
     setMessage("");
+  }
+
+  // 채팅 신고
+  const handleReportChat = () => {
+    alert("신고하기")
+  }
+
+  // 판매 완료
+  const handleSold = () => {
+    if (confirm("정말 판매 완료 처리하시겠습니까?")) {
+      const formData = new FormData();
+      formData.append("dealIdx", dealIdx);
+      formData.append("senderIdx", senderIdx);
+      formData.append("senderNick", senderNick);
+
+      axios.put(`${LOCAL_API_BASE_URL}/deal/status`, formData)
+        .then((res) => {
+          console.log(res.data)
+          window.location.reload();
+        })
+        .catch((err) => console.log(err));
+    }
+  }
+
+  const [hasSatisfactionRating, setHasSatisfactionRating] = useState(false);
+  const [isSatisfactionModalOpen, setIsSatisfactionModalOpen] = useState(false);
+
+  // 만족도 등록 여부 확인 함수
+  const checkSatisfactionRating = async () => {
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction/${dealIdx}`, {
+        params: {
+          userIdx: user?.userIdx
+        }
+      });
+      setHasSatisfactionRating(response.data.exists);
+    } catch (error) {
+      console.error('만족도 확인 실패:', error);
+    }
+  };
+
+  // 만족도 모달 닫힐 때 만족도 상태 다시 확인
+  const handleSatisfactionModalClose = () => {
+    setIsSatisfactionModalOpen(false);
+    checkSatisfactionRating(); // 모달이 닫힐 때 만족도 등록 여부 다시 확인
+  };
+
+  // 후기 작성
+  const handleSatisfaction = () => {
+    alert("후기 작성")
+
   }
 
   if (loading) {
@@ -105,34 +175,76 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
         }}
         className="for-dark-chat-header"
       >
+        {/* 상품 정보 표기 */}
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
+            alignContent: "center",
             justifyContent: "space-between",
           }}
         >
-          <Avatar src="/images/tree-2.jpg" />
-          <Box className="ml-1" style={{ marginLeft: "10px" }}>
+          <Link href={`/deal/detail/${dealIdx}`}>
+            <img src={`${LOCAL_IMG_URL}/deal/${img}` || "default-product-image.jpg"} alt="product"
+              width="80px" height="80px" />
+          </Link>
+          <Box className="ml-1" style={{ marginLeft: "10px" }} justifyContent="space-between">
             <Typography as="h5" fontWeight="500">
-              {senderNick}
+              상품명 : {product.dealTitle}
             </Typography>
             <Typography fontSize="12px" position="relative">
               <span className="active-status2 successBgColor"></span>
-              ★★★★★ ({senderSatisScore}) - 작업중
+              등록일 : {product.dealRegDate}
             </Typography>
+            {product.deal02 ?
+              <>
+                <Box>
+                  {product.deal02}
+                </Box>
+                {
+                  user.nickname != product.dealSellerNick &&
+                  <Button
+                    variant="contained"
+                    color="success"
+                    className="satisfaction-button"
+                    onClick={() => setIsSatisfactionModalOpen(true)}
+                    disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
+                  >
+                    {hasSatisfactionRating ? '후기 등록 완료' : '후기 등록하기'}
+                  </Button>
+                }
+              </>
+              :
+              <>
+                <Button variant="outlined" onClick={handleSold}>판매중</Button>
+              </>
+            }
+
           </Box>
         </Box>
 
-        <Box>
-          <IconButton
-            size="small"
-            sx={{ background: "#F2F6F8" }}
-            className="ml-5px for-dark-button"
-          >
-            <MoreVertIcon />
-          </IconButton>
+        <Box className="ml-1">
+          <div className="right-replay-box">
+            <IconButton size="small">
+              <MoreVertIcon sx={{ fontSize: "28px" }} />
+            </IconButton>
+
+            <div className="hover-caption">
+              <List sx={{ display: "inline" }}>
+                <ListItem disablePadding>
+                  <ListItemButton sx={{ padding: "1px 15px" }} onClick={handleReportChat}>
+                    <img src="/siren-siren-svgrepo-com.svg"
+                      width="20px" height="20px" style={{ marginTop: "-4px" }} />
+                    <ListItemText
+                      primary="&nbsp;신고하기"
+                      sx={{ whiteSpace: 'nowrap' }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </div>
+          </div>
         </Box>
+
       </Box>
 
       {/* Chat List */}
@@ -223,36 +335,10 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
                     >
                       {chat.chatMessage}
                     </Typography>
-
                     <Typography fontSize="12px">{chat.chatTime}</Typography>
                   </Box>
 
-                  {/* Replay Dropdown */}
-                  <Box className="ml-1">
-                    <div className="right-replay-box">
-                      <IconButton size="small">
-                        <MoreVertIcon fontSize="small" />
-                      </IconButton>
 
-                      <div className="hover-caption">
-                        <List sx={{ display: "inline" }}>
-                          <ListItem disablePadding>
-                            <ListItemButton sx={{ padding: "1px 15px" }}>
-                              <ReportProblemIcon
-                                fontSize="small"
-                                sx={{ mt: "-4px" }}
-                                className="mr-5px"
-                              />
-                              <ListItemText
-                                primary="신고"
-                                primaryTypographyProps={{ fontSize: "12px" }}
-                              />
-                            </ListItemButton>
-                          </ListItem>
-                        </List>
-                      </div>
-                    </div>
-                  </Box>
                 </Box>
               </Box>
             );
@@ -315,6 +401,17 @@ const ChatBox = ({ room, senderIdx, senderNick, senderSatisScore }) => {
           </Button>
         </Box>
       </Box>
+      {/* <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        dealTitle={item.dealTitle}
+        sellerNick={item.dealSellerNick}
+      /> */}
+      <SatisfactionModal
+        isOpen={isSatisfactionModalOpen}
+        onClose={handleSatisfactionModalClose}
+        dealIdx={dealIdx}
+      />
     </Box >
   );
 };
