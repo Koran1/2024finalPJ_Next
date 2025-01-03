@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { useDaumPostcodePopup } from 'react-daum-postcode';
 import { postcodeScriptUrl } from 'react-daum-postcode/lib/loadPostcode';
+import './join.css'
 
 function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -271,14 +272,14 @@ function Page() {
 
 
     return (
-        <div>
-            <h2>최초 Kakao 로그인 시 회원가입을 위해 아래 정보를 입력해주세요</h2>
-            <h4>전화번호로 기존 회원 정보를 확인하실 수 있습니다</h4>
-            <FormControl>
-                <Stack direction="column" spacing={1} alignItems='center'>
-                    <Avatar />
-
-                    <TextField error={idError || uvo.userId && !idPass} type='text' label='아이디'
+        <div className='container-box'>
+            <div className='p1'>최초 Kakao 로그인 시 회원가입을 위해 아래 정보를 입력해주세요</div>
+            <div className='p2'>전화번호로 기존 회원 정보를 확인하실 수 있습니다</div>
+                    <hr />
+                    <p/>
+            <FormControl >
+                <Stack direction="column" spacing={1} alignItems='flex-start'>
+                    <TextField className='textf' error={idError || uvo.userId && !idPass} type='text' label='아이디'
                         name='userId' value={uvo.userId} onChange={changeUvo}
                         disabled={!disableUpdate}
                         placeholder='대소문자와 숫자로 구성 4~15자'
@@ -286,7 +287,7 @@ function Page() {
                             : idHelper ? idHelper : "중복검사 중..."
                         } />
 
-                    <TextField error={uvo.userPhone && !phonePass || phoneError} type='text' label='전화번호'
+                    <TextField className='textf' error={uvo.userPhone && !phonePass || phoneError} type='text' label='전화번호'
                         name='userPhone' value={uvo.userPhone}
                         helperText={
                             !uvo.userPhone ? "" : phoneError ? "올바르지 못한 전화번호입니다"
@@ -296,7 +297,7 @@ function Page() {
                             기존 회원 정보 연동하기</Button>
                     }
 
-                    <TextField error={pwError} type='password' label='패스워드'
+                    <TextField className='textf' error={pwError} type='password' label='패스워드'
                         name='userPw' value={uvo.userPw} onChange={changeUvo}
                         disabled={!disableUpdate}
                         placeholder='특수, 대소문자 1개씩 포함, 공백 불가, 6~15자'
@@ -304,7 +305,7 @@ function Page() {
                             "사용 가능한 비밀번호 입니다!"
                         } />
 
-                    <TextField type='text' label='이 름'
+                    <TextField  type='text' label='이 름'
                         value={socialData.socialName}
                         disabled
                     />
@@ -316,7 +317,7 @@ function Page() {
                         helperText={uvo.userNickname && (nickHelper ? nickHelper : "중복검사 중...")} onChange={changeUvo} />
 
                     <Box>
-                        <TextField
+                        <TextField className='textf1' 
                             type='text' label='이메일'
                             value={socialData.socialEmail && (socialData.socialEmail.slice(0, 4).concat('****')
                                 .concat(socialData.socialEmail.slice(socialData.socialEmail.indexOf('@'))))}
@@ -326,15 +327,15 @@ function Page() {
                     </Box>
 
                     <Box>
-                        <TextField type='text' label='인증번호 확인'
+                        <TextField className='textf1' type='text' label='인증번호 확인'
                             disabled={!mailNum} name="chkMailNum" value={chkMailNum}
                             onChange={(e) => setChkMailNum(e.target.value)} />
                         <Button disabled={!mailNum} variant='contained'
                             sx={{ ml: 2 }} onClick={handleMailChk}>인증번호 확인</Button>
                     </Box>
 
-                    <Box>
-                        <TextField type='text' label='주 소' name='userAddr'
+                    <Box >
+                        <TextField className='textf1' type='text' label='주 소' name='userAddr'
                             disabled={!disableUpdate}
                             value={uvo.userAddr} onChange={changeUvo} />
                         <Button variant='contained'
