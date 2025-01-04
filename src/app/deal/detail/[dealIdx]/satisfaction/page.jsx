@@ -95,13 +95,15 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
         dealSatisBuyerUserIdx: user.userIdx,
         dealSatisBuyerNick: user.nickname,
         dealSatisBuyerContent: content,
-        dealSatisSellerScore: rating
+        dealSatisSellerScore: rating,
+        dealSatis01: dealIdx,
       };
 
       const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/satisfaction`, satisfactionData);
 
       if (response.data.success) {
         alert('만족도 평가가 등록되었습니다.');
+        window.location.reload();
         onClose();
       } else {
         alert(response.data.message || '만족도 평가 등록에 실패했습니다.');
@@ -150,7 +152,7 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
               onChange={(event, newValue) => {
                 setRating(newValue);
               }}
-              sx={{ 
+              sx={{
                 fontSize: '2.4rem',
                 '& .MuiRating-iconFilled': {
                   color: '#FFD700 !important'

@@ -131,15 +131,19 @@ function Page() {
                                     {
                                         chatList
                                             .sort((a, b) => {
-                                                const isAOtherUser = a.userIdx === otherUser;
-                                                const isBOtherUser = b.userIdx === otherUser;
+                                                const isAOtherUser = a.userIdx === otherUser && a.dealIdx === dealIdx;
+                                                const isBOtherUser = b.userIdx === otherUser && b.dealIdx === dealIdx;
 
                                                 if (isAOtherUser && !isBOtherUser) return -1;   // a가 상대방이면 a를 먼저
                                                 if (!isAOtherUser && isBOtherUser) return 1;    // b가 상대방이면 b를 먼저
 
                                                 // 둘 다 아닌 경우
-                                                const aChatTime = recentChat.find((rec) => rec.chatRoom === a.chatRoom).chatTime;
-                                                const bChatTime = recentChat.find((rec) => rec.chatRoom === b.chatRoom).chatTime;
+                                                const aRecentChat = recentChat.find((rec) => rec.chatRoom === a.chatRoom);
+                                                const bRecentChat = recentChat.find((rec) => rec.chatRoom === b.chatRoom);
+
+                                                const aChatTime = aRecentChat?.chatTime || 0;
+                                                const bChatTime = bRecentChat?.chatTime || 0;
+
                                                 return new Date(bChatTime) - new Date(aChatTime);
                                             })
                                             .map((chat) => {
@@ -187,26 +191,21 @@ function Page() {
                                                                         mb="5px"
                                                                     >
                                                                         {/* // 여기에 보낸 사람 이름 */}
-                                                                        {userList.map((user) => {
-                                                                            if (chat.userIdx === user.userIdx) {
-                                                                                return user.userNickname
-                                                                            }
-                                                                        })}
+                                                                        {userList.find((user) => chat.userIdx === user.userIdx).userNickname}
                                                                     </Typography>
 
                                                                     {/* // 여기에 메세지 가장 최근 내용 */}
                                                                     <Typography fontSize="12px">
-                                                                        {recentChat.map((rec) => {
-                                                                            if (rec.chatRoom === chat.chatRoom) {
+                                                                        {(() => {
+                                                                            const rec = recentChat.find((rec) => rec.chatRoom === chat.chatRoom);
+                                                                            if (rec) {
                                                                                 const msg = rec.chatMessage;
-                                                                                if (msg) {
-                                                                                    return msg.length > 15 ? msg.substring(0, 15) + '...' : msg;
-                                                                                } else {
-                                                                                    return '첫 대화를 시작해보세요!'
-                                                                                }
+                                                                                return msg ? (msg.length > 15 ? msg.substring(0, 15) + '...' : msg) : "...";
                                                                             }
-                                                                        })}
+                                                                            return
+                                                                        })()}
                                                                     </Typography>
+
                                                                 </Box>
                                                             </Box>
 

@@ -78,10 +78,10 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
         console.log(res.data.data);
         setProduct(res.data.data.deal);
         setImg(res.data.data.files[0].fileName)
+        checkSatisfactionRating();
       })
       .catch((err) => console.log(err));
 
-    checkSatisfactionRating();
   }, [dealIdx]);
 
   // 채팅 파트
@@ -124,17 +124,13 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
   const [isSatisfactionModalOpen, setIsSatisfactionModalOpen] = useState(false);
 
   // 만족도 등록 여부 확인 함수
-  const checkSatisfactionRating = async () => {
-    try {
-      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction/${dealIdx}`, {
-        params: {
-          userIdx: user?.userIdx
-        }
-      });
-      setHasSatisfactionRating(response.data.exists);
-    } catch (error) {
-      console.error('만족도 확인 실패:', error);
-    }
+  const checkSatisfactionRating = () => {
+    console.log('checkSatisfactionRating');
+    axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction?dealIdx=${dealIdx}`)
+      .then((res) => {
+        setHasSatisfactionRating(res.data.data);
+      })
+      .catch((err) => console.log(err));
   };
 
   // 만족도 모달 닫힐 때 만족도 상태 다시 확인
@@ -142,12 +138,6 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
     setIsSatisfactionModalOpen(false);
     checkSatisfactionRating(); // 모달이 닫힐 때 만족도 등록 여부 다시 확인
   };
-
-  // 후기 작성
-  const handleSatisfaction = () => {
-    alert("후기 작성")
-
-  }
 
   if (loading) {
     return <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
@@ -201,7 +191,7 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
                   {product.deal02}
                 </Box>
                 {
-                  user.nickname != product.dealSellerNick &&
+                  senderIdx == product.dealSellerUserIdx &&
                   <Button
                     variant="contained"
                     color="success"
@@ -215,7 +205,13 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
               </>
               :
               <>
-                <Button variant="outlined" onClick={handleSold}>판매중</Button>
+                {
+                  senderIdx != product.dealSellerUserIdx
+                    ?
+                    <Button variant="outlined" onClick={handleSold}>판매중</Button>
+                    :
+                    <Button variant="contained" disabled>판매중</Button>
+                }
               </>
             }
 

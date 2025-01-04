@@ -118,16 +118,12 @@ function Page({ params }) {
 
   // 만족도 등록 여부 확인 함수
   const checkSatisfactionRating = async () => {
-    try {
-      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction/${dealIdx}`, {
-        params: {
-          userIdx: user?.userIdx
-        }
-      });
-      setHasSatisfactionRating(response.data.exists);
-    } catch (error) {
-      console.error('만족도 확인 실패:', error);
-    }
+    await axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction?dealIdx=${dealIdx}`)
+      .then((res) => {
+        console.log(res.data);
+        setHasSatisfactionRating(res.data.data);
+      })
+      .catch((err) => console.log(err));
   };
 
   // 판매자의 다른 상품 조회 함수

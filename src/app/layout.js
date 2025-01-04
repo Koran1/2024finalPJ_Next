@@ -109,13 +109,23 @@ export default function RootLayout({ children }) {
       .catch((err) => console.log(err))
   });
 
+  if (pathname.startsWith("/admin")) {
+    return (
+      <html lang="en">
+        <body>
+          {children}
+        </body>
+      </html>
+    )
+  }
+
   return (
     <html lang="en">
       <body>
         <header data-bs-theme="dark" style={{ height: '38px' }}>
           <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark" >
             <div className="container-fluid">
-              <a className="navbar-brand" href="/" style={{ fontSize: '200%', fontFamily: "'Jaro', sans-serif", marginRight: '50px', marginLeft: '20px', marginBottom:'4px' }}>CAMPERS</a>
+              <a className="navbar-brand" href="/" style={{ fontSize: '200%', fontFamily: "'Jaro', sans-serif", marginRight: '50px', marginLeft: '20px', marginBottom: '4px' }}>CAMPERS</a>
               <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" >
                 <span className="navbar-toggler-icon"></span>
               </button>
@@ -133,9 +143,9 @@ export default function RootLayout({ children }) {
                 </ul>
                 {isAuthenticated ? (
                   <>
-                    <Badge badgeContent={unReadMessages} color="primary" >
+                    <Badge badgeContent={unReadMessages} color="primary" sx={{ marginRight: '22px' }} >
                       <Link href='/deal/message'>
-                        <MailOutline style={{ color: 'white', width: '40px', height: '40px', marginRight:'22px' }} />
+                        <MailOutline style={{ color: 'white', width: '40px', height: '40px' }} />
                       </Link>
                     </Badge>
                     <Avatar className='avatar' onClick={handlePhotoClick} src="/images/kitten-3.jpg" style={{ marginRight: '20px', width: '38px', height: '38px', }} />

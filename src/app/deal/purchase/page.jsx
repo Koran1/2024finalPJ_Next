@@ -5,7 +5,7 @@ import axios from "axios";
 import Link from "next/link";
 import "./purchase.css";
 import useAuthStore from "../../../../store/authStore";
-import { Box } from "@mui/material";
+import { Box, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 
 // 구매 내역 페이지
 
@@ -96,22 +96,42 @@ function Page() {
             <hr />
             <div className="purchase-info">
                 <div className="part">구매 {item.length}개</div>
-                {item.length > 0 ?
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>구매 상품</TableCell>
+                            <TableCell>상품명</TableCell>
+                            <TableCell>판매자 명</TableCell>
+                            <TableCell>상품 가격</TableCell>
+                            <TableCell>상품 설명</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {item.length > 0 ?
 
-                    item.map((product) => (
-                        <Box key={product.dealIdx}>
-                            <Link href={`/deal/detail/${product.dealIdx}`}>
-                                <img src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"} alt={product.dealTitle} className="product-image2" />
-                                <div >{product.dealSellerNick}</div>
-                                <div >{product.dealTitle}</div>
-                                <div >{product.dealPrice}</div>
-                                <div >{product.dealDescription}</div>
-                            </Link>
-                        </Box>
-                    ))
-                    :
-                    <h2>구매한 상품이 없습니다.</h2>
-                }
+                            item.map((product) => (
+                                <TableRow key={product.dealIdx}>
+                                    <TableCell>
+                                        <Link href={`/deal/detail/${product.dealIdx}`}>
+                                            <img src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"} alt={product.dealTitle} width="150px" height="150px" />
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell >{product.dealTitle}</TableCell>
+                                    <TableCell>{product.dealSellerNick}</TableCell>
+                                    <TableCell >{product.dealPrice}</TableCell>
+                                    <TableCell >{product.dealDescription}</TableCell>
+                                </TableRow>
+                            ))
+                            :
+                            <TableRow>
+                                <TableCell colSpan={5}>
+                                    구매한 상품이 없습니다.
+                                </TableCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+
             </div>
 
 
