@@ -91,19 +91,25 @@ function Page() {
         }
     };
 
-
     // 데이터 로드
     useEffect(() => {
         getMyBookList();
     }, [userIdx]);
 
-
     // 다가오는 예약
     const upcomingReservations = (mybookList || [])
-        .filter((reservation) => new Date(reservation.bookCheckOutDate) > new Date())
-        .sort(
-            (a, b) => new Date(a.bookCheckInDate) - new Date(b.bookCheckInDate) // bookCheckInDate 오름차순 정렬
-        );
+        .filter((reservation) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // 시간 제거
+            const checkOutDate = new Date(reservation.bookCheckOutDate);
+            checkOutDate.setHours(0, 0, 0, 0); // 시간 제거
+            return checkOutDate >= today; // 체크아웃 날짜가 오늘 이후 또는 오늘인 경우
+        })
+        .sort((a, b) => {
+            const checkInDateA = new Date(a.bookCheckInDate);
+            const checkInDateB = new Date(b.bookCheckInDate);
+            return checkInDateA - checkInDateB; // bookCheckInDate 오름차순 정렬
+        });
 
     // 다가오는 예약 슬라이더 데이터 생성
     const slides = upcomingReservations.map((reservation) => {
@@ -156,18 +162,27 @@ function Page() {
 
     // 지난 예약 필터링 및 정렬
     const pastReservations = (mybookList || [])
-        .filter((reservation) => new Date(reservation.bookCheckOutDate) <= new Date())
+        .filter((reservation) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // 시간 제거
+            const checkOutDate = new Date(reservation.bookCheckOutDate);
+            checkOutDate.setHours(0, 0, 0, 0); // 시간 제거
+            return checkOutDate < today; // 체크아웃 날짜가 오늘 이전인 경우
+        })
         .map((reservation) => {
             const checkInDate = new Date(reservation.bookCheckInDate);
             const checkOutDate = new Date(reservation.bookCheckOutDate);
             const differenceInTime = checkOutDate - checkInDate;
             const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+            // 당일 예약 계산
+            const isSameDay = checkInDate.toDateString() === checkOutDate.toDateString();
             const { siteKor, site } = getZoneDetails(reservation.bookSelectedZone);
 
             // 년, 월, 일 계산
             const years = Math.floor(differenceInDays / 365);
             const months = Math.floor((differenceInDays % 365) / 30);
-            const days = (differenceInDays % 365) % 30;
+            // const days = (differenceInDays % 365) % 30;
+            const days = isSameDay ? 1 : (differenceInDays % 365) % 30;
 
             return {
                 ...reservation,
@@ -185,29 +200,32 @@ function Page() {
             (a, b) => new Date(b.bookCheckInDate) - new Date(a.bookCheckInDate)
         );
 
-    // const pastReservations = (mybookList || [])
-    // .filter((reservation) => {
-    //     const checkOutDate = new Date(reservation.bookCheckOutDate);
-    //     const currentDate = new Date();
-    //     console.log("CheckOutDate:", checkOutDate, "CurrentDate:", currentDate);
+    // 아래 pastReservations 주석 코드는 날짜 변환이 실패한 경우를 처리하는 코드가 포함되어 있어 주석 해뒀음
+    /*
+    const pastReservations = (mybookList || [])
+    .filter((reservation) => {
+        const checkOutDate = new Date(reservation.bookCheckOutDate);
+        const currentDate = new Date();
+        console.log("CheckOutDate:", checkOutDate, "CurrentDate:", currentDate);
 
-    //     // 날짜 변환이 실패한 경우 처리
-    //     if (isNaN(checkOutDate.getTime())) {
-    //         console.error("Invalid Date:", reservation.bookCheckOutDate);
-    //         return false;
-    //     }
+        // 날짜 변환이 실패한 경우 처리
+        if (isNaN(checkOutDate.getTime())) {
+            console.error("Invalid Date:", reservation.bookCheckOutDate);
+            return false;
+        }
 
-    //     return checkOutDate <= currentDate;
-    // })
-    // .map((reservation) => ({
-    //     ...reservation,
-    //     guests: (reservation.bookAdultCount || 0) +
-    //             (reservation.bookYouthCount || 0) +
-    //             (reservation.bookChildCount || 0),
-    // }))
-    // .sort(
-    //     (a, b) => new Date(b.bookCheckOutDate) - new Date(a.bookCheckOutDate)
-    // );
+        return checkOutDate <= currentDate;
+    })
+    .map((reservation) => ({
+        ...reservation,
+        guests: (reservation.bookAdultCount || 0) +
+                (reservation.bookYouthCount || 0) +
+                (reservation.bookChildCount || 0),
+    }))
+    .sort(
+        (a, b) => new Date(b.bookCheckOutDate) - new Date(a.bookCheckOutDate)
+    );
+    */
 
     // 스크롤 관련
     const handleScroll = () => {
