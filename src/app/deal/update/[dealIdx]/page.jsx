@@ -96,7 +96,7 @@ function Page() {
         if (data.data.files && Array.isArray(data.data.files)) {
           const initialImgs = data.data.files.slice(0, 5).map(file => ({
             file: null,
-            preview: file.fileName ? `${LOCAL_IMG_URL}/${file.fileName}` : null
+            preview: file.fileName ? `${LOCAL_IMG_URL}/deal/${file.fileName}` : null
           }));
           setImages(initialImgs);
           setInitialImages(initialImgs);

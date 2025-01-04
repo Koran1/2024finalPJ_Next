@@ -35,6 +35,8 @@ function Page({ params }) {
   const [sellerOtherFiles, setSellerOtherFiles] = useState([]);
   const [sellerScore, setSellerScore] = useState(0);
   const [sellerSatisfactions, setSellerSatisfactions] = useState([]);
+  const [favoriteStates, setFavoriteStates] = useState({});
+
 
   // isSellerUser를 여기서 먼저 선언
   const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
@@ -186,6 +188,65 @@ function Page({ params }) {
     fetchSellerSatisfactions();
   }, [item?.dealSellerUserIdx]);
 
+  // useEffect 추가
+  useEffect(() => {
+    if (user?.userIdx) {
+      // 각 상품의 찜 상태 초기화
+      const initFavorites = {};
+      sellerOtherDeals.forEach(deal => {
+        initFavorites[deal.dealIdx] = false;
+      });
+      setFavoriteStates(initFavorites);
+
+      // 찜 상태 확인
+      sellerOtherDeals.forEach(async (deal) => {
+        try {
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
+            params: {
+              userIdx: user.userIdx,
+              dealIdx: deal.dealIdx
+            }
+          });
+          setFavoriteStates(prev => ({
+            ...prev,
+            [deal.dealIdx]: response.data.data
+          }));
+        } catch (error) {
+          console.error("Failed to fetch like status:", error);
+        }
+      });
+    }
+  }, [sellerOtherDeals, user?.userIdx]);
+
+  // 찜하기 토글 함수 추가
+  const toggleFavorite = async (dealIdx) => {
+    if (!isAuthenticated || isExpired()) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.push("/user/login");
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like`, {
+        params: {
+          userIdx: user.userIdx,
+          dealIdx: dealIdx,
+          isLiked: String(favoriteStates[dealIdx])
+        }
+      });
+
+      if (response.data.success) {
+        setFavoriteStates(prev => ({
+          ...prev,
+          [dealIdx]: !prev[dealIdx]
+        }));
+      }
+    } catch (error) {
+      console.error("Like toggle error:", error);
+      alert('찜 처리 중 오류가 발생했습니다.');
+    }
+  };
+
   // item이 null일 경우 처리 추가
   if (!item) {
     return (
@@ -272,12 +333,6 @@ function Page({ params }) {
                 alt="상품 이미지"
                 className="product-image"
               />
-              {item.dealview === 0 && (
-                <div className="inactive-notice">
-                  신고로 인해 본 게시물에 대한 게시가 중단되었습니다.
-                  소명이 필요한 경우 아래 고객센터(이메일)로 소명 내용을 보내주시기 바랍니다.
-                </div>
-              )}
             </div>
           </div>
 
@@ -489,6 +544,16 @@ function Page({ params }) {
             </div>
           </div>
         </div>
+
+        {/* 비활성화 알림 위치 변경 */}
+        {item.dealview === 0 && user?.userIdx === item.dealSellerUserIdx && (
+          <div className="inactive-notice2">
+            <p>신고로 인해 본 게시물에 대한 게시가 중단되었습니다.</p>
+            <p>소명이 필요한 경우 아래 고객센터로 소명 내용을 보내주시기 바랍니다.</p>
+            <p className="email">이메일: ICT5@service.com</p>
+          </div>
+        )}
+
         <div className="product-description">
           <h5>상품 설명</h5>
           <div className="deal-description">
@@ -531,6 +596,16 @@ function Page({ params }) {
               const file = sellerOtherFiles[index];
               return (
                 <div key={deal.dealIdx} className="product-item">
+                        <div className="heart-icon" onClick={(e) => {
+                    e.preventDefault();
+                    toggleFavorite(deal.dealIdx);
+                  }}>
+                    {favoriteStates[deal.dealIdx] ? (
+                      <span className="filled-heart">❤️</span>
+                    ) : (
+                      <span className="empty-heart">🤍</span>
+                    )}
+                  </div>
                   <Link href={`/deal/detail/${deal.dealIdx}`}>
                     <img
                       src={file?.fileName ? `${LOCAL_IMG_URL}/deal/${file.fileName}` : '/default-product-image.jpg'}

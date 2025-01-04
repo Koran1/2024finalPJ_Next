@@ -244,9 +244,11 @@
 }
 
 .seller-products .product-item {
+  position: relative;
   width: calc((1200px - 100px) / 6);
   box-sizing: border-box;
   margin-bottom: 10px;
+  transition: transform 0.2s ease-in-out;
 }
 
 .seller-products .product-item a {
@@ -266,6 +268,15 @@
   font-size: 17px;
   font-weight: bold;
   color: #525050;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;  /* 최대 2줄 */
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  line-height: 1.2em;
+  height: 2.4em;  /* line-height * 2 */
+  margin-bottom: 5px;  /* 제목과 가격 사이 간격 */
 }
 
 .seller-products .price {
@@ -283,6 +294,8 @@
 }
 
 .seller-products .product-content {
+  width: 100%;  /* 내용이 컨테이너 너비에 맞게 */
+  min-height: 80px;  /* 내용 영역 최소 높이 설정 */
   padding: 8px;
   text-align: left;
 }
@@ -299,6 +312,29 @@
   transform: translateY(-5px);
 }
 
+.seller-products .heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.seller-products .heart-icon:hover {
+  transform: scale(1.1);
+}
+
+.seller-products .filled-heart,
+.seller-products .empty-heart {
+  font-size: 1.2rem;
+  line-height: 1;
+}
 
 /* 상품 상세 정보 스타일 */
 .product-details li span:first-child {
@@ -390,6 +426,14 @@
   font-size: 24px;
   font-weight: 700;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;  /* 최대 2줄 */
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+  line-height: 1.2em;
+  max-height: 2.4em;  /* line-height * 2 */
 }
 
 .title-favorite-container h2:hover {
@@ -491,14 +535,25 @@
   font-weight: 500;  /* 값 텍스트는 medium 굵기 */
 }
 
-.inactive-notice {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(255, 0, 0, 0.8);
-  color: white;
-  padding: 10px;
+.inactive-notice2 {
+  position: relative;
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 20px;
+  margin: 30px 0;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.5;
   text-align: center;
-  font-size: 14px;
+  border: 1px solid #ef9a9a;
+  width: 100%;
+}
+
+.inactive-notice p {
+  margin: 5px 0;
+}
+
+.inactive-notice .email {
+  font-weight: bold;
+  margin-top: 10px;
 }

@@ -47,8 +47,24 @@ function MainProductCard({ product, favProducts }) {
         })
     }, [favProducts])
 
+    // dealview 상태에 따른 표시 여부 확인
+    const shouldShowProduct = () => {
+        return product.dealview === 1 || 
+               (product.dealview === 0 && user?.userIdx === product.dealSellerUserIdx);
+    };
+
+    // 상품을 표시하지 않아야 할 경우 null 반환
+    if (!shouldShowProduct()) {
+        return null;
+    }
+
     return (
         <div className="product-item" key={product.dealIdx}>
+            {product.dealview === 0 && (
+                <div className="inactive-notice">
+                    Disabled
+                </div>
+            )}
             <div className="heart-icon" onClick={() => toggleFavorite(product.dealIdx)}>
                 {isFavorite ? (
                     <span className="filled-heart">❤️</span>
@@ -72,7 +88,7 @@ function MainProductCard({ product, favProducts }) {
                 <div className="product-content">
                     <div className="nick">{product.dealSellerNick}</div>
                     <div className="title">{product.dealTitle}</div>
-                    <div className='price'>
+                    <div className="price">
                         {product.dealPrice == 0 ? '나눔' : `${product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
                     </div>
                 </div>
