@@ -103,7 +103,6 @@ function Page() {
                             <TableCell>상품명</TableCell>
                             <TableCell>판매자 명</TableCell>
                             <TableCell>상품 가격</TableCell>
-                            <TableCell>상품 설명</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -118,8 +117,7 @@ function Page() {
                                     </TableCell>
                                     <TableCell >{product.dealTitle}</TableCell>
                                     <TableCell>{product.dealSellerNick}</TableCell>
-                                    <TableCell >{product.dealPrice}</TableCell>
-                                    <TableCell >{product.dealDescription}</TableCell>
+                                    <TableCell>{product.dealPrice != "0" ? product.dealPrice : "나눔"}</TableCell>
                                 </TableRow>
                             ))
                             :
