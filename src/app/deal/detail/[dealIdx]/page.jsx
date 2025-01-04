@@ -642,8 +642,10 @@ function Page({ params }) {
       <ReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        dealIdx={item.dealIdx}
         dealTitle={item.dealTitle}
         sellerNick={item.dealSellerNick}
+        sellerUserIdx={item.dealSellerUserIdx}
       />
       <SatisfactionModal
         isOpen={isSatisfactionModalOpen}
