@@ -96,9 +96,17 @@ export default function ProductSearchPage() {
     setSelectedCategories(category)
   }
 
-  const filteredProducts = products.filter((prod) =>
-    selectedCategories === '전체' || prod.dealCategory === selectedCategories
-  );
+  const filteredProducts = products.filter((prod) => {
+    // 기본 카테고리 필터링
+    const categoryMatch = selectedCategories === '전체' || prod.dealCategory === selectedCategories;
+    
+    // dealview 조건 추가
+    const viewCondition = 
+      prod.dealview === 1 || // 활성화된 상품은 모두에게 보임
+      (prod.dealview === 0 && user?.userIdx === prod.dealSellerUserIdx); // 비활성화된 상품은 판매자에게만 보임
+      
+    return categoryMatch && viewCondition;
+  });
 
   // 검색어 핸들러
   const handleKeyword = (e) => setSearchKeyword(e.target.value);
@@ -229,7 +237,7 @@ export default function ProductSearchPage() {
   );
 }
 
-const styles = {
+const cardStyles = {
   card: {
     position: 'relative',
     width: '150px',
