@@ -9,6 +9,7 @@ import axios from 'axios';
 import './dealMain.css';
 import { Box, Button, TextField } from '@mui/material';
 import MainProductCard from './MainProductCard';
+import { blue } from '@mui/material/colors';
 
 export default function ProductSearchPage() {
 
@@ -156,25 +157,31 @@ export default function ProductSearchPage() {
       {/* <h1>나의거래 Main</h1> */}
       <div className='deal-main-nav'>
         <Box>
-          <TextField className='deal-search-bar'
-            variant="outlined"
-            placeholder="검색어를 입력하세요"
-            value={searchKeyword}
-            onChange={handleKeyword}
-            sx={{ mb: 2 }}
-          />
-          <Button style={{ borderRadius:'10px' , backgroundColor:'beige' , height:'56px', width:'50px'}} variant='outlined' onClick={handleSearch}>
-            <div className='search-text'>검색</div>
-            {/* <img style={{height:'50px', width:'50px'}} src="../images/search_icon.png" alt="Search" className="icon" /> */}
-          </Button>
+          <div className='center1'>
+
+            <TextField className='deal-search-bar'
+              variant="outlined"
+              placeholder="검색어를 입력하세요"
+              value={searchKeyword}
+              onChange={handleKeyword}
+              style={{}}
+              sx={{ mb: 2 }}
+            />
+            <Button style={{ borderRadius: '10px', backgroundColor: '#333333', height: '56px', width: '50px' }} variant='outlined' onClick={handleSearch}>
+              <div className='search-text'>검색</div>
+              {/* <img style={{height:'50px', width:'50px'}} src="../images/search_icon.png" alt="Search" className="icon" /> */}
+            </Button>
+          </div>
+
+          <div className='btn-nav'>
+
+            {/* 상품 등록 버튼 */}
+            <Link href="/deal/write" className="btn123">상품 등록</Link>
 
 
-        {/* 상품 등록 버튼 */}
-        <Link href="/deal/write" className="btn1">상품 등록</Link>
-
-
-        {/* 나의 거래 버튼 */}
-        {isAuthenticated && <Link href={`/deal/management`} className="btn1">나의 거래</Link>}
+            {/* 나의 거래 버튼 */}
+            {isAuthenticated && <Link href={`/deal/management`} className="btn123">나의 거래</Link>}
+          </div>
         </Box>
       </div>
 
@@ -198,9 +205,11 @@ export default function ProductSearchPage() {
         ))}
       </div>
 
-      <a onClick={sortByRegDate}> 최신순 </a>
-      <a onClick={sortByUserViewCount}> 조회순 </a>
-      <a onClick={sortByPrice}> 가격순 </a>
+      <div className='filter-space'>
+        <a className='f-btn' onClick={sortByRegDate}> 최신순 </a> |
+        <a className='f-btn' onClick={sortByUserViewCount}> 조회순 </a> |
+        <a className='f-btn' onClick={sortByPrice}> 가격순 </a>
+      </div>
 
       {/* 상품 목록 */}
       <div className="product-grid-wrapper">

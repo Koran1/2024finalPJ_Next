@@ -1,13 +1,16 @@
 .deal-search-bar{
   width: 400px;
   margin-right: 10px;
-  margin-left: 300px;
+  /* margin-left: 300px; */
+}
+
+.center1 {
+  text-align: center;
 }
 
 .search-text{
-  color: #2F3438;
+  color: white;
   font-size: 15px;
-  font-weight: bold;
 }
 
 .product-grid {
@@ -160,7 +163,12 @@
   height: 20px;
 }
 
-.btn1 {
+.btn-nav{
+  text-align: end;
+  margin-right: 50px;
+}
+
+.btn123 {
   color: #767474;
   font-size: 10%;
   font-size: 17px;
@@ -168,21 +176,45 @@
   text-decoration: none;
   border-radius: 5px;
   display: inline-block;
+  text-align: end;
   margin: 5px;
   transition: all 0.3s ease;
   font-family: "Do Hyeon, sans-serif";
-  margin-left: 10px;
+  
 }
 
-.btn1:hover {
+.btn123:hover {
   /* background-color: lightblue; */
   color: #3DBDFD;
 }
 
 .part {
   font-size: 16px;
-  margin-left: 10px;
+  margin-left: 7px;
+  font-weight: bold;
+  color: #767474;
+  margin-bottom: 3px;
 }
+
+.filter-space{
+  text-align: end;
+  margin-right: 50px;
+  color: #767474;
+  font-weight: bold;
+}
+
+.f-btn {
+  text-decoration: none;
+  color: #767474;
+  font-size: 16px;
+  margin: 1px;
+}
+
+.f-btn:hover {
+  color: #3DBDFD;
+  cursor: pointer;
+}
+
 
 .product-grid {
   margin-top: 30px;
