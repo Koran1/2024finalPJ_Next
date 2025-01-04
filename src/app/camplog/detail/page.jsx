@@ -214,11 +214,8 @@ function Page(props) {
                             const limitCount = 3;
 
                             const reportComment = commentReportInfo.find(report => report.reportTableIdx == comment.logCommentIdx);
-                            // console.log(`userIdx : ${userIdx}`);
-                            // console.log(`reportComment : ${reportComment.userIdx}`);
                             // 운영자가 신고 승인한 댓글(비워두기) 운영자가 승인하면 logCommentIsActive = 0으로 변경됨
-                            // if (reportComment && reportComment.reportStatus != 0) {
-                            if (reportComment && comment.logCommentIsActive == 0) {
+                            if (comment.logCommentIsActive == 0) {
                                 resultComment = (
                                     <div key={comment.logCommentIdx}>
                                         {/* 댓글 공백 */}
