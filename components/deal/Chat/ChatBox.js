@@ -128,6 +128,7 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
     console.log('checkSatisfactionRating');
     axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction?dealIdx=${dealIdx}`)
       .then((res) => {
+        console.log(res.data);
         setHasSatisfactionRating(res.data.data);
       })
       .catch((err) => console.log(err));

@@ -2,9 +2,11 @@
 import { useState, useEffect, useRef } from 'react';
 import useAuthStore from '../../../../../../store/authStore';
 import './report.css';
+import axios from 'axios';
 
-function ReportModal({ isOpen, onClose, dealTitle, sellerNick }) {
+function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUserIdx }) {
   const { user } = useAuthStore();
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const [selectedReason, setSelectedReason] = useState('스팸홍보/도배글입니다.');
   const [description, setDescription] = useState('');
   const modalRef = useRef(null);
@@ -63,16 +65,35 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick }) {
     };
   }, [isDragging]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!description.trim()) {
+      alert('상세 내용을 입력해주세요.');
+      return;
+    }
+
+    if(!user) return;
+    
     if (window.confirm('신고를 완료하시겠습니까?')) {
-      // 신고 처리 로직
-      console.log({
-        reason: selectedReason,
-        description,
-        dealTitle,
-        sellerNick
-      });
-      onClose();
+      try {
+        const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/report`, {
+          userIdx: user.userIdx,
+          reportedUserIdx: sellerUserIdx,
+          reportCategory: selectedReason,
+          reportTableType: "1",
+          reportTableIdx: dealIdx,
+          reportContent: description
+        });
+
+        if (response.data.success) {
+          alert('신고가 접수되었습니다.');
+          onClose();
+        } else {
+          alert(response.data.message || '신고 접수에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('신고 접수 실패:', error);
+        alert('신고 접수 중 오류가 발생했습니다.');
+      }
     }
   };
 

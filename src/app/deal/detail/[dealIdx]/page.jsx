@@ -46,41 +46,34 @@ function Page({ params }) {
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        // 기존 데이터 조회
         const API_URL = `${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`;
         const response = await axios.get(API_URL);
         const data = response.data;
 
         if (data.success) {
-          console.log(data);
-          setItem(data.data.deal);
-          setViewCount(data.data.viewCount);          // deal02 값으로 판매 상태 설정
-          setDealStatus(data.data.deal.deal02 || '판매중');  // 기본값은 '판매중'으로 설정
+          const dealData = data.data.deal;
+          
+          // dealview가 0이고 판매자가 아닌 경우 메인으로 리다이렉트
+          if (dealData.dealview === 0 && user?.userIdx !== dealData.dealSellerUserIdx) {
+            router.push('/deal/dealMain');
+            return;
+          }
 
-          // 이미지 처리 코드 추가
+          setItem(dealData);
+          setViewCount(data.data.viewCount);
+          setDealStatus(dealData.deal02 || '판매중');
+
+          // 이미지 처리
           const files = data.data.files;
           if (files && files.length > 0) {
-            // 메인 이미지 (fileOrder가 0인 이미지)
             const mainImgObj = files.find(file => parseInt(file.fileOrder) === 0);
             setMainImage(`${LOCAL_IMG_URL}/deal/${mainImgObj.fileName}`);
 
-            // 모든 이미지를 순서대로 정렬하여 작은 이미지 목록에 추가
             const smallImgs = files
               .sort((a, b) => parseInt(a.fileOrder) - parseInt(b.fileOrder))
               .map(file => `${LOCAL_IMG_URL}/deal/${file.fileName}`);
             setSmallImages(smallImgs);
           }
-        } else {
-          setError(data.message || '상품 정보를 불러올 수 없습니다.');
-        }
-
-        // 좋아요 개수 조회
-        await getFavoriteCount();
-
-        // 만족도 등록 여부 확인
-        if (dealStatus === '판매완료' && !isSellerUser && user?.userIdx) {
-          await checkSatisfactionRating();
         }
       } catch (error) {
         console.error('데이터 조회 실패:', error);
@@ -90,11 +83,10 @@ function Page({ params }) {
       }
     };
 
-    // dealIdx가 있을 때만 데이터 가져오기
     if (dealIdx) {
       fetchData();
     }
-  }, [dealIdx, dealStatus, user?.userIdx, LOCAL_API_BASE_URL, LOCAL_IMG_URL, isSellerUser]);
+  }, [dealIdx, user?.userIdx, router, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
 
   // 좋아요 개수 조회 함수
   const getFavoriteCount = async () => {
@@ -386,7 +378,7 @@ function Page({ params }) {
                 {sellerScore ? sellerScore.toFixed(1) : '5.0'}
               </span>
 
-              &nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <div className="action-buttons">
                 <div
                   onClick={() => {
@@ -545,12 +537,12 @@ function Page({ params }) {
           </div>
         </div>
 
-        {/* 비활성화 알림 위치 변경 */}
-        {item.dealview === 0 && user?.userIdx === item.dealSellerUserIdx && (
+        {/* 신고된 상품 알림 - 상품 설명 제목 바로 위에 배치 */}
+        {item.dealview === 0 && (
           <div className="inactive-notice2">
             <p>신고로 인해 본 게시물에 대한 게시가 중단되었습니다.</p>
             <p>소명이 필요한 경우 아래 고객센터로 소명 내용을 보내주시기 바랍니다.</p>
-            <p className="email">이메일: ICT5@service.com</p>
+            <p className="email">이메일: <a href="mailto:ICT5@service.com">ICT5@service.com</a></p>
           </div>
         )}
 
@@ -596,7 +588,12 @@ function Page({ params }) {
               const file = sellerOtherFiles[index];
               return (
                 <div key={deal.dealIdx} className="product-item">
-                        <div className="heart-icon" onClick={(e) => {
+                  {deal.dealview === 0 && (
+                    <div className="inactive-notice">
+                      Disabled
+                    </div>
+                  )}
+                  <div className="heart-icon" onClick={(e) => {
                     e.preventDefault();
                     toggleFavorite(deal.dealIdx);
                   }}>
@@ -642,8 +639,10 @@ function Page({ params }) {
       <ReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        dealIdx={item.dealIdx}
         dealTitle={item.dealTitle}
         sellerNick={item.dealSellerNick}
+        sellerUserIdx={item.dealSellerUserIdx}
       />
       <SatisfactionModal
         isOpen={isSatisfactionModalOpen}

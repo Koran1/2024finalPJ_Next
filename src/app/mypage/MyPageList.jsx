@@ -9,6 +9,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useRouter } from "next/navigation";
 import './mypage.css'
+import Link from "next/link";
 
 export default function MyPageList() {
     const router = useRouter();
@@ -24,10 +25,12 @@ export default function MyPageList() {
             component="nav"
             aria-labelledby="nested-list-subheader"
             subheader={
-                <ListSubheader component="div" id="nested-list-subheader" sx={{ fontSize: '20px', borderBottom: '1px solid lightgray', fontWeight:'bold'}}>
-                    <div className="mypage-title">
-                    마이 페이지
-                    </div>
+                <ListSubheader component="div" id="nested-list-subheader" sx={{ fontSize: '20px', borderBottom: '1px solid lightgray', fontWeight: 'bold' }}>
+                    <Link href="/mypage">
+                        <div className="mypage-title">
+                            마이 페이지
+                        </div>
+                    </Link>
                 </ListSubheader>
             }
 
