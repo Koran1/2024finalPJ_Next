@@ -275,8 +275,8 @@ function Page() {
         <div className='container-box'>
             <div className='p1'>최초 Kakao 로그인 시 회원가입을 위해 아래 정보를 입력해주세요</div>
             <div className='p2'>전화번호로 기존 회원 정보를 확인하실 수 있습니다</div>
-                    <hr />
-                    <p/>
+            <hr />
+            <p />
             <FormControl >
                 <Stack direction="column" spacing={1} alignItems='flex-start'>
                     <TextField className='textf' error={idError || uvo.userId && !idPass} type='text' label='아이디'
@@ -297,7 +297,7 @@ function Page() {
                             기존 회원 정보 연동하기</Button>
                     }
 
-                    <TextField className='textf' error={pwError} type='password' label='패스워드'
+                    <TextField className='textf' error={pwError && uvo.userPw} type='password' label='패스워드'
                         name='userPw' value={uvo.userPw} onChange={changeUvo}
                         disabled={!disableUpdate}
                         placeholder='특수, 대소문자 1개씩 포함, 공백 불가, 6~15자'
@@ -305,7 +305,7 @@ function Page() {
                             "사용 가능한 비밀번호 입니다!"
                         } />
 
-                    <TextField  type='text' label='이 름'
+                    <TextField type='text' label='이 름'
                         value={socialData.socialName}
                         disabled
                     />
@@ -317,7 +317,7 @@ function Page() {
                         helperText={uvo.userNickname && (nickHelper ? nickHelper : "중복검사 중...")} onChange={changeUvo} />
 
                     <Box>
-                        <TextField className='textf1' 
+                        <TextField className='textf1'
                             type='text' label='이메일'
                             value={socialData.socialEmail && (socialData.socialEmail.slice(0, 4).concat('****')
                                 .concat(socialData.socialEmail.slice(socialData.socialEmail.indexOf('@'))))}

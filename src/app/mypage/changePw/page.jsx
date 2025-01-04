@@ -8,6 +8,7 @@ import axios from 'axios';
 
 function Page() {
 
+    const { user } = useAuthStore();
 
     const initUvo = {
         userIdx: "",
@@ -75,14 +76,15 @@ function Page() {
                     console.log(res.data);
                     if (res.data.success) {
                         alert("비밀번호가 변경되었습니다!");
-                        setUvo(initUvo);
-                        setIsPwChecked(false);
                     } else {
                         alert("비밀번호 변경에 실패했습니다!");
-                        setUvo(initUvo);
                     }
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => console.log(err))
+                .finally(() => {
+                    setUvo(initUvo);
+                    setIsPwChecked(false);
+                });
         }
     }
 
@@ -92,7 +94,7 @@ function Page() {
             <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
                 <div className='page-text'>비밀번호 확인</div>
                 <Box>
-                    <TextField  className='pp1' type='password' name='userPw'
+                    <TextField className='pp1' type='password' name='userPw'
                         label='비밀번호'
                         value={uvo.userPw}
                         disabled={isPwChecked}
