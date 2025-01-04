@@ -65,7 +65,7 @@ function Page(props) {
         if (isShow && replyTextFieldRef.current) {
             replyTextFieldRef.current.focus(); // 필드가 표시되면 포커스 설정
         }
-    }, [isShow]); // isShow 상태가 변경될 때마다 실행
+    }, [isShow, commentIdx]);
 
     const commentSubmit = async () => {
         const API_URL = `${LOCAL_API_BASE_URL}/camplog/commentWrite`;
