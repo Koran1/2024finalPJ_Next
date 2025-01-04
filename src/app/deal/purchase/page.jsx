@@ -95,7 +95,8 @@ function Page() {
             {/* 구매 정보는 별도의 줄로 배치 */}
             <hr />
             <div className="purchase-info">
-                <div className="part">구매 {item.length}개</div>
+                <div className="p-count">구매 {item.length}개</div>
+                {/* <hr/> */}
                 <Table>
                     <TableHead>
                         <TableRow>

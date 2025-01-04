@@ -23,7 +23,7 @@ const ProductList = () => {
 
   return (
       <div style={styles.list}>
-          <div className="part" style={styles.rating}> 찜 {products.length}개</div>
+          <div className="f-count" style={styles.rating}> 찜 {products.length}개</div>
       {products.map((product) => (
           <ProductCard key={product.dealIdx} product={product} />
         ))}

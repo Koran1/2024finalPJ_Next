@@ -83,10 +83,10 @@ function Page() {
                 </div>
                 <hr />
                 <div className="purchase-info">
-                    <div className="part">상품 {item.length}개</div>
+                    <div className="pi">상품 상세 정보</div>
+                    <div className="pi-count">상품 {item.length}개</div>
                 </div>
 
-                <h1>상품 상세 정보</h1>
                 {item.length > 0 ? (
                     <table className="product-table">
                         <thead>

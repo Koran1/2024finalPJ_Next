@@ -40,7 +40,7 @@ function Page() {
     return (
         <div className="pd-reg-container">
             {/* 상단 네비게이션 */}
-            <div >
+            <div className="nav-links" >
                 <Link href="/deal/management"
                     className={`btn1 ${getActiveClass('/deal/management')}`}
                     onClick={() => setActiveLink('/deal/management')}>
@@ -69,13 +69,13 @@ function Page() {
             </div>
 
             <hr />
-            <div className="purchase-info">
+            <div className="rating-info">
                 <Box>
                     <Box>
-                        <Box>
+                        <Box className="user-rats">
                             사용자 평점 : {userRating}
                         </Box>
-                        <div className="part"> 평점 {ratings.length}개</div>
+                        <div className="r-count"> 평점 {ratings.length}개</div>
                     </Box>
                     <Table>
                         <TableHead>

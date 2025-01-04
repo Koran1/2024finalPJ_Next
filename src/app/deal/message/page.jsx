@@ -97,7 +97,7 @@ function Page() {
                     </Link>
                 </div>
                 <hr />
-            </div>
+            
 
             {/* 채팅 화면 */}
             {chatList.length === 0 ?
@@ -291,6 +291,7 @@ function Page() {
                     </Grid2>
                 </Tabs>
             }
+        </div>
         </div>
     );
 }

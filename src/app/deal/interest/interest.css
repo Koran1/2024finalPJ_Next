@@ -5,13 +5,6 @@
   font-size: 130%;
 }
 
-.product-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
-}
-
 .product-card {
   width: 200px;
   border: 1px solid #ddd;
@@ -96,7 +89,6 @@
 .pd-reg-container div {
   /* display: flex; */
   flex-wrap: wrap; 
-  gap: 30px; /* 버튼 간의 간격 */
 }
 
 .btn1 {
@@ -117,8 +109,10 @@
   color: orange; 
 }
 
-.part {
+.f-count {
   font-size: 16px;
+  font-weight: bold;
+  color: #767474;
   text-align: right; /* 텍스트 오른쪽 정렬 */
   margin-top: 10px; /* 버튼과의 간격 */
   margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
