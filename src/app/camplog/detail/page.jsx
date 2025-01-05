@@ -69,21 +69,25 @@ function Page(props) {
     }, [isShow, commentIdx]);
 
     const commentSubmit = async () => {
-        const API_URL = `${LOCAL_API_BASE_URL}/camplog/commentWrite`;
-        const data = new FormData();
-        try {
-            data.append("logIdx", logIdx);
-            data.append("logCommentContent", logCommentContent);
-
-            console.log(data.get("logIdx"));
-            console.log(data.get("logCommentContent"));
-            // 서버에 저장
-            await axios.post(API_URL, data);
-
-            // 페이지 새로 고침
-            window.location.reload(); // 페이지 새로 고침
-        } catch (error) {
-            alert("댓글 등록 오류 : " + error);
+        if(logCommentContent.trim() == ""){
+            alert("댓글을 입력해주세요.")
+        } else{
+            const API_URL = `${LOCAL_API_BASE_URL}/camplog/commentWrite`;
+            const data = new FormData();
+            try {
+                data.append("logIdx", logIdx);
+                data.append("logCommentContent", logCommentContent);
+    
+                console.log(data.get("logIdx"));
+                console.log(data.get("logCommentContent"));
+                // 서버에 저장
+                await axios.post(API_URL, data);
+    
+                // 페이지 새로 고침
+                window.location.reload(); // 페이지 새로 고침
+            } catch (error) {
+                alert("댓글 등록 오류 : " + error);
+            }
         }
     };
 
@@ -98,22 +102,26 @@ function Page(props) {
     }
     
     const replySubmit = async () => {
-        const API_URL = `${LOCAL_API_BASE_URL}/camplog/commentWrite`;
-        const data = new FormData();
-        try {
-            data.append("logIdx", logIdx);
-            data.append("userIdx", userIdx);
-            data.append("logCommentContent", logReplyContent);
-            data.append("commentIdx", commentIdx);
-
-            // 서버에 저장
-            await axios.post(API_URL, data);
-
-            // 페이지 새로 고침
-            window.location.reload(); // 페이지 새로 고침
-        } catch (error) {
-            setError("Error reply data:", error);
-            // alert("답글 등록 오류 : " + error);
+        if(logReplyContent.trim() == ""){
+            alert("답글을 입력해주세요.")
+        }else{
+            const API_URL = `${LOCAL_API_BASE_URL}/camplog/commentWrite`;
+            const data = new FormData();
+            try {
+                data.append("logIdx", logIdx);
+                data.append("userIdx", userIdx);
+                data.append("logCommentContent", logReplyContent);
+                data.append("commentIdx", commentIdx);
+    
+                // 서버에 저장
+                await axios.post(API_URL, data);
+    
+                // 페이지 새로 고침
+                window.location.reload(); // 페이지 새로 고침
+            } catch (error) {
+                setError("Error reply data:", error);
+                // alert("답글 등록 오류 : " + error);
+            }
         }
     };
 
@@ -326,7 +334,7 @@ function Page(props) {
                                             // 운영자가 신고 승인한 답글(비워두기)
                                             if (reportReply && reply.logCommentIsActive == 0) {
                                                 return (
-                                                    <div key={comment.logCommentIdx} style={{ marginLeft: '50px' }}>
+                                                    <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
                                                         {/* 답글 공백 */}
                                                         <p>신고 승인 처리된 답글 입니다.</p>
                                                         <hr />
@@ -337,7 +345,7 @@ function Page(props) {
                                             // 현재 로그인한 유저의 idx == 신고한 유저 idx 일 때
                                             // if (reportReply && reportReply.userIdx == userIdx) {
                                             //     return (
-                                            //         <div key={comment.logCommentIdx} style={{ marginLeft: '50px' }}>
+                                            //         <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
                                             //             <p>신고하신 답글 입니다.</p>
                                             //             <hr />
                                             //         </div>
@@ -348,7 +356,7 @@ function Page(props) {
                                             // console.log(`reportIdx : ${reportReply.logCommentIdx} ,reportCount : ${reportReply.reportCount}`);
                                             if (reportReply && reply.logCommentIsActive != 0 && reportReply.reportCount >= limitCount) {
                                                 return (
-                                                    <div key={comment.logCommentIdx} style={{ marginLeft: '50px' }}>
+                                                    <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
                                                         <p>신고된 답글 입니다.</p>
                                                         <hr />
                                                     </div>
@@ -404,7 +412,7 @@ function Page(props) {
                                             <>
                                                 <div>
                                                     <TextField label="답글 작성"
-                                                        name='logCommentContent'
+                                                        name='logReplyContent'
                                                         value={logReplyContent}
                                                         // onChange={replyChange}
                                                         onChange={(e) => setLogReplyContent(e.target.value)}
