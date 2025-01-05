@@ -1,0 +1,206 @@
+/* 메인 컨테이너 */
+.camplog-main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+    gap: 20px;
+}
+
+/* 검색 영역 */
+.camplog-search-container {
+    display: flex;
+    align-items: center;
+    max-width: 800px;
+    margin-right: 0 auto;
+    padding: 10px 0;
+    gap: 20px;
+    box-sizing: border-box; 
+}
+
+/* 검색 결과 영역 */
+.camplog-result-container {
+    max-width: 800px;
+    margin-right: 0 auto; 
+    padding: 3px 0; 
+    font-size: 16px;
+    color: #333;
+}
+.search-result-blue {
+    color: #5F8FF0;
+    font-weight: bold;
+}
+
+/* 정렬 옵션 영역 */
+.camplog-sort-container {
+    max-width: 800px; 
+    margin-left: 0 auto; 
+    display: flex;
+    justify-content: flex-end; 
+    gap: 10px;
+    font-size: 14px;
+    color: #777;
+    padding-bottom: 10px;
+}
+
+.camplog-sort-container span {
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: color 0.2s, font-weight 0.2s;
+}
+
+.camplog-sort-container span:hover,
+.camplog-sort-container span:active {
+    color: #5F8FF0;
+    font-weight: bold;
+}
+
+/* 리스트 컨테이너 */
+.camplog-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px; 
+    margin: 0 auto; 
+}
+
+/* 리스트 아이템 */
+.camplog-list-item {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start;
+    max-width: 800px; 
+    width: 100%; 
+    margin: 0 auto; 
+    gap: 20px; 
+    border-bottom: 1px solid #ddd;
+    padding: 15px 0;
+}
+
+.camplog-list-item:first-child {
+    border-top: 1px solid #4D88FF; 
+}
+
+/* 썸네일 이미지 */
+.camplog-thumbnail {
+    flex-shrink: 0;
+    width: 200px; 
+    height: 200px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.camplog-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 텍스트 정보 영역 */
+.camplog-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1; 
+    max-width: 800px; 
+    overflow: hidden; 
+}
+
+/* 닉네임 */
+.camplog-nickname {
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.camplog-nickname-icon {
+    font-size: 36px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.camplog-nickname-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.camplog-nickname-text .name {
+    font-size: 14px; 
+    font-weight: bold; 
+    color: #333; 
+}
+
+.camplog-nickname-text .date {
+    font-size: 12px; 
+    color: #777; 
+}
+
+/* 제목 */
+.camplog-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* 내용 */
+.camplog-content p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
+/* 통계 정보 */
+.camplog-info {
+    font-size: 14px;
+    color: #999;
+    display: flex;
+    gap: 10px; 
+    margin-top: 10px;
+}
+
+/* 글쓰기 버튼 */
+.camplog-write-container {
+    display: flex;
+    justify-content: flex-end; 
+}
+
+/* 페이징 */
+.camplog-pagination {
+    margin: 0 auto;
+}
+
+/* 스크롤 관련 */
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #5F8FF0;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.scroll-to-top:hover {
+    background-color: #3a6db3;
+    transform: scale(1.1);
+}

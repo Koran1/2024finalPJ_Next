@@ -134,6 +134,7 @@ function Page() {
                                 ? item.campImg2
                                 : "/images/campImageholder2.png"}
                         alt="캠핑장 사진"
+                        onError={(e) => e.target.src = "/images/campImageholder2.png"}
                         className="product-image"
                     />
 
@@ -170,7 +171,7 @@ function Page() {
 
                         {/* 예약 및 수정 버튼 */}
                         <div className="action-buttons">
-                            <button className="reserve-btn">예약하기</button>
+                            <button className="reserve-btn" onClick={()=>router.push(`/book/write?campIdx=${campIdx}`)}>예약하기</button>
                             <button className="info-request-btn">정보수정 요청</button>
                         </div>
                     </div>
