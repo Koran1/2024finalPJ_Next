@@ -1,4 +1,3 @@
-
 "use client";
 import './camploglist.css';
 import { Search } from "@mui/icons-material";
