@@ -106,7 +106,7 @@ function Page(props) {
     return (
         <>
             <header >
-                <span style={{ fontSize: "70px", display: "inline-block" }}>&lt;</span><span style={{ display: "inline-block", fontSize: "50px", marginLeft: "33%" }}>캠핑로그 작성</span>
+                <span style={{ fontSize: "70px", display: "inline-block" }}> </span><span style={{ display: "inline-block", fontSize: "50px", marginLeft: "33%" }}>캠핑로그 작성</span>
             </header>
             <Grid2 container spacing={1}>
                 <Grid2 size={1} />
@@ -203,7 +203,7 @@ function Page(props) {
                                                                                 placeholder="제품소개 입력"
                                                                                 inputProps=""
                                                                                 style={{
-                                                                                    top: `${tag.y - 55}px`,
+                                                                                    top: `${tag.y - 58}px`,
                                                                                     left: `${tag.x}px`,
                                                                                     position: "absolute",
                                                                                     transform: "translate(-50%, -50%)",
@@ -212,7 +212,7 @@ function Page(props) {
                                                                                 />
                                                                             <div
                                                                                 style={{
-                                                                                    top: `${tag.y - 55}px`,
+                                                                                    top: `${tag.y - 58}px`,
                                                                                     left: `${tag.x + 40}px`,
                                                                                     position: "absolute",
                                                                                     transform: "translate(-50%, -50%)",
@@ -225,20 +225,31 @@ function Page(props) {
                                                                             />
                                                                             <svg
                                                                                 style={{
-                                                                                    top: `${tag.y - 15}px`,
-                                                                                    left: `${tag.x + 40}px`,
+                                                                                    top: `${tag.y - 26}px`,
+                                                                                    left: `${tag.x }px`,
                                                                                     position: "absolute",
                                                                                     transform: "translate(-50%, -50%)",
-                                                                                    border: "1px solid black",
-                                                                                    backgroundColor: "white",
-                                                                                    zIndex: "1"
+                                                                                    zIndex: "1", 
+                                                                                    overflow: "visible"
                                                                                 }}
                                                                                 width="30"
                                                                                 height="30"
-                                                                                viewBox=" 0 0 0 100"
+                                                                                viewBox=" 0 0 100 100"
                                                                             >
-                                                                             <polygon points="50,90 90,30 10,30" fill="black" />
+                                                                             <polygon points="50,90 90,30 10,30" fill="white" />
                                                                             </svg>
+                                                                            <p
+                                                                                style={{
+                                                                                    top: `${tag.y - 55}px`,
+                                                                                    left: `${tag.x + 120}px`,
+                                                                                    position: "absolute",
+                                                                                    transform: "translate(-50%, -50%)",
+                                                                                    zIndex: "1",
+                                                                                    fontSize: "14px"
+                                                                                    
+                                                                                }}
+                                                                            >삭제
+                                                                            </p>
 
                                                                         </>
                                                                         : null}
