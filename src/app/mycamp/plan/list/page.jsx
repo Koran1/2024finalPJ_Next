@@ -143,8 +143,8 @@ function Page(props) {
             <div className="mylog-navmenu-container">
                 {/* 상단 네비게이션바 */}
                 <Link href="/mycamp/plan/list"
-                    className={`btn1 ${getActiveClass('/mylog/plan')}`}
-                    onClick={() => setNavMenu('/mylog/plan')}
+                    className={`btn1 ${getActiveClass('/mycamp/plan/list')}`}
+                    onClick={() => setNavMenu('/mycamp/plan/list')}
                 >
                     캠핑플래너
                 </Link>
@@ -154,15 +154,15 @@ function Page(props) {
                 >
                     나의 예약
                 </Link>
-                <Link href="/mylog/list"
-                    className={`btn1 ${getActiveClass('/mylog/list')}`}
-                    onClick={() => setNavMenu('/mylog/list')}
+                <Link href="/mycamp/mylog/list"
+                    className={`btn1 ${getActiveClass('/mycamp/mylog/list')}`}
+                    onClick={() => setNavMenu('/mycamp/mylog/list')}
                 >
                     나의 캠핑로그
                 </Link>
                 <Link href="/camp/favCamp"
-                    className={`btn1 ${getActiveClass('/mylog/favcamp')}`}
-                    onClick={() => setNavMenu('/mylog/favcamp')}
+                    className={`btn1 ${getActiveClass('/camp/favCamp')}`}
+                    onClick={() => setNavMenu('/camp/favCamp')}
                 >
                     위시리스트
                 </Link>

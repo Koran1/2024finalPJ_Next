@@ -172,7 +172,7 @@ function Page() {
                         {/* 예약 및 수정 버튼 */}
                         <div className="action-buttons">
                             <button className="reserve-btn">예약하기</button>
-                            <button className="info-request-btn">정보수정 요청</button>
+                            <button className="info-request-btn" onClick={() => { alert("report 창으로") }}>정보수정 요청</button>
                         </div>
                     </div>
                 </div>
