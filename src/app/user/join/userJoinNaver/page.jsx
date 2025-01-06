@@ -187,7 +187,7 @@ function Page() {
                         disabled
                     />
 
-                    <TextField error={pwError} type='password' label='패스워드'
+                    <TextField error={pwError && uvo.userPw} type='password' label='패스워드'
                         name='userPw' value={uvo.userPw} onChange={changeUvo}
                         placeholder='특수, 대소문자 1개씩 포함, 공백 불가, 6~15자'
                         helperText={!uvo.userPw ? "" : pwError ? "올바르지 못한 비밀번호입니다" :

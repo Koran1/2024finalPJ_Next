@@ -5,23 +5,51 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // zustand store 호출
 import useAuthStore from '../../store/authStore';
-import { Avatar, Menu, MenuItem, Badge, Button } from '@mui/material';
+import { Avatar, Badge, Button, Menu, MenuItem } from '@mui/material';
+
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
+import { usePathname, useRouter } from 'next/navigation';
+import axios from 'axios';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
   // zustand 상태 가져오기
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout, isExpired } = useAuthStore();
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!user) return;
+    const protectedRoutes = [
+      // deal 관련 페이지
+      "/deal/interest", "/deal/management", "/deal/purchase", "/deal/rating", "/deal/report", "/deal/update", "/deal/write",
+      "/deal/message",
+      // mycamp 관련 페이지
+      "/mycamp",
+
+      // mypage 관련 페이지
+      "/mypage", "/mypage/changePw", "/mypage/changeUserInfo", "/mypage/mycomments", "/mypage/qna",
+    ];
+    const isProtectedRoute = protectedRoutes.includes(pathname);
+
+    if (isProtectedRoute) {
+      if (isExpired() || !isAuthenticated) {
+        alert("로그인이 필요한 서비스입니다.");
+        logout();
+        router.push("/user/login");
+      }
+    }
+  }, [user, pathname]);
+
   const handleLogout = () => {
     // zustand에 있는 함수 호출
     logout();
+    router.push('/')
     alert("로그아웃 되었습니다");
   }
 
-  const handelLogin = () => {
-    router
-  }
 
   const jaro = {
     fontFamily: "'Jaro', sans-serif",
@@ -67,13 +95,45 @@ export default function RootLayout({ children }) {
     isShow ? setPhoto(null) : setPhoto(e.currentTarget);
   }
 
+  const [photo, setPhoto] = useState(null);
+  const [isShow, setIsShow] = useState(false);
+
+  const handlePhotoClick = (e) => {
+    setIsShow(!isShow);
+    isShow ? setPhoto(null) : setPhoto(e.currentTarget);
+  }
+
+  // 안 읽은 메시지 수 조회
+  const [unReadMessages, setUnReadMessages] = useState(0);
+
+  const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
+  useEffect(() => {
+    if (!user) return
+    const response = axios.get(`${LOCAL_API_BASE_URL}/chat/getUnReadMessages?userIdx=${user.userIdx}`)
+      .then((res) => {
+        console.log('안 읽은 메시지 수 : ' + res.data.data);
+        setUnReadMessages(res.data.data);
+      })
+      .catch((err) => console.log(err))
+  });
+
+  if (pathname.startsWith("/admin")) {
+    return (
+      <html lang="en">
+        <body>
+          {children}
+        </body>
+      </html>
+    )
+  }
+
   return (
     <html lang="en">
       <body>
         <header data-bs-theme="dark" style={{ height: '38px' }}>
           <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark" >
             <div className="container-fluid">
-              <a className="navbar-brand" href="/" style={{ fontSize: '250%', fontFamily: "'Jaro', sans-serif", marginRight: '50px' }}>CAMPERS</a>
+              <a className="navbar-brand" href="/" style={{ fontSize: '200%', fontFamily: "'Jaro', sans-serif", marginRight: '50px', marginLeft: '20px', marginBottom: '4px' }}>CAMPERS</a>
               <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" >
                 <span className="navbar-toggler-icon"></span>
               </button>
@@ -92,24 +152,25 @@ export default function RootLayout({ children }) {
 
                 {isAuthenticated ? (
                   <>
-                    <Badge badgeContent={4} color="primary" >
-                      <Link href='/mypage'>
+                    <Badge badgeContent={unReadMessages} color="primary" sx={{ marginRight: '22px' }} >
+                      <Link href='/deal/message'>
                         <MailOutline style={{ color: 'white', width: '40px', height: '40px' }} />
                       </Link>
                     </Badge>
-                    <Avatar onClick={handlePhotoClick} src="/images/kitten-3.jpg" style={{ marginRight: '30px', width: '60px', height: '60px', }} />
-                <Menu
-                  anchorEl={photo}
-                  anchorOrigin={{ vertical: "bottom", horizontal: 'center' }}
-                  transformOrigin={{ vertical: "top", horizontal: "center" }}
-                  open={Boolean(photo)}
-                  onClose={() => setPhoto(null)}
-                >
-                  <MenuItem><Link href={"/mycamp/plan "}>나의캠핑</Link></MenuItem>
-                  <MenuItem >마이페이지</MenuItem>
-                  <MenuItem >로그아웃</MenuItem>
-                </Menu> 
-                  </>
+                    <Avatar className='avatar' onClick={handlePhotoClick} src="/images/kitten-3.jpg" style={{ marginRight: '20px', width: '38px', height: '38px', }} />
+                    <Menu
+                      anchorEl={photo}
+                      anchorOrigin={{ vertical: "bottom", horizontal: 'center' }}
+                      transformOrigin={{ vertical: "top", horizontal: "center" }}
+                      open={Boolean(photo)}
+                      onClose={() => setPhoto(null)}
+                    >
+                      {/* 글로벌 css에 있음 */}
+                      <MenuItem><Link className='nav-menu' href={"/mycamp/plan "}>나의캠핑</Link></MenuItem>
+                      <MenuItem ><Link className='nav-menu' href={"/mypage"}>마이페이지</Link></MenuItem>
+                      <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
+                    </Menu></>
+
                 ) : (
                   <Button variant='contained' href='/user/login' style={{ marginRight: '30px' }}>로그인 </Button>
                 )}
@@ -122,7 +183,9 @@ export default function RootLayout({ children }) {
         <hr />
         <footer className="container">
           <p className="float-end"><a href="#">Back to top</a></p>
-          <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+          <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="/add/notice">공지사항</a>
+            &middot; <a href="#">이용약관</a>
+            &middot; <a href="#">개인정보처리방침</a></p>
         </footer>
       </body>
     </html >

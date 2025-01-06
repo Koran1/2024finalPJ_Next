@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Jaro:opsz@6..72&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=New+Tegomin&display=swap');
 
 :root {
   --background: #ffffff;
@@ -99,185 +100,27 @@ body {
   }
 }
 
- /* @charset "UTF-8";
 
-
-.header_start header_center header_end { 
-	height: 100px;
-	position: fixed;
-	align-items: center; 
-	justify-content: center;
-	padding: 10px;
-	background-color: white;
-	box-shadow: 0 0 3px #7bbe6e;
-	z-index: 5;
-	}
-.header_start {}
-.header_center {}
-.header_end {}
-.header_container {
-	width: 100%;
-	position: fixed;
-	display: flex;
-	align-items: center;
-	justify-content: center; 
-	padding: 10px;
-	background-color: white;
-	box-shadow: 0 0 3px #7bbe6e;
-	z-index: 5;
+/* 기본 스타일 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* 추가: 박스 모델을 일관되게 설정 */
 }
 
-.header_wrapper {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	height: 100px;
-	padding: 0px 16px; 
+/* 본문 스타일 */
+body {
+    font-family: Arial, sans-serif; /* 추가: 기본 폰트 설정 */
+    line-height: 1.6; /* 추가: 줄 간격 설정 */
+    background-color: #f4f4f4; /* 추가: 배경색 설정 */
 }
 
-.header_start {
-	flex: 1 1 18%; 
+/* 추가적인 스타일 규칙들... */
+
+.nav-menu {
+  text-decoration: none;
+  color: #171717;
 }
-
-.header_title img {
-	width: 10%;
-	margin-left: 6px;
-}
-
-.header_center {
-	flex: 1 1 50%; 
-	justify-content: space-between;
-	align-items: center;
-}
-
-.header_search {
-	display: none;
-	margin-right: 5px;
-	border: none;
-	background-color: transparent;
-	font-size: 1.5em;
-}
-
-
-.header_form {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.header_input_text {
-	width: calc(70% - 60px);
-	height: 50px;
-	border: 1px solid #7bbe6e;
-	border-right: none;
-	border-radius: 30px 0 0 30px;
-	padding-left: 15px;
-	font-size: 1em;
-}
-
-.header_input_text:focus {
-	border: 1px solid #7bbe6e; 
-	outline: none; 
-	border-right: none;
-}
-
-.header_input_text::placeholder {
-	color: #7bbe6e;
-	transition: opacity 0.3s ease-in-out;
-}
-
-.header_input_button {
-	width: 60px;
-	height: 54px;
-	border: 1px solid #7bbe6e;
-	border-left: none;
-	border-radius: 0 30px 30px 0;
-	font-size: 1em;
-	background-color: white;
-	color: #7bbe6e;
-}
-
-.header_input_button:active {
-	width: 60px;
-	height: 54.2px;
-	background-color: #5d9652; 
-	border: 1px solid #7bbe6e;
-	border-left: none;
-	border-radius: 0 30px 30px 0;
-	font-size: 1em;
-}
-
-.header_input_button:active {
-	font-weight: bold;
-}
-
-.header_end {
-	display: flex;
-	flex: 1 1 32%; 
-	font-size: 0.9rem;
-}
-
-.header_menu {
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	font-size: 1.2rem;
-	transition: font-weight 0.3s ease-in-out;
-	text-decoration: none; 
-	color: inherit; 
-}
-
-.header_menu:last-child {
-	margin-right: 10px;
-}
-
-.header_menu:hover {
-	color: #7bbe6e;
-}
-
-.header_menu img {
-	display: flex;
-	width: 50px;
-	height: auto;
-	margin: 20px 0 20px 0;
-	opacity: 0.7; 
-	transition: opacity 0.3s ease-in-out; 
-}
-
-.header_menu img:hover {
-	opacity: 1; 
-}
-.header_profile {
-	width: 40px;
-	height: 40px;
-	background-image: url('../images/profile-m.png');
-	background-size: 40px 40px;
-}
-
-
-.login_mypage {
-	border: 1px solid #ddf7d8;
-	border-radius: 30px;
-	background-color: #ddf7d8;
-	height: 50px;
-	padding-right: 5px;
-}
-
-.login {
-	display: flex;
-	font-size: 1.2rem;
-	transition: font-weight 0.3s ease-in-out;
-	text-decoration: none; 
-	color: inherit; 
-	margin-top: 40px;
-	margin-left: 2px;
-}
-
-.login:hover {
-	color: #7bbe6e;
-} */
-
-
 
 
 

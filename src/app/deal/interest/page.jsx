@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+// import styles from "./interest.module.css";
 import "./interest.css";
+import ProductList from "./ProductList";
 
 // 관심 목록 페이지
 
@@ -19,7 +21,7 @@ function Page() {
     return (
         <div className="pd-reg-container">
             {/* 상단 네비게이션 */}
-            <div >
+            <div className="nav-links">
                 <Link href="/deal/management"
                     className={`btn1 ${getActiveClass('/deal/management')}`}
                     onClick={() => setActiveLink('/deal/management')}>
@@ -45,11 +47,11 @@ function Page() {
                     onClick={() => setActiveLink('/deal/message')}>
                     쪽지 목록
                 </Link>
-                <br />
-                <div className="part"> 찜 7개</div>
             </div>
 
-            
+            <hr />
+         
+            <ProductList />
             
         </div>
     );

@@ -1,0 +1,54 @@
+.container-box {
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  min-height: 500px;
+}
+
+.p1 {
+  font-size: 19px;
+  color: #333333;
+  display: grid;
+  font-weight: bold;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  /* font-family: Do Hyeon, sans-serif; */
+  align-items: center;
+}
+
+.p2 {
+  font-size: 20px;
+  color: #333333;
+  display: block;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.fcontrol {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.text-login {
+  width: 300px;
+}
+
+
+.btn1 {
+  color: #767474;
+  font-size: 15px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* text-align: center; */
+  margin: 5px;
+  transition: all 0.3s ease;
+}
