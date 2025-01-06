@@ -64,11 +64,11 @@ function Page({ params }) {
                 console.log("response : ", response);
                 console.log("data.data.rvo.reportCount : ", data.data.rvo[0].reportCount);
                 console.log("data.data.logVO.logIsActive : ", data.data.logVO.logIsActive);
+                // 신고됐거나 삭제된 로그 글은 들어오면 경고창과 함께 리스트로 이동
                 if(data.data.rvo[0].reportCount >= 3){
                     alert("3명이상의 유저에게 신고된 로그글 입니다.");
                     window.location.href = "../list";
-                }
-                if(data.data.logVO.logIsActive == 0){
+                }else if(data.data.logVO.logIsActive == 0){
                     alert("삭제된 로그 글 입니다.");
                     window.location.href = "../list";
                 }
@@ -153,6 +153,7 @@ function Page({ params }) {
             alert("서버 오류 발생");
         }
     }
+    // 기존 로그 글 삭제 함수
     // const handleLogDelete = async () => {
     //     if (confirm("정말 삭제하시겠습니까? ")) {
     //         const apiUrl = `${baseUrl}/camplog/logDelete?logIdx=${data.logVO.logIdx}`;
@@ -164,6 +165,8 @@ function Page({ params }) {
     //         }
     //     }
     // }
+    
+    // 모달로 바꾼 로그 글 삭제 함수(모달로 바꾸면서 confirm필요없어짐 confirm 차이)
     const handleLogDelete = async () => {
         const apiUrl = `${baseUrl}/camplog/logDelete?logIdx=${data.logVO.logIdx}`;
         const response = await axios.post(apiUrl);
