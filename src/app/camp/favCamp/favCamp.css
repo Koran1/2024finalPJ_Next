@@ -1,0 +1,52 @@
+.mylog-favcamp-main-container {
+    max-width: 1300px;
+    margin: 0 auto;
+
+    font-size: 130%;
+}
+
+.mylog-navmenu-container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px;
+    font-size: 130%;
+}
+
+.btn1 {
+    color: #767474;
+    font-size: 17px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn1:hover {
+    color: #3DBDFD;
+}
+
+.btn1.active {
+    color: orange;
+}
+
+.mylog-favcamp-header-container {
+    box-shadow: 0 0 0 20px#94949428;
+    background-color: #94949428;
+    margin: 0 auto;
+    margin-top: 20px;
+    /* 헤더 상단 간격 */
+    margin-bottom: 80px;
+    /* 헤더 하단 간격 */
+    max-width: 1250px;
+}
+
+.info p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: normal;
+}

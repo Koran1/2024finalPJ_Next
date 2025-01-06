@@ -1,0 +1,236 @@
+/* 메인 컨테이너 */
+.camplog-main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+    gap: 20px;
+}
+
+/* 검색 영역 */
+.camplog-search-container {
+    display: flex;
+    align-items: center;
+    max-width: 800px;
+    margin-right: 0 auto;
+    padding: 10px 0;
+    gap: 1px;
+    box-sizing: border-box; 
+}
+
+/* 검색 결과 영역 */
+.camplog-result-container {
+    max-width: 800px;
+    margin-right: 0 auto; 
+    padding: 3px 0; 
+    font-size: 16px;
+    color: #333;
+}
+
+.search-result-blue {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* 정렬 옵션 영역 */
+.camplog-sort-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #555;
+}
+
+.camplog-sort-container span {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.camplog-sort-container .active {
+    font-weight: bold;
+    color: #5F8FF0;
+}
+
+.camplog-sort-container span:hover,
+.camplog-sort-container span:active {
+    color: #5F8FF0;
+    font-weight: bold;
+}
+
+/* 리스트 컨테이너 */
+.camplog-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* 리스트 아이템 */
+.camplog-list-item {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    padding: 15px 0;
+    box-sizing: border-box;
+}
+
+/* 신고된 후기 글 스타일 */
+.camplog-list-item.reported {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.camplog-content-wrapper {
+    flex: 1;
+}
+
+.camplog-list-item:first-child {
+    border-top: 1px solid #4D88FF; 
+}
+
+/* 썸네일 이미지 */
+.camplog-thumbnail {
+    width: 200px;
+    height: 200px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.camplog-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 닉네임 */
+.camplog-nickname {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.camplog-nickname-icon {
+    font-size: 36px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.camplog-nickname-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.camplog-nickname-text .name {
+    font-size: 14px; 
+    font-weight: bold; 
+    color: #333; 
+}
+
+.camplog-nickname-text .date {
+    font-size: 12px; 
+    color: #777; 
+}
+
+/* 제목 */
+.camplog-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* 내용 */
+.camplog-content p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
+/* 캠핑장명 */
+.camplog-info a {
+    color: #666;
+    text-decoration: none;
+}
+.camplog-info a:hover {
+    color: #4D88FF;
+    text-decoration: underline;
+}
+
+/* 통계 정보 */
+.camplog-info {
+    font-size: 14px;
+    color: #999;
+    display: flex;
+    gap: 10px; 
+    margin-top: 10px;
+}
+
+/* 글쓰기 버튼 */
+.camplog-write-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.camplog-write-container button:hover {
+    background-color: #0056b3;
+}
+
+/* 페이징 */
+.camplog-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* 스크롤 관련 */
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #5F8FF0;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.scroll-to-top:hover {
+    background-color: #3a6db3;
+    transform: scale(1.1);
+}

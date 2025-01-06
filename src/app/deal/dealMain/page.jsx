@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 
+
 import './dealMain.css';
 import { Box, Button, TextField } from '@mui/material';
 import MainProductCard from './MainProductCard';
@@ -160,6 +161,7 @@ export default function ProductSearchPage() {
   }
 
 
+
   return (
     <div className="pd-reg-container">
       {/* <h1>나의거래 Main</h1> */}
@@ -182,6 +184,7 @@ export default function ProductSearchPage() {
           </div>
 
           <div className='btn-nav'>
+
 
             {/* 상품 등록 버튼 */}
             <Link href="/deal/write" className="btn123">상품 등록</Link>
@@ -227,12 +230,14 @@ export default function ProductSearchPage() {
 
           ))}
         </div>
+
       </div>
 
       <br></br>
       <div className="part">캠핑 후기</div>
 
     </div >
+
 
   );
 }

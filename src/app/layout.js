@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // zustand store 호출
 import useAuthStore from '../../store/authStore';
 import { Avatar, Badge, Button, Menu, MenuItem } from '@mui/material';
+
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
@@ -86,6 +87,13 @@ export default function RootLayout({ children }) {
       bsCollapseRef.current.hide();
     }
   };
+  const [photo, setPhoto] = useState(null);
+  const [isShow, setIsShow] = useState(false);
+
+  const handlePhotoClick = (e) => {
+    setIsShow(!isShow);
+    isShow ? setPhoto(null) : setPhoto(e.currentTarget);
+  }
 
   const [photo, setPhoto] = useState(null);
   const [isShow, setIsShow] = useState(false);
@@ -132,15 +140,16 @@ export default function RootLayout({ children }) {
               <div className="collapse navbar-collapse" id="navbarCollapse" ref={navbarCollapseRef}>
                 <ul className="navbar-nav me-auto mb-2 mb-md-0">
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑장소</Link>
+                    <Link className="nav-link active" href="/camp" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑장소</Link>
                   </li>
                   <li className="nav-item">
-                    <Link className="nav-link active" href="/" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑로그</Link>
+                    <Link className="nav-link active" href="/camplog/list" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif", marginRight: '30px' }} onClick={handleNavLinkClick}>캠핑로그</Link>
                   </li>
                   <li className="nav-item">
                     <Link className="nav-link active" href="/deal/dealMain" style={{ fontSize: '180%', fontFamily: "Do Hyeon, sans-serif" }} onClick={handleNavLinkClick}>캠핑마켓</Link>
                   </li>
                 </ul>
+
                 {isAuthenticated ? (
                   <>
                     <Badge badgeContent={unReadMessages} color="primary" sx={{ marginRight: '22px' }} >
@@ -161,10 +170,12 @@ export default function RootLayout({ children }) {
                       <MenuItem ><Link className='nav-menu' href={"/mypage"}>마이페이지</Link></MenuItem>
                       <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
                     </Menu></>
+
                 ) : (
                   <Button variant='contained' href='/user/login' style={{ marginRight: '30px' }}>로그인 </Button>
                 )}
               </div>
+
             </div>
           </nav>
         </header>
