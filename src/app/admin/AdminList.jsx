@@ -1,74 +1,77 @@
 'use client'
-import { Collapse, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from "@mui/material";
-import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
-import { useState } from "react";
-import CommentIcon from '@mui/icons-material/Comment';
-import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-import LiveHelpIcon from '@mui/icons-material/LiveHelp';
+import { List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Typography } from "@mui/material";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function AdminList() {
     const router = useRouter();
-    const [open, setOpen] = useState(true);
+    const pathname = usePathname();
 
-    const handleClick = () => {
-        setOpen(!open);
+    // 클릭한 메뉴로 이동
+    const handleNavigation = (path) => {
+        if (pathname !== path) {
+            router.push(path);
+        }
     };
 
     return (
         <List
             sx={{
-                width: '100%', height: '100vh',
-                minWidth: 240, maxWidth: 360, bgcolor: 'background.paper', borderRight: '1px solid black'
+                width: '100%',
+                height: '100vh',
+                minWidth: 240,
+                maxWidth: 360,
+                bgcolor: 'background.paper',
+                borderRight: '1px solid black',
             }}
             component="nav"
             aria-labelledby="nested-list-subheader"
             subheader={
                 <ListSubheader component="div" id="nested-list-subheader" sx={{ fontSize: '32px', borderBottom: '1px solid lightgray' }}>
-                    My Page
+                    <Link href="/admin/main/">
+                        Admin Page
+                    </Link>
                 </ListSubheader>
             }
-
         >
-            <ListItemButton onClick={() => router.push('/mypage/mycomments')}>
-                <ListItemIcon>
-                    <CommentIcon />
-                </ListItemIcon>
-                <ListItemText primary="나의 댓글관리" />
-            </ListItemButton>
-
-            <ListItemButton onClick={handleClick}>
-                <ListItemIcon>
-                    <PersonSearchIcon />
-                </ListItemIcon>
-                <ListItemText primary="회원정보" />
-                {open ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                    <ListItemButton sx={{ pl: 4, backgroundColor: '#fafafa' }} onClick={() => router.push('/mypage/changeUserInfo')}>
-                        <ListItemIcon>
-                            <ManageAccountsIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="회원정보 수정" />
-                    </ListItemButton>
-                    <ListItemButton sx={{ pl: 4, backgroundColor: '#fafafa' }} onClick={() => router.push('/mypage/changePw')}>
-                        <ListItemIcon>
-                            <LockOpenIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="비밀번호 변경" />
-                    </ListItemButton>
-                </List>
-            </Collapse>
-
-            <ListItemButton onClick={() => router.push('/mypage/qna')}>
-                <ListItemIcon>
-                    <LiveHelpIcon />
-                </ListItemIcon>
-                <ListItemText primary="나의 질문" />
-            </ListItemButton>
+            {[
+                { path: '/admin/userList', text: '회원정보관리' },
+                { path: '/admin/userReport', text: '신고내역관리' },
+                { path: '/admin/campList', text: '캠핑정보관리' },
+                { path: '/admin/campLogList', text: '캠핑로그관리' },
+                { path: '/admin/dealList', text: '캠핑거래관리' },
+                { path: '/admin/noticeList', text: '공지사항관리' },
+                { path: '/admin/faqList', text: 'FAQ관리' },
+                { path: '/admin/qnaList', text: 'QNA관리' },
+                { path: '/admin/weather', text: '날씨정보관리' },
+            ].map((menu, index) => (
+                <ListItemButton
+                    key={index}
+                    onClick={() => handleNavigation(menu.path)}
+                    sx={{
+                        '&:hover': {
+                            bgcolor: 'lightgray' // Hover 시 배경색
+                        }
+                    }}
+                >
+                    <ListItemIcon>
+                        <ManageAccountsIcon sx={{ color: pathname === menu.path ? '#1976D2' : 'inherit' }} />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={
+                            <Typography
+                                sx={{
+                                    color: pathname === menu.path ? '#1976D2' : 'inherit', 
+                                    fontWeight: pathname === menu.path ? 'bold' : 'normal', 
+                                }}
+                            >
+                                {menu.text}
+                            </Typography>
+                        }
+                    />
+                </ListItemButton>
+            ))}
         </List>
     );
 }

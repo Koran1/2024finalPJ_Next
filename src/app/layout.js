@@ -95,14 +95,6 @@ export default function RootLayout({ children }) {
     isShow ? setPhoto(null) : setPhoto(e.currentTarget);
   }
 
-  const [photo, setPhoto] = useState(null);
-  const [isShow, setIsShow] = useState(false);
-
-  const handlePhotoClick = (e) => {
-    setIsShow(!isShow);
-    isShow ? setPhoto(null) : setPhoto(e.currentTarget);
-  }
-
   // 안 읽은 메시지 수 조회
   const [unReadMessages, setUnReadMessages] = useState(0);
 
