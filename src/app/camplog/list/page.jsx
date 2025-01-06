@@ -125,7 +125,8 @@ function Page(props) {
                             </div>
                         </div>
                         {/* 서버 연결하면 경로 수정하기 */}
-                        <a href={`./detail?logIdx=${logIdx}`} style={{textDecoration: "none"}}>
+                        {/* <a href={`./detail?logIdx=${logIdx}`} style={{textDecoration: "none"}}> */}
+                        <a href={`./detail/${logIdx}`} style={{textDecoration: "none"}}>
                             <div className="camplog-title"><p>여기 정말 좋네요 추천</p></div>
                             <div className="camplog-content">
                                 <p>

@@ -8,7 +8,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { ChevronLeft, ChevronRight, Search } from '@mui/icons-material';
 import axios from 'axios';
 import { CSSTransition } from 'react-transition-group';
-import './page.css';
+// import './page.css';
 
 import CheckIcon from '@mui/icons-material/Check';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';

@@ -68,7 +68,7 @@ export default function RootLayout({ children }) {
   }
 
   // 임의 예약정보 Idx
-  const bookIdx = "2";
+  const bookIdx = "34";
 
   return (
     <html lang="en">
