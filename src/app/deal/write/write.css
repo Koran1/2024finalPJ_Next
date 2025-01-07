@@ -28,17 +28,26 @@ h1 {
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
+  position: relative;
 }
 
 .image-preview-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .upload-placeholder {
   font-size: 30px;
   color: #ccc;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .form-group {
@@ -106,7 +115,7 @@ h1 {
 
 .description-textarea {
   width: 100%; 
-  height: 300px;
+  height: 150px;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -152,11 +161,20 @@ h1 {
   width: 180px;
 }
 
+.form-completion-message {
+  font-size: 24px;
+  color: #0a7c27;
+  text-align: center;
+}
+
 .submit-btn {
   background-color: #f0f0f0;
   color: rgb(97, 95, 95);
   cursor: pointer;
   transition: background-color 0.3s;
+  box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 
+              0px 2px 2px 0px rgba(0,0,0,0.14), 
+              0px 1px 5px 0px rgba(0,0,0,0.12);
 }
 
 .submit-btn:hover {
@@ -221,4 +239,28 @@ h1 {
     height: 100%;
     object-fit: cover;
   }
+}
+
+.delete-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  z-index: 1;
+  padding: 0;
+  line-height: 1;
+}
+
+.delete-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
 }

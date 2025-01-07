@@ -5,15 +5,15 @@
   font-size: 130%;
 }
 
+
 .btn1 {
   color: #767474;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: bold;
   text-decoration: none;
   border-radius: 5px;
   display: inline-block;
-  margin: 20px;
-  transition: all 0.3s ease;
+  padding: 10px 20px; /* 버튼의 내부 여백 추가 */
 }
 
 .btn1:hover {
@@ -21,13 +21,29 @@
 }
 
 .btn1.active {
-  color: orange; /* Active state color */
+  color: orange; 
 }
 
-.part {
+.p-count {
   font-size: 16px;
-  text-align: right; /* 텍스트를 오른쪽으로 정렬 */
-  margin-top: 10px; /* 버튼과의 간격 */
+  text-align: right; /* 텍스트 오른쪽 정렬 */
+  margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
+  display: block; /* 텍스트를 새로운 줄로 만듬 */
+  font-weight: bold;
+  color: #767474;
+
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.purchase-info {
+  margin-top: 10px;
+  font-size: 14px;
+  
 }
 
 /* 테이블 스타일 */

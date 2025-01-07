@@ -1,161 +1,147 @@
 "use client";
 
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import axios from 'axios';
-import React, {  useEffect, useState } from "react";
-import { useRouter } from 'next/router';
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Link from "next/link";
 import "./management.css";
+import useAuthStore from "../../../../store/authStore";
 
 function Page() {
-    const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
-    const [loading, setLoading] = useState(true); // 로딩 상태
-    const [error, setError] = useState(null); // 에러 상태
-    const API_URL = `${LOCAL_API_BASE_URL}/deal/management`;
-    const [products, setProducts] = useState([
-        // {
-        //     id: 1,
-        //     image: "/images/sample1.jpg",
-        //     name: "상품 1",
-        //     status: "판매중",
-        //     price: "10,000원",
-        //     lastModified: new Date(),
-        // },
-        // {
-        //     id: 2,
-        //     image: "/images/sample2.jpg",
-        //     name: "상품 2",
-        //     status: "판매완료",
-        //     price: "20,000원",
-        //     lastModified: new Date(),
-        // },
-    ]);
+    // 선택된 네비게이션 바 표시
+    const [activeLink, setActiveLink] = useState("/deal/management");
 
-    // 데이터 가져오기
-    const getData = async () => {
-        try {
-            setLoading(true); // 로딩 상태 시작
-            const response = await axios.get(API_URL); // axios를 사용한 API 호출
-            const data = response.data.data;
-            // console.log(res.data)
-            setProducts(data);
-        } catch (err) {
-            console.error("Error fatching data : ", err) ;
-            setError(err.message);
-        } finally {
-            setLoading(false) ; // 로딩 상태 종료 
-        }
-    }
+    // const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+    // const [products, setProducts] = useState([]);
 
-    // State to track active link
-    const [activeLink, setActiveLink] = useState('/deal/management');
+    const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+    const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
+    const [item, setItem] = useState([]);                 // 데이터 상태 
+    const [loading, setLoading] = useState(true);           // 로딩 상태
+    const [error, setError] = useState(null);               // 에러 상태
+    const { user } = useAuthStore();       // 로그인 상태
 
-    // Function to determine the active class
-    const getActiveClass = (link) => {
-        return activeLink === link ? 'active' : '';
-    };
-
-    // 최초 한 번만 실행
     useEffect(() => {
-        getData();
-    }, []);
+        if (user == null) return
+        const fetchData = async () => {
+            try {
+                setLoading(true); // 로딩 시작
+                const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${user.userIdx}`;
 
-    // 로딩 중 화면
-    if (loading) {
-        return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
-    }
-    // 에러 발생 시 화면
-    if (error) {
-        return <div style={{ textAlign: "center", padding: "20px", color: "red" }}>Error: {error}</div>;
-    }
-    // 로딩 완료 후 화면
+                // 데이터 가져오기
+                const response = await axios.get(API_URL);
+                // const data = response.data;
+                // console.log(response.data);
+                if (response.data.success) {
+                    console.log("setItem: 이거 데이터.데이터", response.data.data);
+                    setItem(response.data.data);
+                } else {
+                    setError("Failed to fetch product data.");
+                }
+            } catch (err) {
+                console.error("Error fetching product data:", err);
+                setError("Failed to fetch product data.");
+            } finally {
+                setLoading(false); // 로딩 종료
+            }
+        };
+
+        fetchData();
+    }, [user, LOCAL_API_BASE_URL]);
+
+
+    const getActiveClass = (link) => (activeLink === link ? "active" : "");
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+
+    // // 글 작성자와 현재 로그인한 사용자 비교 
+    // const isOwner = isAuthenticated && String(user.m_id) === String(item.gb_id);
+
     return (
-        <div className="pd-reg-container">
-            {/* 상단 네비게이션 */}
-            <div >
-                <Link href="/deal/management"
-                    className={`btn1 ${getActiveClass('/deal/management')}`}
-                    onClick={() => setActiveLink('/deal/management')}>
-                    상품 관리
-                </Link>
-                <Link href="/deal/purchase"
-                    className={`btn1 ${getActiveClass('/deal/purchase')}`}
-                    onClick={() => setActiveLink('/deal/purchase')}>
-                    구매 내역
-                </Link>
-                <Link href="/deal/interest"
-                    className={`btn1 ${getActiveClass('/deal/interest')}`}
-                    onClick={() => setActiveLink('/deal/interest')}>
-                    관심 목록
-                </Link>
-                <Link href="/deal/rating"
-                    className={`btn1 ${getActiveClass('/deal/rating')}`}
-                    onClick={() => setActiveLink('/deal/rating')}>
-                    나의 평점
-                </Link>
-                <Link href="/deal/message"
-                    className={`btn1 ${getActiveClass('/deal/message')}`}
-                    onClick={() => setActiveLink('/deal/message')}>
-                    쪽지 목록
-                </Link>
-                <br />
-                <div className="part">상품 {products.length}개</div>
-            </div>
+        <>
+            <div className="pd-reg-container">
 
-            {/* 상품 목록 테이블 */}
-            <table className="product-table">
-                <thead>
-                    <tr>
-                        <th>사진</th>
-                        <th>판매상태</th>
-                        <th>상품명</th>
-                        <th>가격</th>
-                        <th>최근 수정일</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.length === 0 ?
-                        <>
-                            <TableRow>
-                                <TableCell colSpan={2} style={{ textAlign: "center" }}>등록된 정보가 없습니다.</TableCell>
-                            </TableRow>
+                <div className="nav-links">
+                    <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>상품 관리</Link>
+                    <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>구매 내역</Link>
+                    <Link href="/deal/interest"
+                        className={`btn1 ${getActiveClass('/deal/interest')}`}
+                        onClick={() => setActiveLink('/deal/interest')}>
+                        관심 목록
+                    </Link>
+                    <Link href="/deal/rating"
+                        className={`btn1 ${getActiveClass('/deal/rating')}`}
+                        onClick={() => setActiveLink('/deal/rating')}>
+                        나의 평점
+                    </Link>
+                    <Link href="/deal/message"
+                        className={`btn1 ${getActiveClass('/deal/message')}`}
+                        onClick={() => setActiveLink('/deal/message')}>
+                        쪽지 목록
+                    </Link>
+                    {/* ... 다른 링크들 */}
+                </div>
+                <hr />
+                <div className="purchase-info">
+                    <div className="pi">상품 상세 정보</div>
+                    <div className="pi-count">상품 {item.length}개</div>
+                </div>
 
-                        </>
-
-                        : products.map((product) => (
-                            <tr key={product.id}>
-                                {/* 사진 클릭 시 상세 페이지 이동 */}
-                                <td>
-                                    <Link href={`/product/${product.id}`}>
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            width="50"
-                                            height="50"
-                                            style={{ cursor: "pointer" }}
-                                        />
-                                    </Link>
-                                </td>
-                                {/* 판매 상태 */}
-                                <td>{product.status}</td>
-                                {/* 상품명 클릭 시 상세 페이지 이동 */}
-                                <td>
-                                    <Link
-                                        href={`/detail/${product.dealIdx}`}
-                                        style={{ textDecoration: "none", color: "black" }}
-                                    >
-                                        {product.name}
-                                    </Link>
-                                </td>
-                                {/* 가격 */}
-                                <td>{product.price}</td>
-                                {/* 최근 수정일 */}
-                                <td>{product.lastModified.toLocaleDateString()}</td>
+                {item.length > 0 ? (
+                    <table className="product-table">
+                        <thead>
+                            <tr>
+                                <th>사진</th>
+                                <th>판매상태</th>
+                                <th>상품명</th>
+                                <th>가격</th>
+                                <th>최근 수정일</th>
                             </tr>
-                        ))}
-                </tbody>
-            </table>
-        </div>
+                        </thead>
+                        <tbody>
+                            {item.map((k, idx) => {
+                                return (
+
+                                    <tr key={idx}>
+                                        <td>
+                                            <Link href={`/deal/detail/${k.dealIdx}`}>
+                                                <img src={`${LOCAL_IMG_URL}/deal/${k.deal01}`} alt={k.dealTitle} width="50" height="50" />
+                                            </Link>
+                                        </td>
+                                        <td>
+                                            {k.deal02 ? "판매완료" : "판매중"}
+                                        </td>
+                                        <td>
+                                            <Link href={`/deal/detail/${k.dealIdx}`} style={{ textDecoration: "none" }}>
+                                                {k.dealTitle}
+                                            </Link>
+                                        </td>
+                                        <td>{k.dealPrice}</td>
+                                        <td>{k.dealRegDate}</td>
+                                    </tr>
+                                )
+                            })}
+                        </tbody>
+                    </table>) : ((
+                        <table className="product-table">
+                            <thead>
+                                <tr>
+                                    <th>사진</th>
+                                    <th>판매상태</th>
+                                    <th>상품명</th>
+                                    <th>가격</th>
+                                    <th>최근 수정일</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colSpan="5">상품이 없습니다.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    ))}
+            </div>
+        </>
     );
 }
 

@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import "./camp.css"; // CSS 파일은 그대로 사용
 import CampMap from "./camp_map/page.jsx"; // 지도 컴포넌트
 import { FaLocationDot, FaPhoneFlip } from "react-icons/fa6";
-import { FormControl, InputLabel, MenuItem, NativeSelect, Pagination, Select, TextField } from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, NativeSelect, Pagination, Select, TextField } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
 import Button from '@mui/material/Button';
+import useAuthStore from "../../../store/authStore";
 
 function Page() {
     const [campList, setCampList] = useState([]); // 캠핑장 리스트
@@ -26,12 +27,17 @@ function Page() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const { user } = useAuthStore();
+    const [favList, setFavList] = useState([]);
+
+    const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+
     // 시도(doNm) 데이터 가져오기
     useEffect(() => {
         const getSidoList = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("http://localhost:8080/api/camp/sido");
+                const response = await axios.get(`${LOCAL_API_BASE_URL}/camp/sido`);
                 if (response.data.success) {
                     setSidoList(response.data.data); // 시도 리스트 저장
                 } else {
@@ -87,7 +93,6 @@ function Page() {
                     sortOption,
                 },
             });
-
             if (response.data.success) {
                 setCampList(response.data.data.data || []);
                 setTotalPages(response.data.data.totalPages || 0);
@@ -102,7 +107,7 @@ function Page() {
         }
     };
 
-    useEffect(() => { 
+    useEffect(() => {
         getCampList();
     }, [region, selectedSigungu, page, size, sortOption]);
 
@@ -113,6 +118,35 @@ function Page() {
     useEffect(() => {
         setSelectedSigungu(""); // 시군구 초기화
     }, [region]);
+
+    // 사용자 찜 리스트 가져오기
+    const getFavList = () => {
+        if (!user) return;
+        axios.get(`${LOCAL_API_BASE_URL}/camp/getLikeList?userIdx=${user.userIdx}`)
+            .then((res) => {
+                console.log(res.data);
+                setFavList(res.data.data);
+            })
+            .catch((err) => console.log(err))
+    }
+
+    useEffect(() => {
+        getFavList();
+    }, [user])
+
+    // 사용자 찜 처리
+    const handleLike = (isLiked, campIdx) => {
+        if (!user) return;
+        axios.get(`${LOCAL_API_BASE_URL}/camp/like`, {
+            params: {
+                userIdx: user.userIdx,
+                campIdx: campIdx,
+                isLiked: isLiked,
+            },
+        })
+            .then(() => getFavList())
+            .catch((err) => console.log(err))
+    }
 
     const handlePageChange = (newPage) => {
         setPage(newPage);
@@ -135,7 +169,7 @@ function Page() {
         setPage(1); // 페이지를 1로 리셋
         getCampList(); // 백엔드에서 정렬된 데이터 요청
     };
-    
+
 
     // 스크롤 관련
     const handleScroll = () => {
@@ -166,7 +200,7 @@ function Page() {
     }
 
     if (error) {
-        return <div style={{color:'red'}}>{error}</div>
+        return <div style={{ color: 'red' }}>{error}</div>
     }
 
     return (
@@ -180,11 +214,11 @@ function Page() {
             <div className="camp-main-container">
                 {/* 지도 영역 */}
                 <div className="camp-map-container">
-                    <CampMap 
-                        region={region} 
-                        setRegion={setRegion} 
-                        setSelectedSigungu={setSelectedSigungu} 
-                        setSigunguList={setSigunguList} 
+                    <CampMap
+                        region={region}
+                        setRegion={setRegion}
+                        setSelectedSigungu={setSelectedSigungu}
+                        setSigunguList={setSigunguList}
                         setKeyword={setKeyword}
                     />
                 </div>
@@ -192,15 +226,15 @@ function Page() {
                 {/* 검색 및 정렬 영역 */}
                 <div className="camp-right-container">
                     <div className="camp-search-container">
-                    {/* 시도 및 시군구 드롭다운 */}
+                        {/* 시도 및 시군구 드롭다운 */}
                         <div className="camp-doNm-select">
                             {/*
                             {/* 시도 드롭다운 영역 */}
-                            <FormControl variant="standard" sx={{m: 1, minWidth: 120}}>
+                            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                                 <InputLabel id="region-select-label">전국</InputLabel>
-                                <Select 
-                                    labelId="region-select-label" 
-                                    id="region-select" 
+                                <Select
+                                    labelId="region-select-label"
+                                    id="region-select"
                                     value={region}
                                     onChange={(e) => {
                                         const newRegion = e.target.value;
@@ -217,20 +251,20 @@ function Page() {
                                     <MenuItem value="">
                                         <em>전국</em>
                                     </MenuItem>
-                                    {sidoList.map((sido, index)=> (
+                                    {sidoList.map((sido, index) => (
                                         <MenuItem key={index} value={sido}>
                                             {sido}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                            
+
                             {/* 시군구 드롭다운 영역 */}
-                            <FormControl variant="standard" sx={{m: 1, minWidth: 120}}>
+                            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                                 <InputLabel id="sigungu-select-label">시군구</InputLabel>
                                 <Select
                                     labelId="sigungu-select-label"
-                                    id="sigungu-select" 
+                                    id="sigungu-select"
                                     value={selectedSigungu}
                                     onChange={(e) => {
                                         const sigungu = e.target.value;
@@ -254,16 +288,16 @@ function Page() {
                         {/* {`${totalCount}개`} */}
                         <div className="camp-total-count">
                             {`${totalCount.toLocaleString()}개`}
-                         </div>
+                        </div>
                     </div>
 
                     <div className="camp-search-keyword-container">
                         {/* 키워드 검색 영역 */}
                         <div className="camp-search-keyword">
                             <FormControl sx={{ width: '200px' }}>
-                                <TextField 
-                                    id="keyword-search" 
-                                    label="검색어를 입력하세요." 
+                                <TextField
+                                    id="keyword-search"
+                                    label="검색어를 입력하세요."
                                     value={keyword}
                                     variant="standard"
                                     onChange={(e) => setKeyword(e.target.value)}
@@ -272,14 +306,14 @@ function Page() {
                                     }}
                                     onKeyUp={handleKeyUp}
                                 />
-                                </FormControl>
-                                <Button 
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={handleSearch}
-                                >
-                                    검색
-                                </Button>
+                            </FormControl>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={handleSearch}
+                            >
+                                검색
+                            </Button>
                         </div>
                     </div>
 
@@ -316,15 +350,15 @@ function Page() {
 
                     {/* 캠핑장 리스트 */}
                     <div className="camp-faclNmList-container">
-                        {campList && campList.map((camp) => (
+                        {campList.length > 0 ? campList.map((camp) => (
                             <div className="camp-item" key={camp.campIdx}>
                                 {/* 캠핑장 사진 영역 */}
                                 <div className="camp-img-container">
                                     <Link href={`/camp/detail/${camp.campIdx}`}>
                                         <img
-                                            src={camp.firstImageUrl ? camp.firstImageUrl : camp.campImg2 ? camp.campImg2 : "/images/campImageholder.png"} 
-                                            alt="캠핑장 사진" 
-                                            onError={(e) => e.target.src = "/images/campImageholder.png" }
+                                            src={camp.firstImageUrl ? camp.firstImageUrl : camp.campImg2 ? camp.campImg2 : "/images/campImageholder.png"}
+                                            alt="캠핑장 사진"
+                                            onError={(e) => e.target.src = "/images/campImageholder.png"}
                                         />
                                     </Link>
                                     {/* 캠핑장 휴업일 경우, 사진 좌상에 휴업 아이콘 띄우기 */}
@@ -335,40 +369,32 @@ function Page() {
                                     )}
                                 </div>
                                 <div className="camp-text">
-                                    {/* 통계 데이터 */}
-                                    {/* <p>
-                                        <span className="totalViews">조회수 <span className="totalNumber">{camp.totalViews}</span></span> | 
-                                        <span className="totalLogs"> 캠핑로그 <span className="totalNumber">{camp.totalLogs}</span></span> | 
-                                        <span className="totalLikes"> 찜수 <span className="totalNumber">{camp.totalLikes}</span></span>
-                                    </p> */}
-                                    
-                                    {/* <p>
-                                        <span className={`totalViews ${sortOption === "views" ? "active-stat" : ""}`}>
-                                            조회수 <span className="totalNumber">{camp.totalViews}</span>
-                                        </span> | &nbsp;
-                                        <span className={`totalLogs`}>
-                                            캠핑로그 <span className="totalNumber">{camp.totalLogs}</span>
-                                        </span> | &nbsp;
-                                        <span className={`totalLikes ${sortOption === "likes" ? "active-stat" : ""}`}>
-                                            찜수 <span className="totalNumber">{camp.totalLikes}</span>
-                                        </span>
-                                    </p> */}
+                                    <Box display="flex" justifyContent="space-between">
+                                        <p
+                                            className={`camp-stats ${sortOption === "title" || sortOption === "latest" ? "bold-stats" : ""
+                                                }`}
+                                        >
+                                            <span className={`totalViews ${sortOption === "views" ? "active-stat" : ""}`}>
+                                                조회수 <span className="totalNumber">{camp.totalViews}</span>
+                                            </span> | &nbsp;
+                                            <span className="totalLogs">
+                                                캠핑로그 <span className="totalNumber">{camp.totalLogs}</span>
+                                            </span> | &nbsp;
+                                            <span className={`totalLikes ${sortOption === "likes" ? "active-stat" : ""}`}>
+                                                찜수 <span className="totalNumber">{camp.totalLikes}</span>
+                                            </span>
+                                        </p>
 
-                                    <p
-                                    className={`camp-stats ${
-                                        sortOption === "title" || sortOption === "latest" ? "bold-stats" : ""
-                                        }`}
-                                    >
-                                        <span className={`totalViews ${sortOption === "views" ? "active-stat" : ""}`}>
-                                            조회수 <span className="totalNumber">{camp.totalViews}</span>
-                                        </span> | &nbsp;
-                                        <span className="totalLogs">
-                                            캠핑로그 <span className="totalNumber">{camp.totalLogs}</span>
-                                        </span> | &nbsp;
-                                        <span className={`totalLikes ${sortOption === "likes" ? "active-stat" : ""}`}>
-                                            찜수 <span className="totalNumber">{camp.totalLikes}</span>
-                                        </span>
-                                    </p>
+                                        {/* 찜하기 버튼 */}
+                                        <Box >
+                                            <Button variant="text"
+                                                className="like-btn"
+                                                onClick={() => handleLike(favList.filter((fav) => fav.campIdx == camp.campIdx).length > 0, camp.campIdx)}
+                                            >
+                                                {favList.filter((fav) => fav.campIdx == camp.campIdx).length > 0 ? '❤️' : '🤍'}
+                                            </Button>
+                                        </Box>
+                                    </Box>
 
                                     {/* 캠핑장명 */}
                                     <h3><Link href={`/camp/detail/${camp.campIdx}`}>[{camp.doNm2} {camp.sigunguNm}] {camp.facltNm}</Link></h3>
@@ -380,7 +406,7 @@ function Page() {
                                     <p className="camp-intro">{camp.intro ? camp.intro : camp.featureNm}</p>
 
                                     {/* 캠핑장 주소 */}
-                                    <p><FaLocationDot color="#5F8FF0"/> {camp.addr1} </p>
+                                    <p><FaLocationDot color="#5F8FF0" /> {camp.addr1} </p>
 
                                     {/* 캠핑장 전화번호 */}
                                     <p>{camp.tel && <><FaPhoneFlip color="#5F8FF0" /> {camp.tel}</>}</p>
@@ -395,20 +421,26 @@ function Page() {
                                     {/* 최신순으로 눌렀을 때 캠핑장 수정날짜 표시 */}
                                     {sortOption === "latest" && camp.modifiedtime && (
                                         <p className="camp-modified-time">
-                                            <b>업데이트 날짜:</b> {camp.modifiedtime.substring(0,10)}
+                                            <b>업데이트 날짜:</b> {camp.modifiedtime.substring(0, 10)}
                                         </p>
                                     )}
 
                                 </div>
                             </div>
-                        ))}
+                        ))
+                            :
+                            <div>
+                                <h3>
+                                    검색 결과가 없습니다!
+                                </h3>
+                            </div>}
                     </div>
 
                     <div className="camp-pagination">
-                        <Pagination 
+                        <Pagination
                             count={totalPages}
-                            page={page} 
-                            defaultPage={1} 
+                            page={page}
+                            defaultPage={1}
                             onChange={(event, value) => {
                                 setPage(value);
                                 window.scrollTo({

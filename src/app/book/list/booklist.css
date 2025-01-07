@@ -1,0 +1,297 @@
+.book-list-main-container {
+    /* max-width: 1300px; */
+    margin: 0 auto;
+    padding: 20px;
+    font-size: 130%;
+}
+
+.btn1 {
+    color: #767474;
+    font-size: 17px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn1:hover {
+    color: #3DBDFD;
+}
+  
+.btn1.active {
+    color: orange;
+}
+
+.book-navmenu-container {
+    margin-left: 20px auto;
+    margin-bottom: 20px;
+}
+
+.comming-book-container,
+.connect-plan-container {
+    min-width: 600px;
+    margin: 0px auto;
+    width: 100%;
+    max-width: 900px;
+    padding: 15px;
+}
+
+.comming-book-header,
+.connect-plan-header,
+.prev-book-header {
+    margin: 10px 0;
+    padding: 20px;
+    color: #4D88FF;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.slide-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+    height: 200px;
+}
+
+.slide-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px;
+    padding: 20px;
+    gap: 10px;
+}
+
+.slide-content img {
+    flex-shrink: 0;
+}
+
+.text-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+.title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.title-wrapper .book-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.title-wrapper .book-d-day {
+    font-size: 1.2rem;
+    color: #007BFF;
+    font-weight: bold;
+}
+
+.date {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+}
+
+.slick-prev, .slick-next {
+    width: 40px;
+    height: 40px;
+    z-index: 1000; /* 슬라이드 위에 표시되도록 z-index 조정 */
+}
+
+.slick-prev {
+    left: -50px; /* 슬라이드 왼쪽 밖으로 이동 */
+}
+
+.slick-next {
+    right: -50px; /* 슬라이드 오른쪽 밖으로 이동 */
+}
+
+.connect-plan-body {
+    display: flex;
+    border: 1px solid #000; 
+    border-radius: 5px;
+    padding: 40px;
+    margin-top: 10px;
+    font-size: 1.1rem;
+    color: #000;
+    background-color: #fff;
+    gap: 10px; 
+}
+
+.separated-hr {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border: 1px;
+    height: 1px;
+    background: black;
+    margin: 0; 
+}
+
+.prev-book-container {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 900px;
+    padding: 15px;
+}
+
+.prev-book-header {
+    margin-bottom: 20px;
+    color: #4D88FF;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.reservation-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    gap: 15px;
+    width: 100%;
+    max-width: 900px;
+    margin: 10px auto;
+    box-sizing: border-box;
+}
+
+.reservation-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.reservation-details {
+    flex: 1;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.reservation-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.reservation-location {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.reservation-info {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.reservation-dates {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #333;
+    gap: 10px;
+}
+
+.date-block {
+    text-align: center;
+}
+
+.check-in,
+.check-out {
+    font-weight: bold;
+    color: #4D88FF;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.date-time {
+    font-size: 14px;
+    color: #333;
+}
+
+.stay-duration {
+    font-size: 14px;
+    color: #4D88FF;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 20px;
+}
+
+.reservation-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.no-reservation {
+    text-align: center;
+    font-size: 16px;
+    color: "black";
+    font-weight: bold;
+    width: 100%;
+    padding: 30px;
+}
+
+.load-more-button {
+    display: block;
+    margin: 10px auto;
+    width: 100%;
+    max-width: 900px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid #4D88FF;
+    color: #333;
+    cursor: pointer;
+    box-sizing: border-box; 
+}
+
+/* 스크롤 관련 */
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #5F8FF0;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.scroll-to-top:hover {
+    background-color: #3a6db3;
+    transform: scale(1.1);
+}

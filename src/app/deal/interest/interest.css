@@ -1,31 +1,165 @@
 .pd-reg-container {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 20px;
-    font-size: 130%;
-  }
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 130%;
+}
+
+.product-card {
+  width: 200px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  position: relative;
+}
+
+.card-content {
+  position: relative;
+}
+
+.product-image2 {
+  width: 100%;        /* 부모 요소의 가로폭을 가득 채우기 */
+  height: 200px;       /* 세로 비율에 맞춰 자동으로 조정 */
+  object-fit: cover;  /* 이미지 비율을 유지하면서 부모 요소에 맞게 잘리도록 설정 */
+}
+
+
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.filled-heart {
+  color: red;
+  font-size: 20px;
+}
+
+.empty-heart {
+  color: #ccc;
+  font-size: 20px;
+}
+
+.product-info2 {
+  text-align: left; /* 왼쪽 정렬 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 부분 숨기기 */
+  text-overflow: ellipsis; /* "..." 표시 */
+  width: 100%; /* 부모 요소의 가로폭에 맞게 설정 */
+  max-width: 200px; /* 원하는 최대 너비 설정 */
+  padding: 10px;
+}
+
+.seller-name2 {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.product-name2 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.product-price2 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.description2 {
+  font-size: 12px;
+  color: #666;
+  text-overflow: ellipsis; 
+  overflow: hidden;
+}
+
+
+
+.pd-reg-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 130%;
+}
+
+.pd-reg-container div {
+  /* display: flex; */
+  flex-wrap: wrap; 
+}
+
+.btn1 {
+  color: #767474;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 5px;
+  display: inline-block;
+  padding: 10px 20px; /* 버튼의 내부 여백 추가 */
+}
+
+.btn1:hover {
+  color: #3DBDFD;
+}
+
+.btn1.active {
+  color: orange; 
+}
+
+.f-count {
+  font-size: 16px;
+  font-weight: bold;
+  color: #767474;
+  text-align: right; /* 텍스트 오른쪽 정렬 */
+  margin-top: 10px; /* 버튼과의 간격 */
+  margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
+  display: block; /* 텍스트를 새로운 줄로 만듬 */
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.purchase-info {
+  margin-top: 10px;
+  font-size: 14px;
   
-  .btn1 {
-    color: #767474;
-    font-size: 17px;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 5px;
-    display: inline-block;
-    margin: 20px;
-    transition: all 0.3s ease;
-  }
-  
-  .btn1:hover {
-    color: #3DBDFD;
-  }
-  
-  .btn1.active {
-    color: orange; /* Active state color */
-  }
-  
-  .part {
-    font-size: 16px;
-    text-align: right; /* 텍스트를 오른쪽으로 정렬 */
-    margin-top: 10px; /* 버튼과의 간격 */
-  }
+}
+
+/* 테이블 스타일 */
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.product-table thead {
+  background-color: #f4f4f4;
+  border-top: 1px solid #333; /* 위쪽 선 */
+  border-bottom: 1px solid #333; /* 아래쪽 선 */
+}
+
+.product-table th,
+.product-table td {
+  padding: 10px;
+  text-align: center;
+}
+
+.product-table tbody tr {
+  border-bottom: 1px solid #ddd; /* 각 행 아래에 선 */
+}
+
+.product-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.product-table img {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
