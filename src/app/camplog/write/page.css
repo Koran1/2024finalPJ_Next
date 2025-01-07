@@ -1,0 +1,21 @@
+/* .fade-enter {
+  opacity: 0;
+  top: calc(${tag.tagY - 107}px) !important;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  top: calc(${tag.tagY - 57}px) !important;
+  transition: opacity 500ms, top 500ms ease-out;
+}
+
+.fade-exit {
+  opacity: 1;
+  top: calc(${tag.tagY - 57}px) !important;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  top: calc(${tag.tagY - 107}px) !important;
+  transition: opacity 500ms, top 500ms ease-out;
+} */

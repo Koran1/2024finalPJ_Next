@@ -98,6 +98,7 @@ export default function RootLayout({ children }) {
     isShow ? setPhoto(null) : setPhoto(e.currentTarget);
   }
 
+
   // 안 읽은 메시지 수 조회
   const [unReadMessages, setUnReadMessages] = useState(0);
 
@@ -178,6 +179,7 @@ export default function RootLayout({ children }) {
             </div>
           </nav>
         </header>
+        <Link href={`/book/detail?bookIdx=${bookIdx}`}>예약상세 임시</Link>
         {children}
         <hr />
         <footer className="container">
