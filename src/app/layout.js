@@ -179,7 +179,6 @@ export default function RootLayout({ children }) {
             </div>
           </nav>
         </header>
-        <Link href={`/book/detail?bookIdx=${bookIdx}`}>예약상세 임시</Link>
         {children}
         <hr />
         <footer className="container">

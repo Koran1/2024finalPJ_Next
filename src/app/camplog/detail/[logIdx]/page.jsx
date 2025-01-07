@@ -12,12 +12,15 @@ import { CSSTransition } from 'react-transition-group';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import './page.css';
 import { Close, Delete, Report } from '@mui/icons-material';
+import useAuthStore from '../../../../../store/authStore';
 
 function Page({ params }) {
     // 로그 내용 변수
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const imgUrl = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
-    const userIdx = "1";
+
+    const { user } = useAuthStore();
+
     const router = useRouter();
     const [isIconHover, setIsIconHover] = useState(false);
     const [data, setData] = useState([]);
@@ -55,20 +58,21 @@ function Page({ params }) {
     // 로그 내용 함수들
     useEffect(() => {
         const fetchData = async () => {
+            if (!user) return;
             try {
                 const { logIdx } = await Promise.resolve(params);
 
-                const apiUrl = `${baseUrl}/camplog/detail?logIdx=${logIdx}&userIdx=${userIdx}`;
+                const apiUrl = `${baseUrl}/camplog/detail?logIdx=${logIdx}&userIdx=${user.userIdx}`;
                 const response = await axios.get(apiUrl);
                 const data = response.data;
                 console.log("response : ", response);
                 console.log("data.data.rvo.reportCount : ", data.data.rvo[0].reportCount);
                 console.log("data.data.logVO.logIsActive : ", data.data.logVO.logIsActive);
                 // 신고됐거나 삭제된 로그 글은 들어오면 경고창과 함께 리스트로 이동
-                if(data.data.rvo[0].reportCount >= 3){
+                if (data.data.rvo[0].reportCount >= 3) {
                     alert("3명이상의 유저에게 신고된 로그글 입니다.");
                     window.location.href = "../list";
-                }else if(data.data.logVO.logIsActive == 0){
+                } else if (data.data.logVO.logIsActive == 0) {
                     alert("삭제된 로그 글 입니다.");
                     window.location.href = "../list";
                 }
@@ -92,7 +96,7 @@ function Page({ params }) {
                     }));
                     setDoRecommend(data.doRecommend);
                     // 사용자 인지 아닌지 임의로 설정하기
-                    setIsWriter(response.data.data.userVO.userIdx === userIdx ? true : false);
+                    setIsWriter(response.data.data.userVO.userIdx === user.userIdx ? true : false);
                     // setIsWriter(response.data.data.userVO.userIdx === userIdx ? false : true);
                 } else {
                     alert(response.data.message);
@@ -142,9 +146,10 @@ function Page({ params }) {
         router.push(`/deal/detail/${dealIdx}`);
     }
     const handleToogleReCommend = async () => {
+        if (!user) return;
         try {
             console.log("클릭함");
-            const apiUrl = `${baseUrl}/camplog/toggleRecommend?logIdx=${data.logVO.logIdx}&userIdx=${userIdx}&doRecommend=${doRecommend ? 1 : 0}`;
+            const apiUrl = `${baseUrl}/camplog/toggleRecommend?logIdx=${data.logVO.logIdx}&userIdx=${user.userIdx}&doRecommend=${doRecommend ? 1 : 0}`;
             const response = await axios.get(apiUrl);
             if (response.data.success) {
                 response.data.data === "1" ? setDoRecommend(true) : setDoRecommend(false)
@@ -165,14 +170,14 @@ function Page({ params }) {
     //         }
     //     }
     // }
-    
+
     // 모달로 바꾼 로그 글 삭제 함수(모달로 바꾸면서 confirm필요없어짐 confirm 차이)
     const handleLogDelete = async () => {
         const apiUrl = `${baseUrl}/camplog/logDelete?logIdx=${data.logVO.logIdx}`;
         const response = await axios.post(apiUrl);
         if (response.data.success) {
             router.push(`/camplog/list`);
-        }else {
+        } else {
             alert(response.data.message)
         }
     }
@@ -181,13 +186,14 @@ function Page({ params }) {
     }
 
     const logReport = async () => {
+        if (!user) return;
         const API_URL = `${baseUrl}/camplog/logReport`;
         const sendData = new FormData();
         try {
             console.log("logReport, data.logVO.logIdx", data.logVO.logIdx);
             console.log("logReport, reportCategory", reportCategory);
             console.log("logReport, reportContent", reportContent);
-            sendData.append("userIdx", userIdx);
+            sendData.append("userIdx", user.userIdx);
             sendData.append("reportTableIdx", data.logVO.logIdx);
             sendData.append("reportCategory", reportCategory);
             sendData.append("reportContent", reportContent);
@@ -211,22 +217,22 @@ function Page({ params }) {
             console.log("getComm logIdx : ", logIdx);
             const API_URL = `${baseUrl}/camplog/commentList?logIdx=${logIdx}`;
             await axios.get(API_URL)
-            .then((res) => {
-                console.log("res : ", res);
-                console.log("rvo : ", res.data.data.rvo);
-                const commentsList = res.data.data.lcvo.filter(comment => !comment.commentIdx);
-                const replysList = res.data.data.lcvo.filter(comment => comment.commentIdx);
-                console.log("commentsList : ", commentsList);
-                console.log("replyList : ", replysList);
-                setLogCommentList(commentsList);
-                setLogReplyList(replysList);
-                setUserNickname(res.data.data.userNicknameMap);
-                setReportInfo(res.data.data.rvo);
+                .then((res) => {
+                    console.log("res : ", res);
+                    console.log("rvo : ", res.data.data.rvo);
+                    const commentsList = res.data.data.lcvo.filter(comment => !comment.commentIdx);
+                    const replysList = res.data.data.lcvo.filter(comment => comment.commentIdx);
+                    console.log("commentsList : ", commentsList);
+                    console.log("replyList : ", replysList);
+                    setLogCommentList(commentsList);
+                    setLogReplyList(replysList);
+                    setUserNickname(res.data.data.userNicknameMap);
+                    setReportInfo(res.data.data.rvo);
 
-                // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
-                // setDisableCommentCount (res.data.data.lcvo.filter(comment => comment.logCommentIsActive == 0).length);
-            })
-            .catch((err) => console.log(err));        
+                    // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
+                    // setDisableCommentCount (res.data.data.lcvo.filter(comment => comment.logCommentIsActive == 0).length);
+                })
+                .catch((err) => console.log(err));
         } catch (error) {
             alert("댓글 리스트 불러오기 오류 : " + error);
         } finally {
@@ -246,21 +252,21 @@ function Page({ params }) {
     }, [isShow, commentIdx]);
 
     const commentSubmit = async () => {
-        if(logCommentContent.trim() == ""){
+        if (logCommentContent.trim() == "") {
             alert("댓글을 입력해주세요.")
-        } else{
+        } else {
             const { logIdx } = await Promise.resolve(params);
             const API_URL = `${baseUrl}/camplog/commentWrite`;
             const data = new FormData();
             try {
                 data.append("logIdx", logIdx);
                 data.append("logCommentContent", logCommentContent);
-    
+
                 console.log(data.get("logIdx"));
                 console.log(data.get("logCommentContent"));
                 // 서버에 저장
                 await axios.post(API_URL, data);
-    
+
                 // 페이지 새로 고침
                 window.location.reload(); // 페이지 새로 고침
             } catch (error) {
@@ -272,29 +278,30 @@ function Page({ params }) {
     // 답글 작성 버튼
     const replyWrite = (commIdx) => {
         // 로딩 후 처음 클릭 시 실행
-        if(commentIdx == "") {setIsShow(!isShow)};
+        if (commentIdx == "") { setIsShow(!isShow) };
         // 클릭한 댓글의 답글 작성필드가 열려 있을 경우
-        if(commentIdx == commIdx) {setIsShow(!isShow)};
+        if (commentIdx == commIdx) { setIsShow(!isShow) };
         // 클릭한 댓글의 답글 작성필드가 닫혀 있을 경우
-        if(commentIdx != commIdx) {setCommentIdx(commIdx)};
+        if (commentIdx != commIdx) { setCommentIdx(commIdx) };
     }
-    
+
     const replySubmit = async () => {
-        if(logReplyContent.trim() == ""){
+        if (!user) return;
+        if (logReplyContent.trim() == "") {
             alert("답글을 입력해주세요.")
-        }else{
+        } else {
             const { logIdx } = await Promise.resolve(params);
             const API_URL = `${baseUrl}/camplog/commentWrite`;
             const data = new FormData();
             try {
                 data.append("logIdx", logIdx);
-                data.append("userIdx", userIdx);
+                data.append("userIdx", user.userIdx);
                 data.append("logCommentContent", logReplyContent);
                 data.append("commentIdx", commentIdx);
-    
+
                 // 서버에 저장
                 await axios.post(API_URL, data);
-    
+
                 // 페이지 새로 고침
                 window.location.reload();
             } catch (error) {
@@ -322,21 +329,21 @@ function Page({ params }) {
     };
 
     const handleModalClick = (comment, modalType) => {
-        if(comment == "camplog"){
+        if (comment == "camplog") {
             setSelectedComment("");
-            if(modalType == "delete"){
+            if (modalType == "delete") {
                 setDeleteModalOpen(true);
-            } else if(modalType == "report"){
+            } else if (modalType == "report") {
                 setReportCategory("스팸홍보 / 도배글 입니다.");
                 setReportContent("");
                 setReportModalOpen(true);
             }
-        }else{
+        } else {
             // 신고 버튼 클릭 시, 해당 댓글 정보를 모달에 전달
             setSelectedComment(comment);
-            if(modalType == "delete"){
+            if (modalType == "delete") {
                 setDeleteModalOpen(true);
-            } else if(modalType == "report"){
+            } else if (modalType == "report") {
                 setReportCategory("스팸홍보 / 도배글 입니다.");
                 setReportContent("");
                 setReportModalOpen(true);
@@ -353,10 +360,11 @@ function Page({ params }) {
     }
 
     const commentReport = async (comm) => {
+        if (!user) return;
         const API_URL = `${baseUrl}/camplog/commentReport`;
         const data = new FormData();
         try {
-            data.append("userIdx", userIdx);
+            data.append("userIdx", user.userIdx);
             data.append("reportTableIdx", comm.logCommentIdx);
             data.append("reportCategory", reportCategory);
             data.append("reportContent", reportContent);
@@ -380,7 +388,7 @@ function Page({ params }) {
     }
 
     if (error) {
-        return <div style={{color:'red'}}>{error}</div>
+        return <div style={{ color: 'red' }}>{error}</div>
     }
 
     return (
@@ -423,7 +431,7 @@ function Page({ params }) {
                                                 <>
                                                     {toggleIcon &&
                                                         <>
-                                                            <div style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "70px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", backgroundColor: "white" }} 
+                                                            <div style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "70px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", backgroundColor: "white" }}
                                                                 onClick={handleLogEdit}
                                                             >
                                                                 <span style={{ color: "gray", margin: "17px 67px 0px 10px", fontWeight: "bold", }}>수정하기</span>
@@ -632,12 +640,12 @@ function Page({ params }) {
                 </Grid2>
                 <Grid2 size={3} />
             </Grid2>
-            
+
 
             {/* 댓글 */}
             <div>
                 <hr />
-                <div style={{maxWidth: "2000px", width:"80%", margin: "0 auto"}}>
+                <div style={{ maxWidth: "2000px", width: "80%", margin: "0 auto" }}>
                     {/* useState 사용해서 운영자가 신고 승인한 댓글 출력(공백)할 때마다 갯수 줄이기 */}
                     {/* <p>댓글 {logCommentList.length + logReplyList.length - disableCommentCount}개</p> */}
                     <p>댓글 {logCommentList.length + logReplyList.length}개</p>
@@ -665,11 +673,11 @@ function Page({ params }) {
                                     const day = String(commentTime.getDate()).padStart(2, '0');
                                     commentDisplayTime = `${year}.${month}.${day}`;
                                 }
-    
+
                                 let resultComment = "";
                                 // 신고 처리 조건
                                 const limitCount = 3;
-    
+
                                 const reportComment = commentReportInfo.find(report => report.reportTableIdx == comment.logCommentIdx);
                                 // 운영자가 신고 승인한 댓글(비워두기) 운영자가 승인하면 logCommentIsActive = 0으로 변경됨
                                 if (reportComment && comment.logCommentIsActive == 0) {
@@ -680,7 +688,7 @@ function Page({ params }) {
                                         </div>
                                     );
                                 }
-    
+
                                 // 현재 로그인한 유저의 idx == 신고한 유저 idx 일 때
                                 // if (reportComment && reportComment.userIdx == userIdx) {
                                 //     return (
@@ -690,7 +698,7 @@ function Page({ params }) {
                                 //         </div>
                                 //     );
                                 // }
-    
+
                                 // 신고 횟수 3회 이상이면 모든 유저에게 신고된 댓글로 표시
                                 if (reportComment && comment.logCommentIsActive != 0 && reportComment.reportCount >= limitCount) {
                                     resultComment = (
@@ -700,155 +708,155 @@ function Page({ params }) {
                                         </div>
                                     );
                                 }
-    
+
                                 // 한번도 신고되지 않았거나 신고 당한 횟수가 limitCount 미만인 댓글 출력
                                 if (reportComment == null || reportComment.reportCount < limitCount) {
                                     resultComment = (
                                         <div key={comment.logCommentIdx}>
                                             {/* 댓글만 출력 */}
-                                            {comment.logCommentIsActive == 1 && comment.logCommentIsDelete == 0? (
+                                            {comment.logCommentIsActive == 1 && comment.logCommentIsDelete == 0 ? (
                                                 <>
-                                                    <div style={{display: "flex", justifyContent: "space-between", margin: "20px 0", alignItems: "center"}}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", margin: "20px 0", alignItems: "center" }}>
                                                         {/* 유저 아바타 */}
                                                         <Avatar />
                                                         {/* 유저 닉네임 */}
-                                                        <span style={{flexGrow: "1", marginLeft: "20px"}}>
+                                                        <span style={{ flexGrow: "1", marginLeft: "20px" }}>
                                                             <a>{userNickname[comment.userIdx]}</a>
                                                         </span>
                                                         <div>
-                                                            <a style={{marginRight: "30px"}}>
+                                                            <a style={{ marginRight: "30px" }}>
                                                                 {/* 오늘로부터 시간 계산 24시간내에 범위면 ~시간 전, 24시간 넘으면 날짜 */}
                                                                 {commentDisplayTime}
                                                             </a>
                                                             {/* 댓글 작성자면 삭제, 아니면 신고버튼 보이게하기 */}
                                                             {/* { reportComment.userIdx == userIdx ?  */}
-                                                            { isWriter ? 
-                                                                (<IconButton onClick={() => handleModalClick(comment, "delete")}><Delete /></IconButton>):
-                                                                (<IconButton onClick={() => handleModalClick(comment, "report")}><img src='/images/siren-siren-svgrepo-com.svg' style={{width: "30px"}} /></IconButton>)
+                                                            {isWriter ?
+                                                                (<IconButton onClick={() => handleModalClick(comment, "delete")}><Delete /></IconButton>) :
+                                                                (<IconButton onClick={() => handleModalClick(comment, "report")}><img src='/images/siren-siren-svgrepo-com.svg' style={{ width: "30px" }} /></IconButton>)
                                                             }
                                                         </div>
                                                     </div>
                                                     {/* 댓글 내용 가져오기 */}
                                                     <div>
-                                                        <p style={{margin: "0 50px"}}>
+                                                        <p style={{ margin: "0 50px" }}>
                                                             {comment.logCommentContent}
                                                         </p>
                                                     </div>
-                                                    <div style={{textAlign: "right"}}>
-                                                        <Button style={{width: "80px", height: "30px", padding: "0"}} variant='contained' color='primary' onClick={() => replyWrite(comment.logCommentIdx)}
+                                                    <div style={{ textAlign: "right" }}>
+                                                        <Button style={{ width: "80px", height: "30px", padding: "0" }} variant='contained' color='primary' onClick={() => replyWrite(comment.logCommentIdx)}
                                                         >답글 작성</Button>
                                                     </div>
                                                     <hr />
                                                 </>
-                                                ) : (
-                                                    <div>
-                                                        <p>삭제된 댓글 입니다.</p>
-                                                        <hr />
-                                                    </div>
-                                                )
+                                            ) : (
+                                                <div>
+                                                    <p>삭제된 댓글 입니다.</p>
+                                                    <hr />
+                                                </div>
+                                            )
                                             }
                                         </div>
                                     );
                                 }
-    
+
                                 return (
                                     <div key={comment.logCommentIdx}>
                                         {resultComment}
                                         {/* 댓글에 해당하는 답글들 */}
                                         {
                                             logReplyList
-                                            .filter((reply) => reply.commentIdx === comment.logCommentIdx) // 해당 댓글에 대한 답글만 필터링
-                                            .map((reply) => {
-                                                const replyTime = new Date(reply.logCommentRegDate);
-                                                const replyTimeDiff = now - replyTime;
-                                                let replyDisplayTime;
-                                                if (replyTimeDiff < twentyFourHours) {
-                                                    const hoursAgo = Math.floor(replyTimeDiff / (60 * 60 * 1000));
-                                                    replyDisplayTime = `${hoursAgo} 시간 전`;
-                                                } else {
-                                                    const year = replyTime.getFullYear();
-                                                    const month = String(replyTime.getMonth() + 1).padStart(2, '0');
-                                                    const day = String(replyTime.getDate()).padStart(2, '0');
-                                                    replyDisplayTime = `${year}.${month}.${day}`;
-                                                }
-    
-                                                const reportReply = commentReportInfo.find(report => report.reportTableIdx == reply.logCommentIdx);
-    
-                                                // 운영자가 신고 승인한 답글(비워두기)
-                                                if (reportReply && reply.logCommentIsActive == 0) {
-                                                    return (
-                                                        <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
-                                                            {/* 답글 공백 */}
-                                                            <p>신고 승인 처리된 답글 입니다.</p>
-                                                            <hr />
-                                                        </div>
-                                                    );
-                                                }
-    
-                                                // 현재 로그인한 유저의 idx == 신고한 유저 idx 일 때
-                                                // if (reportReply && reportReply.userIdx == userIdx) {
-                                                //     return (
-                                                //         <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
-                                                //             <p>신고하신 답글 입니다.</p>
-                                                //             <hr />
-                                                //         </div>
-                                                //     );
-                                                // }
-    
-                                                // 신고 횟수 3회 이상이면 모든 유저에게 신고된 답글로 표시
-                                                // console.log(`reportIdx : ${reportReply.logCommentIdx} ,reportCount : ${reportReply.reportCount}`);
-                                                if (reportReply && reply.logCommentIsActive != 0 && reportReply.reportCount >= limitCount) {
-                                                    return (
-                                                        <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
-                                                            <p>신고된 답글 입니다.</p>
-                                                            <hr />
-                                                        </div>
-                                                    );
-                                                }
-    
-                                                // 한번도 신고되지 않은 답글들 출력
-                                                if (reportReply == null || reportReply.reportCount < limitCount) {
-                                                    return (
-                                                        <div key={reply.logCommentIdx}>
-                                                            {reply.logCommentIsActive == 1 && reply.logCommentIsDelete == 0 ? (
-                                                                // 답글 depth를 marginLeft으로 줌
-                                                                <div style={{ marginLeft: '50px' }}>
-                                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: "20px 0"}}>
-                                                                        <a style={{marginRight: "20px"}}>ㄴ</a>
-                                                                        <Avatar />
-                                                                        <span style={{ flexGrow: '1', marginLeft: '20px' }}>
-                                                                            <a>{userNickname[reply.userIdx]}</a>
-                                                                        </span>
-                                                                        <div>
-                                                                            <a style={{ marginRight: '30px' }}>
-                                                                                {replyDisplayTime}
-                                                                            </a>
-                                                                            {/* {reportReply.userIdx == userIdx ?  */}
-                                                                            {isWriter ? 
-                                                                                (<IconButton onClick={() => handleModalClick(reply, "delete")}><Delete /></IconButton>) : 
-                                                                                (<IconButton onClick={() => handleModalClick(reply, "report")}><img src="/images/siren-siren-svgrepo-com.svg" style={{ width: '30px' }} /></IconButton>)
-                                                                            }
+                                                .filter((reply) => reply.commentIdx === comment.logCommentIdx) // 해당 댓글에 대한 답글만 필터링
+                                                .map((reply) => {
+                                                    const replyTime = new Date(reply.logCommentRegDate);
+                                                    const replyTimeDiff = now - replyTime;
+                                                    let replyDisplayTime;
+                                                    if (replyTimeDiff < twentyFourHours) {
+                                                        const hoursAgo = Math.floor(replyTimeDiff / (60 * 60 * 1000));
+                                                        replyDisplayTime = `${hoursAgo} 시간 전`;
+                                                    } else {
+                                                        const year = replyTime.getFullYear();
+                                                        const month = String(replyTime.getMonth() + 1).padStart(2, '0');
+                                                        const day = String(replyTime.getDate()).padStart(2, '0');
+                                                        replyDisplayTime = `${year}.${month}.${day}`;
+                                                    }
+
+                                                    const reportReply = commentReportInfo.find(report => report.reportTableIdx == reply.logCommentIdx);
+
+                                                    // 운영자가 신고 승인한 답글(비워두기)
+                                                    if (reportReply && reply.logCommentIsActive == 0) {
+                                                        return (
+                                                            <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
+                                                                {/* 답글 공백 */}
+                                                                <p>신고 승인 처리된 답글 입니다.</p>
+                                                                <hr />
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    // 현재 로그인한 유저의 idx == 신고한 유저 idx 일 때
+                                                    // if (reportReply && reportReply.userIdx == userIdx) {
+                                                    //     return (
+                                                    //         <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
+                                                    //             <p>신고하신 답글 입니다.</p>
+                                                    //             <hr />
+                                                    //         </div>
+                                                    //     );
+                                                    // }
+
+                                                    // 신고 횟수 3회 이상이면 모든 유저에게 신고된 답글로 표시
+                                                    // console.log(`reportIdx : ${reportReply.logCommentIdx} ,reportCount : ${reportReply.reportCount}`);
+                                                    if (reportReply && reply.logCommentIsActive != 0 && reportReply.reportCount >= limitCount) {
+                                                        return (
+                                                            <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
+                                                                <p>신고된 답글 입니다.</p>
+                                                                <hr />
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    // 한번도 신고되지 않은 답글들 출력
+                                                    if (reportReply == null || reportReply.reportCount < limitCount) {
+                                                        return (
+                                                            <div key={reply.logCommentIdx}>
+                                                                {reply.logCommentIsActive == 1 && reply.logCommentIsDelete == 0 ? (
+                                                                    // 답글 depth를 marginLeft으로 줌
+                                                                    <div style={{ marginLeft: '50px' }}>
+                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: "20px 0" }}>
+                                                                            <a style={{ marginRight: "20px" }}>ㄴ</a>
+                                                                            <Avatar />
+                                                                            <span style={{ flexGrow: '1', marginLeft: '20px' }}>
+                                                                                <a>{userNickname[reply.userIdx]}</a>
+                                                                            </span>
+                                                                            <div>
+                                                                                <a style={{ marginRight: '30px' }}>
+                                                                                    {replyDisplayTime}
+                                                                                </a>
+                                                                                {/* {reportReply.userIdx == userIdx ?  */}
+                                                                                {isWriter ?
+                                                                                    (<IconButton onClick={() => handleModalClick(reply, "delete")}><Delete /></IconButton>) :
+                                                                                    (<IconButton onClick={() => handleModalClick(reply, "report")}><img src="/images/siren-siren-svgrepo-com.svg" style={{ width: '30px' }} /></IconButton>)
+                                                                                }
+                                                                            </div>
                                                                         </div>
+                                                                        <div>
+                                                                            <p style={{ margin: '0 80px' }}>
+                                                                                {reply.logCommentContent}
+                                                                            </p>
+                                                                        </div>
+                                                                        <hr />
                                                                     </div>
-                                                                    <div>
-                                                                        <p style={{ margin: '0 80px' }}>
-                                                                            {reply.logCommentContent}
-                                                                        </p>
-                                                                    </div>
-                                                                    <hr />
-                                                                </div>
                                                                 ) : (
                                                                     <div style={{ marginLeft: '50px' }}>
                                                                         <p>삭제된 답글 입니다.</p>
                                                                         <hr />
                                                                     </div>
                                                                 )
-                                                            }
-                                                        </div>
-                                                    );
-                                                }
-                                                
-                                            })}
+                                                                }
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                })}
                                         {/* 답글 작성 필드 */}
                                         {
                                             isShow && (commentIdx == comment.logCommentIdx) && (
@@ -866,12 +874,12 @@ function Page({ params }) {
                                                             inputRef={replyTextFieldRef}  // TextField에 ref 연결
                                                         />
                                                     </div>
-                                                    <div style={{marginTop:"20px", textAlign:"right"}}>
+                                                    <div style={{ marginTop: "20px", textAlign: "right" }}>
                                                         <Button
                                                             variant='contained'
                                                             color='primary'
                                                             onClick={replySubmit}
-                                                            // disabled={!isFormValid}
+                                                        // disabled={!isFormValid}
                                                         >등록</Button>
                                                     </div>
                                                     <hr />
@@ -899,16 +907,16 @@ function Page({ params }) {
                         />
                     </div>
                     {/* 댓글 등록 버튼 */}
-                    <div style={{marginTop:"20px", textAlign:"right"}}>
+                    <div style={{ marginTop: "20px", textAlign: "right" }}>
                         <Button
                             variant='contained'
                             color='primary'
                             onClick={() => commentSubmit(selectedComment)}
-                            // disabled={!isFormValid}
+                        // disabled={!isFormValid}
                         >등록</Button>
                     </div>
                 </div>
-    
+
                 {/* 삭제 모달 */}
                 <Modal
                     open={isDeleteModalOpen}
@@ -931,21 +939,21 @@ function Page({ params }) {
                             overflowY: 'auto', // 스크롤 기능 추가
                         }}
                     >
-                        <div style={{textAlign: "center"}}>
-                            <Report sx={{fontSize: "100px", color: "#FA5858"}} />
-                            <h4 style={{textAlign: "center", marginTop: "10px"}}>삭제 하시겠습니까?</h4>
-                            <div style={{marginTop:"30px", textAlign:"right", display:"flex", justifyContent: "space-between"}}>
+                        <div style={{ textAlign: "center" }}>
+                            <Report sx={{ fontSize: "100px", color: "#FA5858" }} />
+                            <h4 style={{ textAlign: "center", marginTop: "10px" }}>삭제 하시겠습니까?</h4>
+                            <div style={{ marginTop: "30px", textAlign: "right", display: "flex", justifyContent: "space-between" }}>
                                 <Button
                                     variant='contained'
                                     color='inherit'
                                     onClick={() => setDeleteModalOpen(false)}
-                                    style={{width: "100px", marginRight: "20px"}}
+                                    style={{ width: "100px", marginRight: "20px" }}
                                 >닫기</Button>
                                 <Button
                                     variant='contained'
                                     color='error'
                                     onClick={() => selectedComment === "" ? handleLogDelete() : commentDelete(selectedComment)}
-                                    style={{width: "100px"}}
+                                    style={{ width: "100px" }}
                                 >삭제</Button>
                             </div>
                         </div>
@@ -974,21 +982,21 @@ function Page({ params }) {
                     >
                         {/* 신고 내용 */}
                         <div>
-                            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                                <h4 style={{margin: "0"}}>신고하기</h4>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <h4 style={{ margin: "0" }}>신고하기</h4>
                                 <IconButton onClick={() => setReportModalOpen(false)}><Close /></IconButton>
                             </div>
                             <hr />
                             {
-                                selectedComment === "" ? 
-                                (<>
-                                    <p style={{marginBottom: "10px"}}><b>후기 글 작성자</b> : {data.userVO.userNickname}</p>
-                                </>)
-                                :
-                                (<>
-                                    <p style={{marginBottom: "10px"}}><b>댓글 작성자</b> : {userNickname[selectedComment.userIdx]}</p>
-                                    <p><b>댓글 내용</b> : {selectedComment.logCommentContent}</p>
-                                </>)
+                                selectedComment === "" ?
+                                    (<>
+                                        <p style={{ marginBottom: "10px" }}><b>후기 글 작성자</b> : {data.userVO.userNickname}</p>
+                                    </>)
+                                    :
+                                    (<>
+                                        <p style={{ marginBottom: "10px" }}><b>댓글 작성자</b> : {userNickname[selectedComment.userIdx]}</p>
+                                        <p><b>댓글 내용</b> : {selectedComment.logCommentContent}</p>
+                                    </>)
                             }
                             <hr />
                             <h5>신고사유</h5>
@@ -996,7 +1004,7 @@ function Page({ params }) {
                                 <FormControlLabel value="스팸홍보 / 도배글 입니다." control={<Radio size='small' />} label="스팸홍보 / 도배글 입니다." />
                                 <FormControlLabel value="음란물 입니다." control={<Radio size='small' />} label="음란물 입니다." />
                                 <FormControlLabel value="불법정보를 포함하고 있습니다." control={<Radio size='small' />} label="불법정보를 포함하고 있습니다." />
-                                <FormControlLabel value="청소년에게 유해한 내용입니다."  control={<Radio size='small' />} label="청소년에게 유해한 내용입니다." />
+                                <FormControlLabel value="청소년에게 유해한 내용입니다." control={<Radio size='small' />} label="청소년에게 유해한 내용입니다." />
                                 <FormControlLabel value="욕설/생명경시/혐오/차별적 표현입니다." control={<Radio size='small' />} label="욕설/생명경시/혐오/차별적 표현입니다." />
                                 <FormControlLabel value="개인정보 노출 게시물 입니다." control={<Radio size='small' />} label="개인정보 노출 게시물 입니다." />
                                 <FormControlLabel value={"불쾌한 표현이 있습니다."} control={<Radio size='small' />} label="불쾌한 표현이 있습니다." />
@@ -1012,7 +1020,7 @@ function Page({ params }) {
                                 maxRows={5}
                                 margin="normal"
                             />
-                            <div style={{marginTop:"20px", textAlign:"right"}}>
+                            <div style={{ marginTop: "20px", textAlign: "right" }}>
                                 <Button
                                     variant='contained'
                                     color='primary'

@@ -124,7 +124,7 @@ function Page() {
                                     mylogList.map((list) => (
                                         <tr key={list.logIdx}>
                                             <td style={{ textAlign: "left" }}>
-                                                <Link href={`/mycamp/mylog/detal/${list.logIdx}`}>
+                                                <Link href={`/camplog/detail/${list.logIdx}`}>
                                                     {list.logTitle}&nbsp;
                                                     {list.fileIdx ? <ImageIcon style={{ color: "#4D88FF" }} /> : null}&nbsp;
                                                     {list.commentCount && list.commentCount > 0 ? (
