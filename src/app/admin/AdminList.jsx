@@ -40,7 +40,7 @@ export default function AdminList() {
                 { path: '/admin/userReport', text: '신고내역관리' },
                 { path: '/admin/campList', text: '캠핑정보관리' },
                 { path: '/admin/campLogList', text: '캠핑로그관리' },
-                { path: '/admin/dealList', text: '캠핑거래관리' },
+                { path: '/admin/dealList', text: '캠핑마켓관리' },
                 { path: '/admin/noticeList', text: '공지사항관리' },
                 { path: '/admin/faqList', text: 'FAQ관리' },
                 { path: '/admin/qnaList', text: 'QNA관리' },

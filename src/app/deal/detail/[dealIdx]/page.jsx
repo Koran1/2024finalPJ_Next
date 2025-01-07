@@ -53,9 +53,10 @@ function Page({ params }) {
         if (data.success) {
           const dealData = data.data.deal;
           
-          // dealview가 0이고 판매자가 아닌 경우 메인으로 리다이렉트
+          // dealview가 0이고 판매자가 아닌 경우 상품 정보를 숨김
           if (dealData.dealview === 0 && user?.userIdx !== dealData.dealSellerUserIdx) {
-            router.push('/deal/dealMain');
+            setError('상품 정보를 볼 수 없습니다.');
+            setLoading(false);
             return;
           }
 
@@ -125,7 +126,12 @@ function Page({ params }) {
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-other-deals/${dealIdx}`);
       if (response.data.success) {
-        setSellerOtherDeals(response.data.data.deals);
+        // dealview가 0인 상품은 판매자에게만 보이도록 필터링
+        const filteredDeals = response.data.data.deals.filter(deal => 
+          deal.dealview === 1 || 
+          (deal.dealview === 0 && user?.userIdx === deal.dealSellerUserIdx)
+        );
+        setSellerOtherDeals(filteredDeals);
         setSellerOtherFiles(response.data.data.files);
       }
     } catch (error) {
