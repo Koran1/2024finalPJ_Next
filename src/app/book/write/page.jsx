@@ -3,7 +3,7 @@ import "./page.css";
 import 'react-date-range/dist/styles.css'; // 기본 스타일
 import 'react-date-range/dist/theme/default.css'; // 기본 테마 스타일
 import { useEffect, useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Button, IconButton, TextField } from '@mui/material';
 import useAuthStore from "../../../../store/authStore";
 import axios from "axios";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
@@ -11,13 +11,14 @@ import { DateRange } from 'react-date-range';
 import { addDays, set } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useSearchParams } from "next/navigation";
+import { ContentCopy, Phone, Place } from "@mui/icons-material";
 
 function Page() {
     const campIdx = useSearchParams().get("campIdx");
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const {isAuthenticated, token} = useAuthStore(); // 로그인 상태
+    // const {isAuthenticated, token} = useAuthStore(); // 로그인 상태
     const [amount, setAmount] = useState(150); // 결제 금액
     const [siteAndPrice, setSiteAndPrice] = useState([]); // 캠핑장 구역과 가격
     const [maxPeople, setMaxPeople] = useState(8); // 사이트 총 인원 제한
@@ -185,9 +186,10 @@ function Page() {
     }
 
     const handleSubmit = async () => {
-        // const API_URL = `${LOCAL_API_BASE_URL}/book/write`;
+        // 데이터 서버에 저장
+        const API_URL = `${LOCAL_API_BASE_URL}/book/write`;
         // 임시로 데이터 서버에 저장
-        const API_URL = `${LOCAL_API_BASE_URL}/book/saveData`;
+        // const API_URL = `${LOCAL_API_BASE_URL}/book/saveData`;
         const data = new FormData();
         const date = new Date();
         const YYMMDD = `${String(date.getFullYear()).slice(2)}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
@@ -200,9 +202,8 @@ function Page() {
             });
             data.append("orderId", orderId);
 
-            console.log(data);
-            // 서버에 데이터 임시 저장 DB에는 X
-            await axios.post(API_URL, data);
+            // console.log(data);
+            // await axios.post(API_URL, data); // 서버에 데이터 임시 저장 DB에는 X
 
             console.log("토스 서버 시작");
             
@@ -215,8 +216,37 @@ function Page() {
                 orderId: orderId, // 고유 주문 ID(값 변경) 캠핑장idx + 구역 + -YYMMDD + 랜덤수4자리
                 orderName: `${campData.facltNm} 예약 결제`,          // 결제할 때 표시될 제목(값 변경)
                 amount: formData.bookTotalPrice, // 실제 예약 데이터에 따라 금액 설정(값 변경)
-                successUrl: `${window.location.origin}/api/payments`,
-                failUrl: `${window.location.origin}/api/payments/fail`,
+                // successUrl: `${window.location.origin}/api/payments`,
+                // failUrl: `${window.location.origin}/api/payments/fail`,
+            }).then( async (paymentData) => {
+                console.log("결제 성공1");
+                const paymentKey = paymentData.paymentKey; // 결제 키 추출
+                console.log("paymentKey : ", paymentKey);
+                data.append("paymentKey", paymentKey);
+                const amount = paymentData.amount;
+                console.log("amount : ", amount);
+                
+                const url = "https://api.tosspayments.com/v1/payments/confirm"; // 결제 데이터 토스에 저장하기 위한 url
+                const secretKey = process.env.TOSS_SECRET_KEY; // 토스 비밀키
+                const basicToken = Buffer.from(`${secretKey}:`, "utf-8").toString("base64"); // 인증용 Basic 토큰 생성
+                
+                // 토스서버에 보낼 결제 확인 데이터
+                await fetch(url, {
+                    method: "post",
+                    body: JSON.stringify({
+                        orderId,
+                        amount,
+                        paymentKey, // 결제 키
+                    }),
+                    headers: {
+                        Authorization: `Basic ${basicToken}`, // 인증정보
+                        "Content-Type": "application/json",   // JSON 데이터 형식
+                    },
+                }).then((res) => res.json()); // 응답을 JSON으로 변환
+
+                console.log("결제 성공2");
+                console.log(data);
+                await axios.post(API_URL, data); // 서버에 데이터 저장
             });
         } catch (error) {
             alert("결제 중 오류가 발생했습니다.");
@@ -243,12 +273,12 @@ function Page() {
         // 클립보드에 텍스트 복사
         navigator.clipboard.writeText(textToCopy)
         .then(() => {
-            alert('복사되었습니다!');
+            alert('주소가 복사되었습니다!');
         })
         .catch((err) => {
             console.error('복사 실패:', err);
         });
-      };
+    };
 
     // 데이터 가져올 때 로딩
     if (loading) {
@@ -293,11 +323,11 @@ function Page() {
                 <img src={campData.firstImageUrl} style={{ width: '150px', height: '150px', margin: "0 5px", borderRadius: "10px"}} />
                 <div>
                     <h3>{campData.facltNm}</h3>
-                    <div style={{display: "flex", width: "430px", justifyContent: "space-between"}}>
-                        <p style={{width: "360px", margin: "auto"}} id="addressText">{campData.addr1}</p>
-                        <Button style={{width: "70px"}} onClick={handleCopy}>복사하기</Button>
+                    <div style={{display: "flex", width: "430px", justifyContent: "space-between", alignItems: "center"}}>
+                        <p style={{margin: "0"}} id="addressText"><Place sx={{color:"#4D88FF"}} /> {campData.addr1}</p>
+                        <IconButton onClick={handleCopy}><ContentCopy style={{color: "#0093ff"}} /></IconButton>
                     </div>
-                    { campData.tel && <p>{campData.tel}</p> }
+                    { campData.tel && <p><Phone sx={{color:"#4D88FF"}} /> {campData.tel}</p> }
                 </div>
             </div>
             {/* 예약 날짜 선택 */}
@@ -317,7 +347,7 @@ function Page() {
             <div>
                 <h5>↓ 캠핑구역(사이트) 선택</h5>
                 {Array.isArray(siteAndPrice) && siteAndPrice.map((item, index) => (
-                    <div key={index} style={{border: "1px solid black", borderRadius: "10px",display: "flex", marginBottom: "20px", padding: "5px"}}>
+                    <div key={index} style={{border: "2px solid #4D88FF", borderRadius: "10px",display: "flex", marginBottom: "20px", padding: "5px"}}>
                         <img src={item.siteImg} style={{ width: '200px', height: '200px', marginRight: "6px", borderRadius: "10px"}} />
                         <div style={{width: "380px"}}>
                             <h3>{item.site} 구역({item.siteKor})</h3>
