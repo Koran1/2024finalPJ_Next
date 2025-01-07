@@ -100,12 +100,12 @@ export default function ProductSearchPage() {
   const filteredProducts = products.filter((prod) => {
     // 기본 카테고리 필터링
     const categoryMatch = selectedCategories === '전체' || prod.dealCategory === selectedCategories;
-    
+
     // dealview 조건 추가
-    const viewCondition = 
+    const viewCondition =
       prod.dealview === 1 || // 활성화된 상품은 모두에게 보임
       (prod.dealview === 0 && user?.userIdx === prod.dealSellerUserIdx); // 비활성화된 상품은 판매자에게만 보임
-      
+
     return categoryMatch && viewCondition;
   });
 
@@ -225,10 +225,18 @@ export default function ProductSearchPage() {
       {/* 상품 목록 */}
       <div className="product-grid-wrapper">
         <div className="product-grid">
-          {filteredProducts.map((product) => (
-            <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
+          {filteredProducts.length > 0 ?
+            filteredProducts.map((product) => (
+              <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
 
-          ))}
+            ))
+            :
+            <Box>
+              <h3>
+                검색 결과가 없습니다!
+              </h3>
+            </Box>
+          }
         </div>
 
       </div>

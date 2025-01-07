@@ -105,6 +105,7 @@ function Page(props) {
     };
 
     useEffect(() => {
+
         window.addEventListener("scroll", handleScroll);
         return () => {
             window.removeEventListener("scroll", handleScroll);
@@ -198,6 +199,7 @@ function Page(props) {
             
             {/* 리스트 영역 */}
             <div className="camplog-list-container">
+
                 {camplogList.length === 0 ? (
                     <p>등록된 캠핑로그가 없습니다.</p>
                 ) : (

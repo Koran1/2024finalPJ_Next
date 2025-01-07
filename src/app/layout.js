@@ -11,9 +11,12 @@ import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
+import Script from 'next/script';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
+
+  const KAKAO_KEY = process.env.NEXT_PUBLIC_KAKAO_KEY;
   // zustand 상태 가져오기
   const { isAuthenticated, user, logout, isExpired } = useAuthStore();
 
@@ -95,6 +98,7 @@ export default function RootLayout({ children }) {
     isShow ? setPhoto(null) : setPhoto(e.currentTarget);
   }
 
+
   // 안 읽은 메시지 수 조회
   const [unReadMessages, setUnReadMessages] = useState(0);
 
@@ -122,6 +126,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <Script
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&libraries=services,clusterer,drawing&autoload=false`}
+          strategy="beforeInteractive"
+        />
         <header data-bs-theme="dark" style={{ height: '38px' }}>
           <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark" >
             <div className="container-fluid">
@@ -158,7 +166,7 @@ export default function RootLayout({ children }) {
                       onClose={() => setPhoto(null)}
                     >
                       {/* 글로벌 css에 있음 */}
-                      <MenuItem><Link className='nav-menu' href={"/mycamp/plan "}>나의캠핑</Link></MenuItem>
+                      <MenuItem><Link className='nav-menu' href={"/mycamp/plan/list"}>나의캠핑</Link></MenuItem>
                       <MenuItem ><Link className='nav-menu' href={"/mypage"}>마이페이지</Link></MenuItem>
                       <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
                     </Menu></>
