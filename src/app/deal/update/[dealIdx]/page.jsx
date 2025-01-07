@@ -961,22 +961,6 @@ function Page() {
           variant="contained" 
           onClick={handleCancel} 
           sx={{ mt: 2, width: '180px', fontSize: '20px' }}>취소</Button>
-        
-
-        {/* 관리자 임시 버튼, 향후 관리자 페이지 작성 시 관리자idx 25 삭제 필요 */}
-        {user?.userIdx === "25" && (
-          <>
-            &nbsp;&nbsp;&nbsp;
-            <Button 
-              variant="contained" 
-              color={isHidden ? "success" : "error"}
-              onClick={handleVisibilityToggle}
-              sx={{ mt: 2, width: '180px', fontSize: '20px' }}
-            >
-              {isHidden ? 'Active' : 'Inactive'}
-            </Button>
-          </>
-        )}
       </div>
       <br /><br />
     </div>

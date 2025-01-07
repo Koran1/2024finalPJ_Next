@@ -100,12 +100,12 @@ export default function ProductSearchPage() {
   const filteredProducts = products.filter((prod) => {
     // 기본 카테고리 필터링
     const categoryMatch = selectedCategories === '전체' || prod.dealCategory === selectedCategories;
-
+    
     // dealview 조건 추가
-    const viewCondition =
+    const viewCondition = 
       prod.dealview === 1 || // 활성화된 상품은 모두에게 보임
       (prod.dealview === 0 && user?.userIdx === prod.dealSellerUserIdx); // 비활성화된 상품은 판매자에게만 보임
-
+      
     return categoryMatch && viewCondition;
   });
 
@@ -143,11 +143,14 @@ export default function ProductSearchPage() {
   // 2. 조회순
   const sortByUserViewCount = () => {
     const sortedProducts = [...products]
-      .sort((a, b) =>
-        b.dealUserViewCount - a.dealUserViewCount
-      )
-    console.log(sortedProducts);
-    setProducts(sortedProducts)
+      .sort((a, b) => {
+        // dealCount를 숫자로 변환하여 비교
+        const aCount = parseInt(a.dealCount) || 0;
+        const bCount = parseInt(b.dealCount) || 0;
+        return bCount - aCount;
+      });
+    console.log("조회순 정렬:", sortedProducts);
+    setProducts(sortedProducts);
   }
 
   // 3. 가격순
@@ -160,7 +163,12 @@ export default function ProductSearchPage() {
     setProducts(sortedProducts)
   }
 
-
+  // 카테고리별 상품 수를 계산하는 함수 추가
+  const getCategoryCount = (category) => {
+    return products.filter(product => 
+      category === "전체" ? true : product.dealCategory === category
+    ).length;
+  };
 
   return (
     <div className="pd-reg-container">
@@ -203,15 +211,17 @@ export default function ProductSearchPage() {
       {/* 카테고리 필터 */}
       <div className="categories">
         {[
-          "전체", "텐트/타프", "테이블", "의자", "가방/스토리지", "취미/게임", "침구류",
-          "의류/신발", "휴대용품", "난방/화로", "반려동물용품", "취사도구", "디지털기기",
-          "안전보안", "기타 물품"
-        ].map((category) => (
+          "전체", "텐트/타프", "식품/음료", "휴대용품", "가방/스토리지", "취미/게임", "침구류",
+          "의류/신발", "위생용품", "난방/화로", "반려동물용품", "취사도구", "디지털기기",
+          "안전보안", "뷰티/미용", "테이블/의자", "기타 물품"
+        ].filter(category => 
+          category === "전체" || getCategoryCount(category) > 0
+        ).map((category) => (
           <button
             key={category}
             className={`category ${selectedCategories.includes(category) ? 'active' : ''}`}
             onClick={() => toggleCategory(category)}>
-            {category}
+            {category} {category !== "전체" && `(${getCategoryCount(category)})`}
           </button>
         ))}
       </div>
@@ -225,18 +235,10 @@ export default function ProductSearchPage() {
       {/* 상품 목록 */}
       <div className="product-grid-wrapper">
         <div className="product-grid">
-          {filteredProducts.length > 0 ?
-            filteredProducts.map((product) => (
-              <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
+          {filteredProducts.map((product) => (
+            <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
 
-            ))
-            :
-            <Box>
-              <h3>
-                검색 결과가 없습니다!
-              </h3>
-            </Box>
-          }
+          ))}
         </div>
 
       </div>

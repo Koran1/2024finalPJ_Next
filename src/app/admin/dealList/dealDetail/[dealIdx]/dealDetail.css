@@ -1,38 +1,40 @@
-.detail-container {
+.product-detail-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  margin-top: 80px;
 }
 
 .product-main {
   display: flex;
-  position: relative;
+  margin-bottom: 40px;
 }
 
-.images-container {
+.product-images {
   display: flex;
-  align-items: flex-start;
+  gap: 20px;
 }
 
 .small-images {
-  margin-right: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.small-image {
+.small-images img {
   width: 90px;
   height: 90px;
-  object-fit: fill;
-  min-width: 100%;
-  min-height: 100%;
+  object-fit: cover;
   border: 1px solid #ccc;
   border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s;
 }
 
-.main-image-container {
+.small-images img.active {
+  border: 2px solid #1976d2;
+}
+
+.main-image {
   width: 500px;
   height: 500px;
   display: flex;
@@ -43,16 +45,17 @@
   background-color: #fff;
 }
 
-.product-image {
+.main-image img {
   width: 100%;
   height: 100%;
-  object-fit: fill;
-  min-width: 100%;
-  min-height: 100%;
+  object-fit: contain;
+  border: 1px solid #ccc;
 }
 
 .product-info {
+  flex: 1;
   margin-left: 40px;
+  padding: 20px;
 }
 
 .like-btn {
@@ -585,4 +588,69 @@
 .seller-products .product-item {
   position: relative;
   /* 기존 스타일 유지 */
+}
+
+/* AdminList와의 레이아웃을 위한 추가 스타일 */
+.product-images {
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.product-info {
+  flex: 1;
+  margin-left: 40px;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (max-width: 1200px) {
+  .product-detail-container {
+    padding: 10px;
+  }
+}
+
+/* 관리자 버튼 컨테이너 */
+.admin-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+/* 상품 상태 변경 버튼 스타일 */
+.status-toggle-button {
+  width: 150px;
+  height: 50px;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* 관리자 수정 버튼 스타일 */
+.admin-edit-button {
+  width: 150px !important;
+  height: 50px;
+  padding: 10px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+}
+
+/* 기존 버튼 스타일 유지 */
+.status-toggle-button.active {
+  background-color: #1976d2;
+  color: white;
+}
+
+.status-toggle-button.inactive {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.status-toggle-button:hover,
+.admin-edit-button:hover {
+  opacity: 0.9;
 }

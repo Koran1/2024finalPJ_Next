@@ -365,3 +365,9 @@
   line-height: 20px;
   font-weight: bold;
 }
+
+.pd-reg-container .view-count {
+    font-size: 14px;
+    color: #767474;
+    margin-top: 5px;
+}

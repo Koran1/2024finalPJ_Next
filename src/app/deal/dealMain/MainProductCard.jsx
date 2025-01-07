@@ -4,6 +4,7 @@ import Link from 'next/link';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function MainProductCard({ product, favProducts }) {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -90,6 +91,11 @@ function MainProductCard({ product, favProducts }) {
                     <div className="title">{product.dealTitle}</div>
                     <div className="price">
                         {product.dealPrice == 0 ? '나눔' : `${product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
+                    </div>
+                    {/* 조회수 */}
+                    <div className="view-count">
+                        <VisibilityIcon style={{ fontSize: '1.2rem' }} />
+                        <span> {product.dealCount}</span>
                     </div>
                 </div>
             </Link>
