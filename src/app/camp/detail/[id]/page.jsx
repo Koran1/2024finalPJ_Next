@@ -171,7 +171,10 @@ function Page() {
 
                         {/* 예약 및 수정 버튼 */}
                         <div className="action-buttons">
-                            <button className="reserve-btn" onClick={() => router.push(`/book/write?campIdx=${campIdx}`)}>예약하기</button>
+                            <button className="reserve-btn" 
+                                onClick={()=> userIdx > 0 ? router.push(`/book/write?campIdx=${campIdx}`) : 
+                                (alert("로그인 후 예약작성이 가능합니다")) }
+                            >예약하기</button>
                             {/* <button className="info-request-btn" onClick={() => { alert("report 창으로") }}>정보수정 요청</button> */}
                         </div>
                     </div>

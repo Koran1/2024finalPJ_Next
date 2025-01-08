@@ -25,7 +25,11 @@ export default async function handler(req, res) {
       }).then((res) => res.json()); // 응답을 JSON으로 변환
 
       const API_URL = `${LOCAL_API_BASE_URL}/book/write`;
-      await axios.post(API_URL, orderId, {
+      await axios.post(API_URL, null, {
+        params : {
+          orderId: orderId,
+          paymentKey: paymentKey
+        }, 
         headers: {
           "Content-Type": "application/json",
         },

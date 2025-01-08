@@ -329,7 +329,7 @@ function Page() {
                                                 {/* 날짜 */}
                                                 <p className="date">{list.date}</p>
                                             </div>
-                                            <Button variant="contained" size="small" sx={{ borderRadius: "13px" }}>
+                                            <Button href={`/book/detail?bookIdx=${list.id}`} variant="contained" size="small" sx={{ borderRadius: "13px" }}>
                                                 예약 정보 확인
                                             </Button>
                                         </div>

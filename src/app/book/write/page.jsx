@@ -4,7 +4,6 @@ import 'react-date-range/dist/styles.css'; // 기본 스타일
 import 'react-date-range/dist/theme/default.css'; // 기본 테마 스타일
 import { useEffect, useState } from 'react';
 import { Button, IconButton, TextField } from '@mui/material';
-import useAuthStore from "../../../../store/authStore";
 import axios from "axios";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
 import { DateRange } from 'react-date-range';
@@ -12,13 +11,14 @@ import { addDays, set } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useSearchParams } from "next/navigation";
 import { ContentCopy, Phone, Place } from "@mui/icons-material";
+import useAuthStore from "../../../../store/authStore";
 
 function Page() {
+    const { user } = useAuthStore();
     const campIdx = useSearchParams().get("campIdx");
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    // const {isAuthenticated, token} = useAuthStore(); // 로그인 상태
     const [amount, setAmount] = useState(150); // 결제 금액
     const [siteAndPrice, setSiteAndPrice] = useState([]); // 캠핑장 구역과 가격
     const [maxPeople, setMaxPeople] = useState(8); // 사이트 총 인원 제한
@@ -44,6 +44,7 @@ function Page() {
 
     const [formData, setFormData] = useState({
         campIdx: campIdx,
+        userIdx: "",
         // 날짜(달력 선택)
         bookCheckInDate :  new Date().toLocaleDateString('en-CA'),
         bookCheckOutDate : addDays(new Date(), 3).toLocaleDateString('en-CA'),
@@ -63,7 +64,6 @@ function Page() {
         bookCar1 : "",
         bookCar2 : "",
         bookRequest : "",
-        // 주문 번호
     });
 
     const getData = async () => {
@@ -104,6 +104,10 @@ function Page() {
     };
 
     useEffect(() => {
+        if (!user) {
+            alert("로그인 후 예약작성이 가능합니다.");
+            window.location.href = "../";
+        }
         getData();
     }, []);
 
@@ -186,15 +190,16 @@ function Page() {
     }
 
     const handleSubmit = async () => {
-        // 데이터 서버에 저장
-        const API_URL = `${LOCAL_API_BASE_URL}/book/write`;
-        // 임시로 데이터 서버에 저장
-        // const API_URL = `${LOCAL_API_BASE_URL}/book/saveData`;
+        // 데이터 DB에 바로 저장
+        // const API_URL = `${LOCAL_API_BASE_URL}/book/write`;
+        // 데이터 서버에 저장 DB에는 저장 안됨 결제하고 나서 DB에 저장과 동시에 서버에 남아있던 데이터 제거
+        const API_URL = `${LOCAL_API_BASE_URL}/book/saveData`;
         const data = new FormData();
         const date = new Date();
         const YYMMDD = `${String(date.getFullYear()).slice(2)}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}`;
-        const randomNumber = Math.floor(Math.random() * 10000).toString().padStart(4, '0');;  // 0부터 9999까지의 랜덤 숫자 생성 빈자리수수는 0으로 넣어줌
+        const randomNumber = Math.floor(Math.random() * 10000).toString().padStart(4, '0');;  // 0부터 9999까지의 랜덤 숫자 생성 빈자리수는 0으로 넣어줌
         const orderId = `${campIdx}-${formData.bookSelectedZone}-${YYMMDD + randomNumber}`
+        formData.userIdx = user.userIdx;
         try {
             // 서버에 보낼거 한번에 넣기
             Object.keys(formData).forEach((key) => {
@@ -202,8 +207,8 @@ function Page() {
             });
             data.append("orderId", orderId);
 
-            // console.log(data);
-            // await axios.post(API_URL, data); // 서버에 데이터 임시 저장 DB에는 X
+            console.log(data);
+            await axios.post(API_URL, data); // 서버에 데이터 임시 저장 DB에는 X
 
             console.log("토스 서버 시작");
             
@@ -216,39 +221,11 @@ function Page() {
                 orderId: orderId, // 고유 주문 ID(값 변경) 캠핑장idx + 구역 + -YYMMDD + 랜덤수4자리
                 orderName: `${campData.facltNm} 예약 결제`,          // 결제할 때 표시될 제목(값 변경)
                 amount: formData.bookTotalPrice, // 실제 예약 데이터에 따라 금액 설정(값 변경)
-                // successUrl: `${window.location.origin}/api/payments`,
-                // failUrl: `${window.location.origin}/api/payments/fail`,
-            }).then( async (paymentData) => {
-                console.log("결제 성공1");
-                const paymentKey = paymentData.paymentKey; // 결제 키 추출
-                console.log("paymentKey : ", paymentKey);
-                data.append("paymentKey", paymentKey);
-                const amount = paymentData.amount;
-                console.log("amount : ", amount);
-                
-                const url = "https://api.tosspayments.com/v1/payments/confirm"; // 결제 데이터 토스에 저장하기 위한 url
-                const secretKey = process.env.TOSS_SECRET_KEY; // 토스 비밀키
-                const basicToken = Buffer.from(`${secretKey}:`, "utf-8").toString("base64"); // 인증용 Basic 토큰 생성
-                
-                // 토스서버에 보낼 결제 확인 데이터
-                await fetch(url, {
-                    method: "post",
-                    body: JSON.stringify({
-                        orderId,
-                        amount,
-                        paymentKey, // 결제 키
-                    }),
-                    headers: {
-                        Authorization: `Basic ${basicToken}`, // 인증정보
-                        "Content-Type": "application/json",   // JSON 데이터 형식
-                    },
-                }).then((res) => res.json()); // 응답을 JSON으로 변환
-
-                console.log("결제 성공2");
-                console.log(data);
-                await axios.post(API_URL, data); // 서버에 데이터 저장
-            });
+                successUrl: `${window.location.origin}/api/payments`,
+                failUrl: `${window.location.origin}/api/payments/fail`, // 가상 결제는 항상 성공이라 실패url은 미구현
+            })
         } catch (error) {
+            console.error("결제 요청 중 오류 발생 : ", error);
             alert("결제 중 오류가 발생했습니다.");
         }
     };
@@ -297,26 +274,25 @@ function Page() {
         formData.bookCar1.trim() !== "" &&
         formData.bookCar2.trim() !== "" &&
         formData.bookUserName.trim() !== "" &&
-        formData.bookUserPhone.trim() !== ""
-        // isAuthenticated &&
+        formData.bookUserPhone.trim() !== "" &&
+        user
     }else if(formData.bookCarCount === 1){
         isFormValid =
         formData.bookCar1.trim() !== "" &&
         formData.bookUserName.trim() !== "" &&
         formData.bookUserPhone.trim() !== ""
-        // isAuthenticated &&
+        user
     }else{
         isFormValid = 
         formData.bookUserName.trim() !== "" &&
         formData.bookUserPhone.trim() !== ""
-        // isAuthenticated &&
+        user
     }
 
     return (
         <div style={{width:"600px", margin: "0 auto"}}>
             <div style={{textAlign: "center", margin: "20px 0"}}>
                 <a style={{fontSize: "32px"}}>예약하기</a>
-                {/* <a style={{right: "20px"}}>성수기/비성수기</a> */}
             </div>
             {/* 캠핑장 정보(이름, 주소, 전화번호) */}
             <div style={{display: "flex", marginBottom: "20px"}}>

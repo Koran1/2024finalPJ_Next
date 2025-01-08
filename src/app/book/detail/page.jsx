@@ -6,12 +6,21 @@ import { Button, IconButton } from "@mui/material";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { ContentCopy, Phone, Place } from "@mui/icons-material";
+import useAuthStore from "../../../../store/authStore";
 
 function Page() {
+    const { user } = useAuthStore();
     const bookIdx = useSearchParams().get('bookIdx');
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    // 비 로그인 시 경고창 후 메인화면
+    if(!user) {
+        // alert("로그인 후 열람이 가능합니다.");
+        // return window.location.href = "/";
+        return window.location.replace("/");
+    }
     
     // 예약 정보
     const [formData, setFormData] = useState({
@@ -63,6 +72,7 @@ function Page() {
 
             setFormData(dataVO.data.bvo);
             setCampData(dataVO.data.cvo);
+            console.log("dataVO.data.bvo.userIdx : ", dataVO.data.bvo.userIdx);
         } catch (error) {
             setError("Error fetching data:", error);
         } finally {
@@ -76,32 +86,11 @@ function Page() {
 
     const handleSubmit = async () => {
         try {
-            console.log("formData.bookTotalPrice : ", formData.bookTotalPrice);
-            console.log("formData.orderId : ", formData.orderId);
-            console.log("formData.paymentKey : ", formData.paymentKey);
-            // 토스 API 결제 취소 요청
-            const cancelResponse = await axios.post('https://api.tosspayments.com/v1/payments/cancel', {
-                paymentKey: formData.paymentKey,    // 결제 키
-                amount: formData.bookTotalPrice,    // 취소할 금액
-                orderId: formData.orderId           // 주문 ID
-            }, {
-                headers: {
-                    'Authorization': `Basic ${Buffer.from(`${process.env.TOSS_SECRET_KEY}:`).toString('base64')}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            // 예약 취소 성공 처리
-            if (cancelResponse.status === 200) {
-                alert("예약 취소가 완료되었습니다.");
-                // 예약 취소와 함께 DB 삭제
-                const API_URL = `${LOCAL_API_BASE_URL}/book/cancel?bookIdx=${bookIdx}`;
-                await axios.get(API_URL);
-                window.location.href = "/"
-            } else {
-                throw new Error("예약 취소에 실패했습니다.");
-            }
-
+            // 예약 취소와 함께 DB 삭제
+            const API_URL = `${LOCAL_API_BASE_URL}/book/cancel?bookIdx=${bookIdx}`;
+            await axios.get(API_URL);
+            alert("예약 취소가 완료되었습니다.");
+            window.location.href = "/"
         } catch (error) {
             console.error(error);
             alert("예약 취소 중 오류가 발생했습니다.");
@@ -146,10 +135,20 @@ function Page() {
         } else if(category == "phone"){
             // 010-1234-5678 => 010-****-5678
             let parts;
+            let maskedNumber;
   
             // 하이픈이 있는 경우, 하이픈을 기준으로 분리
             if (text.includes("-")) {
                 parts = text.split("-");
+
+                const firstPart = parts[0];     // 첫 번째 부분 (010)
+                const lastPart = parts[parts.length - 1]; // 마지막 부분 (4444)
+                
+                // 중간 부분을 *로 처리
+                const maskedParts = parts.slice(1, parts.length - 1).map(() => "****");
+
+                // 첫 번째와 마지막 부분을 그대로 두고, 중간 부분을 *로 처리하여 결합
+                maskedNumber = [firstPart, ...maskedParts, lastPart].join("-");
             } else {
                 // 하이픈이 없으면 3자리씩 나눠서 처리
                 parts = [
@@ -160,20 +159,22 @@ function Page() {
             }
 
             // 3개의 부분으로 나눠졌다면 첫 3자리와 마지막 4자리는 그대로 두고, 중간 4자리는 *로 처리
-            if (parts.length === 3) {
-                return `${parts[0]}-****-${parts[2]}`;
+            if (parts.length >= 3) {
+                return maskedNumber;
             } else {
-                return phoneNumber; // 전화번호 형식이 맞지 않으면 그대로 반환 ex) 010-123-45-678
+                
+                return text; // 전화번호 형식이 맞지 않으면 그대로 반환 ex) 010-123-45-678 이렇게 안되게 write에서 양식주기
             }
 
         } else if(category == "car"){
             // 12가3456 => 12가**56
-            // 차량번호 마지막인덱스로부터 4번째 앞의 문자열
-            let frontString = text.slice(0, text.length-4);
-            // 차량번호 마지막인덱스로부터 4번째 뒤, 2번째 앞의 문자열
-            let middleString = text.slice(text.length-4, -2).replace(/./g, '*');
-            // 차량번호 마지막인덱스로부터 2번째 뒤의 문자열
-            let lastString = text.slice(-2);
+            // 차량번호 0~3번째 인덱스까지 문자열
+            const frontString = text.slice(0, 3);
+            // 차량번호 3번째 인덱스로부터 마지막에서3번째까지 문자열
+            // const middleString = text.slice(3, text.length-2).replace(/./g, '*');
+            const middleString = text.slice(3, text.length-2).split(' ').map(() => "**");
+            // 차량번호 마지막인덱스로부터 3번째 뒤의 문자열
+            const lastString = text.slice(text.length-2);
             
             return frontString + middleString + lastString;
         }
@@ -187,7 +188,7 @@ function Page() {
     if (error) {
         return <div style={{color:'red'}}>{error}</div>
     }
-    
+
     // 결제 내역을 보여주는 페이지
     return (
         <div style={{width:"600px", margin: "0 auto"}}>
@@ -202,9 +203,9 @@ function Page() {
                     <h3>{campData.facltNm}</h3>
                     <div style={{display: "flex", width: "430px", justifyContent: "space-between", alignItems: "center"}}>
                         <p style={{margin: "0"}} id="addressText"><Place sx={{color:"#4D88FF"}} /> {campData.addr1}</p>
-                        <IconButton onClick={handleCopy}><ContentCopy style={{color: "#0093ff"}} /></IconButton>
+                        <IconButton onClick={handleCopy}><ContentCopy style={{color: "#4D88FF"}} /></IconButton>
                     </div>
-                    { campData.tel && <p><Phone /> {campData.tel}</p> }
+                    { campData.tel && <p><Phone sx={{color: "#4D88FF"}} /> {campData.tel}</p> }
                 </div>
             </div>
             <hr />
@@ -325,7 +326,7 @@ function Page() {
                 <Button
                     variant='contained'
                     color='primary'
-                    onClick={handleSubmit}
+                    onClick={() => {if(confirm("예약을 취소하시겠습니까?")) {handleSubmit()}}}
                 >예약취소</Button>
             </div>
         </div>
