@@ -15,8 +15,8 @@ function Main() {
               <img src="/images/reviewImage03.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption text-start">
-                  <h1>양평 캠핑장</h1>
-                  <p className="opacity-75">캠핑이 처음이라도 무사히 해낼 수 있는 곳!을 찾다가 캠핑과 백팽킹을 사랑하는 지인이 직접 캠핑장을 차렸다는 소식을 듣고</p>
+                  <h1 className='main-title'>양평 캠핑장</h1>
+                  <p className="opacity-75">캠핑이 처음이라도 무사히 해낼 수 있는 곳을 찾다가 캠핑과 백팽킹을 사랑하는 지인이 직접 캠핑장을 차렸다는 소식을 듣고</p>
                   <p><a className="btn btn-lg btn-primary" href="#">Review more</a></p>
                 </div>
               </div>
@@ -25,7 +25,7 @@ function Main() {
               <img src="/images/reviewImage02.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption">
-                  <h1>서해안 여행계획</h1>
+                  <h1 className='main-title'>서해안 여행계획</h1>
                   <p>테이블이랑 의자 그리고 간단하게 먹을 거리만 좀 챙겨서 나가도 충분</p>
                   <p><a className="btn btn-lg btn-primary" href="#">Review more</a></p>
                 </div>
@@ -35,7 +35,7 @@ function Main() {
               <img src="/images/reviewImage01.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption text-end">
-                  <h1>나만의 아이템</h1>
+                  <h1 className='main-title'>나만의 아이템</h1>
                   <p>우리 가족만의 캠핑 간판! 캠핑을 본격적으로 시작하고 난 후부터 제작해서 들고 다니고 있는데 애들이 너무 좋아해요.</p>
                   <p><a className="btn btn-lg btn-primary" href="/deal">Review more</a></p>
                 </div>

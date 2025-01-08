@@ -40,12 +40,16 @@ function Page() {
         <div className='mypage-body'>
 
             <Box display='flex'>
+                {/* 마이페이지 메뉴 > */}
                 <MyPageList />
-                <Box flexGrow={1} p={2} m={1} sx={{ border: '3px solid lightblue', borderRadius: '10px'}}>
-                    <h2>내가 올린 상품&nbsp;
-                        <Link href='/deal/management'><ArrowForwardIosIcon /> </Link>
+                <Box flexGrow={1} p={2} m={1} sx={{ borderRadius: '10px'}}>
+                    <h2 className='m-sub'>
+                        내가 올린 상품&nbsp;
+                        <Link className='m-sub' href='/deal/management'> 
+                        {/* 내가 올린 상품  */}
+                        <ArrowForwardIosIcon style={{  marginBottom :'9px' , width:'30px'}} /> </Link>
                     </h2>
-                    <Stack direction="row">
+                    <Stack className='product-grid' direction="row">
                         {products.length > 0 ?
                             products.map((prod) => {
                                 return <MyPageCard product={prod} key={prod.dealIdx} />
@@ -57,8 +61,8 @@ function Page() {
                     </Stack>
 
                     <hr />
-                    <h2>내가 작성한 후기&nbsp;
-                        <Link href='/mycamp/mylog/list'><ArrowForwardIosIcon /> </Link>
+                    <h2 className='m-sub'>내가 작성한 후기&nbsp;
+                        <Link href='/mycamp/mylog/list'><ArrowForwardIosIcon style={{  marginBottom :'9px' , width:'30px'}}/> </Link>
                     </h2>
                 </Box>
             </Box>

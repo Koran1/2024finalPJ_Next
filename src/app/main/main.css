@@ -4,10 +4,14 @@
 
 body {
   font-family: 'Gyeonggi_Batang_Regular';
-  margin-top: 30px;
   padding-top: 3rem;
   padding-bottom: 3rem;
   color: rgb(var(--bs-tertiary-color-rgb));
+}
+
+.main-title{
+  color: wheat;
+  text-decoration: none;
 }
 
 /* CUSTOMIZE THE CAROUSEL
