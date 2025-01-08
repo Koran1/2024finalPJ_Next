@@ -79,6 +79,8 @@ function Page({ params }) {
                 }
                 if (data.success) {
                     setData(data.data);
+                    // console.log("Writer NickName : ", data.data.userVO);
+                    setLogWriterNickname(data.data.userVO[0].userNickname);
                     setTagData(data.data.pData.map(item => {
                         if (!item.tagData || item.tagData.length === 0) {
                             return [];
@@ -276,13 +278,13 @@ function Page({ params }) {
                     data.append("userIdx", user.userIdx);
                     data.append("logIdx", logIdx);
                     data.append("logCommentContent", logCommentContent);
-                    
+
                     console.log("userIdx : ", user.userIdx);
                     console.log(data.get("logIdx"));
                     console.log(data.get("logCommentContent"));
                     // 서버에 저장
                     await axios.post(API_URL, data);
-    
+
                     // 페이지 새로 고침
                     window.location.reload(); // 페이지 새로 고침
                 } catch (error) {
@@ -319,10 +321,10 @@ function Page({ params }) {
                     data.append("userIdx", user.userIdx);
                     data.append("logCommentContent", logReplyContent);
                     data.append("commentIdx", commentIdx);
-    
+
                     // 서버에 저장
                     await axios.post(API_URL, data);
-    
+
                     // 페이지 새로 고침
                     window.location.reload();
                 } catch (error) {
@@ -351,7 +353,7 @@ function Page({ params }) {
     };
 
     const handleModalClick = (comment, modalType) => {
-        if(!user){
+        if (!user) {
             alert("로그인 후 사용 가능합니다.");
             // window.location.reload();
             return;
@@ -467,7 +469,8 @@ function Page({ params }) {
                                                             </div>
                                                             <div
                                                                 style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "130px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", borderTop: "none", backgroundColor: "white" }}
-                                                                onClick={handleLogDelete}
+                                                                // onClick={handleLogDelete}
+                                                                onClick={() => handleModalClick("", "delete")}
                                                             >
                                                                 <span style={{ color: "gray", margin: "17px 67px 0px 10px", fontWeight: "bold" }}>삭제하기</span>
                                                                 <DeleteIcon style={{ fontSize: "30px", marginTop: "13px" }} />
@@ -483,7 +486,7 @@ function Page({ params }) {
                                                         <>
                                                             <div
                                                                 style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "70px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", backgroundColor: "white" }}
-                                                                onClick={() => setModalOpen(true)}
+                                                                onClick={() => handleModalClick("", "report")}
 
                                                             >
                                                                 <span style={{ color: "gray", margin: "17px 67px 0px 10px", fontWeight: "bold" }}>신고하기</span>
@@ -769,8 +772,8 @@ function Page({ params }) {
                                                         </p>
                                                     </div>
                                                     <div style={{ textAlign: "right" }}>
-                                                        <Button style={{ width: "80px", height: "30px", padding: "0" }} variant='contained' color='primary' 
-                                                        onClick={() => user == null ? alert("로그인 후 작성 가능합니다.") : replyWrite(comment.logCommentIdx)}
+                                                        <Button style={{ width: "80px", height: "30px", padding: "0" }} variant='contained' color='primary'
+                                                            onClick={() => user == null ? alert("로그인 후 작성 가능합니다.") : replyWrite(comment.logCommentIdx)}
                                                         >답글 작성</Button>
                                                     </div>
                                                     <hr />

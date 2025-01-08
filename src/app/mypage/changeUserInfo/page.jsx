@@ -329,10 +329,16 @@ function Page() {
                             <TextField className='pp2' type='text' label='이 름' name='userName'
                                 value={uvo.userName} onChange={changeUvo} />
 
-                            <TextField className='pp2' error={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && !nickPass}
+                            <TextField className='pp2'
                                 type='text' label='닉네임'
                                 name='userNickname' value={uvo.userNickname}
-                                helperText={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && (nickHelper ? nickHelper : "중복검사 중...")} onChange={changeUvo} />
+                                disabled />
+
+                            {/* <TextField className='pp2' error={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && !nickPass}
+                                type='text' label='닉네임'
+                                name='userNickname' value={uvo.userNickname}
+                                helperText={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && (nickHelper ? nickHelper : "중복검사 중...")} onChange={changeUvo}
+                                disabled /> */}
 
 
                             <Box>
