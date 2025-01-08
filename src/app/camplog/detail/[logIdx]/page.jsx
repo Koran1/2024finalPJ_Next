@@ -59,12 +59,11 @@ function Page({ params }) {
     // 로그 내용 함수들
     useEffect(() => {
         const fetchData = async () => {
-            if (!user) return;
             try {
                 const { logIdx } = await Promise.resolve(params);
 
                 let apiUrl = `${baseUrl}/camplog/detail?logIdx=${logIdx}`;
-                if (user?.userIdx) {
+                if (user) {
                     apiUrl += `&userIdx=${user.userIdx}`;
                 }
                 const response = await axios.get(apiUrl);
@@ -95,7 +94,7 @@ function Page({ params }) {
                             })
                         }
                     }));
-                    setIsWriter(response.data.data.userVO.userIdx === user.userIdx ? true : false);
+                    setIsWriter(response.data.data.userVO.userIdx === user ? true : false);
                 } else {
                     alert(response.data.message);
                     router.push("/camplog/list");
