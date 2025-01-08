@@ -164,8 +164,13 @@ function Page(ㄱ) {
             const filedIdx = extraFields.findIndex(field => field.id === fieldID) + 1;
 
             setTags(tags => [
-                ...tags,
-                { tagX: x, tagY: y, tagId: Date.now(), fieldID: fieldID, showContent: false, text: "", showModal: true, fieldIdx: filedIdx, dealIdx: 0, nodeRef: React.createRef() }
+                ...tags.map(tag => {
+                    return{
+                        ...tag, 
+                        showContent: false
+                    }
+                }),
+                { tagX: x, tagY: y, tagId: Date.now(), fieldID: fieldID, showContent: true, text: "", showModal: true, fieldIdx: filedIdx, dealIdx: 0, nodeRef: React.createRef() }
             ]);
             handleImgOverlay(fieldID);
         }
@@ -450,7 +455,7 @@ function Page(ㄱ) {
     return (
         <>
             <header >
-                <span style={{ fontSize: "70px", display: "inline-block" }}> </span><span style={{ display: "inline-block", fontSize: "50px", marginLeft: "33%" }}>캠핑로그 작성</span>
+                <span style={{ fontSize: "70px", display: "inline-block" }}> </span><span style={{ display: "inline-block", fontSize: "50px", marginLeft: "44%" }}>캠핑로그 작성</span>
             </header>
             <Grid2 container spacing={2}>
                 <Grid2 size={2} />
