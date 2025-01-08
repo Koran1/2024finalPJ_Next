@@ -120,8 +120,8 @@ function Page() {
             <hr></hr>
             {/* <div className='p2'>Social Login</div> */}
             <Stack className="btn1" direction="row" spacing={2} alignItems='center'>
-                <img src='/images/kakao_login_icon.png' onClick={handleKakaoLogin} style={{ width: '200px', height: '48px' }} />
-                <img src='/images/naver_icon.png' onClick={handleNaverLogin} style={{ width: '195px', height: '47px' }} />
+                <img src='/images/kakao_login_icon.png' onClick={handleKakaoLogin} style={{ width: '200px', height: '48px', cursor: "pointer" }} />
+                <img src='/images/naver_icon.png' onClick={handleNaverLogin} style={{ width: '195px', height: '47px',  cursor: "pointer"}} />
                 {/* <img src='/images/kakao_login_large.png' onClick={handleKakaoLogin} style={{ width: '100px', height: '45px' }} />
                 <img src='/images/btnG_축약형.png' onClick={handleNaverLogin} style={{ width: '120px', height: '45px' }} /> */}
             </Stack>

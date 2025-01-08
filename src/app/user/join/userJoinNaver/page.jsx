@@ -167,11 +167,11 @@ function Page() {
 
 
     return (
-        <div>
+        <div style={{textAlign: "center"}}>
             <h2>최초 Naver 로그인 시 회원가입을 위해 아래 정보를 입력해주세요</h2>
-            <FormControl>
+            <FormControl >
                 {/* 수직정렬 */}
-                <Stack direction="column" spacing={1} alignItems='center'>
+                <Stack direction="column" spacing={1} alignItems='center' >
                     <Avatar />
 
                     <TextField error={idError || uvo.userId && !idPass} type='text' label='아이디'
