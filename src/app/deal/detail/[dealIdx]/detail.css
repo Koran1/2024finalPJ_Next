@@ -586,3 +586,17 @@
   position: relative;
   /* 기존 스타일 유지 */
 }
+
+/* 기존 스타일에 font-family 추가 */
+.detail-container h2,
+.detail-container .price,
+.detail-container .seller-info span,
+.detail-container .product-details li span,
+.detail-container .product-description,
+.detail-container .stat-item span,
+.detail-container .product-content .title,
+.detail-container .product-content .price,
+.detail-container .product-content .nick,
+.detail-container .product-content .view-count {
+  font-family: 'MinSans-Regular';
+}

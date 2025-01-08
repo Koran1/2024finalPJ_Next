@@ -24,16 +24,20 @@ function Page() {
         if (user == null) return
         const fetchData = async () => {
             try {
-                setLoading(true); // 로딩 시작
+                setLoading(true);
                 const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${user.userIdx}`;
-
-                // 데이터 가져오기
                 const response = await axios.get(API_URL);
-                // const data = response.data;
-                // console.log(response.data);
+                
                 if (response.data.success) {
-                    console.log("setItem: 이거 데이터.데이터", response.data.data);
-                    setItem(response.data.data);
+                    const uniqueItems = response.data.data.reduce((acc, current) => {
+                        const existingItem = acc.find(item => item.dealIdx === current.dealIdx);
+                        if (!existingItem) {
+                            acc.push(current);
+                        }
+                        return acc;
+                    }, []);
+                    
+                    setItem(uniqueItems);
                 } else {
                     setError("Failed to fetch product data.");
                 }
@@ -41,7 +45,7 @@ function Page() {
                 console.error("Error fetching product data:", err);
                 setError("Failed to fetch product data.");
             } finally {
-                setLoading(false); // 로딩 종료
+                setLoading(false);
             }
         };
 
@@ -62,24 +66,25 @@ function Page() {
             <div className="pd-reg-container">
 
                 <div className="nav-links">
-                    <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>상품 관리</Link>
-                    <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>구매 내역</Link>
-                    <Link href="/deal/interest"
-                        className={`btn1 ${getActiveClass('/deal/interest')}`}
-                        onClick={() => setActiveLink('/deal/interest')}>
-                        관심 목록
+                    <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
+                        상품관리
                     </Link>
-                    <Link href="/deal/rating"
-                        className={`btn1 ${getActiveClass('/deal/rating')}`}
-                        onClick={() => setActiveLink('/deal/rating')}>
-                        나의 평점
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
+                        구매내역
                     </Link>
-                    <Link href="/deal/message"
-                        className={`btn1 ${getActiveClass('/deal/message')}`}
-                        onClick={() => setActiveLink('/deal/message')}>
-                        쪽지 목록
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/interest" className={`btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
+                        관심목록
                     </Link>
-                    {/* ... 다른 링크들 */}
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/rating" className={`btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
+                        나의평점
+                    </Link>
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/message" className={`btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
+                        채팅목록
+                    </Link>
                 </div>
                 <hr />
                 <div className="purchase-info">
@@ -91,7 +96,7 @@ function Page() {
                     <table className="product-table">
                         <thead>
                             <tr>
-                                <th>사진</th>
+                                <th>상품이미지</th>
                                 <th>판매상태</th>
                                 <th>상품명</th>
                                 <th>가격</th>
@@ -105,18 +110,26 @@ function Page() {
                                     <tr key={idx}>
                                         <td>
                                             <Link href={`/deal/detail/${k.dealIdx}`}>
-                                                <img src={`${LOCAL_IMG_URL}/deal/${k.deal01}`} alt={k.dealTitle} width="50" height="50" />
+                                                <img 
+                                                    src={`${LOCAL_IMG_URL}/deal/${k.deal01}`} 
+                                                    alt={k.dealTitle} 
+                                                    width="50" 
+                                                    height="50" 
+                                                />
                                             </Link>
                                         </td>
-                                        <td>
-                                            {k.deal02 ? "판매완료" : "판매중"}
-                                        </td>
+                                        <td>{k.deal02 || '판매중'}</td>
                                         <td>
                                             <Link href={`/deal/detail/${k.dealIdx}`} style={{ textDecoration: "none" }}>
                                                 {k.dealTitle}
                                             </Link>
                                         </td>
-                                        <td>{k.dealPrice}</td>
+                                        <td>
+                                            {k.dealPrice === 0 
+                                                ? '나눔' 
+                                                : `${k.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`
+                                            }
+                                        </td>
                                         <td>{k.dealRegDate}</td>
                                     </tr>
                                 )

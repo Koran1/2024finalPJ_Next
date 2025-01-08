@@ -71,29 +71,24 @@ function Page() {
             {/* 상단 네비게이션 */}
             <div className="pd-reg-container" >
                 <div className="nav-links">
-                    <Link href="/deal/management"
-                        className={`btn1 ${getActiveClass('/deal/management')}`}
-                        onClick={() => setActiveLink('/deal/management')}>
-                        상품 관리
+                    <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
+                        상품관리
                     </Link>
-                    <Link href="/deal/purchase"
-                        className={`btn1 ${getActiveClass('/deal/purchase')}`}>
-                        구매 관리
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
+                        구매내역
                     </Link>
-                    <Link href="/deal/interest"
-                        className={`btn1 ${getActiveClass('/deal/interest')}`}
-                        onClick={() => setActiveLink('/deal/interest')}>
-                        관심 목록
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/interest" className={`btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
+                        관심목록
                     </Link>
-                    <Link href="/deal/rating"
-                        className={`btn1 ${getActiveClass('/deal/rating')}`}
-                        onClick={() => setActiveLink('/deal/rating')}>
-                        나의 평점
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/rating" className={`btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
+                        나의평점
                     </Link>
-                    <Link href="/deal/message"
-                        className={`btn1 ${getActiveClass('/deal/message')}`}
-                        onClick={() => setActiveLink('/deal/message')}>
-                        쪽지 목록
+                    <span className="nav-divider">|</span>
+                    <Link href="/deal/message" className={`btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
+                        채팅목록
                     </Link>
                 </div>
                 <hr />

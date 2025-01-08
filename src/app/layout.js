@@ -130,7 +130,7 @@ export default function RootLayout({ children }) {
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_KEY}&libraries=services,clusterer,drawing&autoload=false`}
           strategy="beforeInteractive"
         />
-        <header data-bs-theme="dark" style={{ height: '38px' }}>
+        <header data-bs-theme="dark">
           <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark" >
             <div className="container-fluid">
               <a className="navbar-brand" href="/" style={{ fontSize: '200%', fontFamily: "'Jaro', sans-serif", marginRight: '50px', marginLeft: '20px', marginBottom: '4px' }}>CAMPERS</a>

@@ -334,7 +334,10 @@ function Page({ params }) {
             </div>
           </div>
 
-          <div className="product-info">
+          <div className="product-info" style={{ 
+            width: '55%',  // 기존 50%에서 55%로 증가
+            paddingLeft: '20px'  // 왼쪽 여백 추가
+          }}>
             <div className="product-header">
               <div className="title-favorite-container">
                 <h2 style={{
@@ -352,40 +355,43 @@ function Page({ params }) {
 
             <div className="price">{item.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</div>
 
-            <div className="seller-info">
-              <span>판매자</span>
-              <span> {item.dealSellerNick}</span>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <span style={{ fontWeight: 'bold', color: '#525050' }}>평점</span>
-              <Rating
-                value={sellerScore}
-                precision={0.5}
-                readOnly
-                size="large"
-                sx={{
-                  '& .MuiRating-iconFilled': {
-                    color: '#FFD700 !important'
-                  },
-                  '& .MuiRating-iconEmpty': {
-                    color: '#C0C0C0 !important'
-                  },
-                  '& .MuiSvgIcon-root': {
-                    display: 'block',
-                    '& path': {
-                      fill: 'currentColor'
-                    }
-                  },
-                  marginLeft: '5px',
-                  marginRight: '5px',
-                  verticalAlign: 'middle'
-                }}
-              />
-              <span style={{ verticalAlign: 'middle' }}>
-                {sellerScore ? sellerScore.toFixed(1) : '5.0'}
-              </span>
+            <div className="seller-info" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span>판매자</span>
+                &nbsp;&nbsp;
+                <span>{item.dealSellerNick}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
+                <span style={{ fontWeight: 'bold', color: '#525050' }}>평점</span>
+                <Rating
+                  value={sellerScore}
+                  precision={0.5}
+                  readOnly
+                  size="large"
+                  sx={{
+                    '& .MuiRating-iconFilled': {
+                      color: '#FFD700 !important'
+                    },
+                    '& .MuiRating-iconEmpty': {
+                      color: '#C0C0C0 !important'
+                    },
+                    '& .MuiSvgIcon-root': {
+                      display: 'block',
+                      '& path': {
+                        fill: 'currentColor'
+                      }
+                    },
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                    verticalAlign: 'middle'
+                  }}
+                />
+                <span style={{ verticalAlign: 'middle' }}>
+                  {sellerScore ? sellerScore.toFixed(1) : '5.0'}
+                </span>
+              </div>
 
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <div className="action-buttons">
+              <div className="action-buttons" style={{ marginLeft: 'auto' }}>
                 <div
                   onClick={() => {
                     if (!isAuthenticated || isExpired()) {
@@ -516,7 +522,7 @@ function Page({ params }) {
               </Button>
 
               {/* 판매 완료이고 판매자가 아닐 때만 만족도 버튼 표시 */}
-              {dealStatus === '판매완료' && !isSellerUser && isAuthenticated ? (
+              {/* {dealStatus === '판매완료' && !isSellerUser && isAuthenticated ? ( 
                 <Button
                   variant="contained"
                   color="success"
@@ -524,21 +530,21 @@ function Page({ params }) {
                   onClick={() => setIsSatisfactionModalOpen(true)}
                   disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
                 >
-                  {hasSatisfactionRating ? '만족도 등록 완료' : '만족도'}
+                  {/* {hasSatisfactionRating ? '만족도 등록 완료' : '만족도'} 
                 </Button>
-              ) : dealStatus === '판매완료' && !isSellerUser && !isAuthenticated && (
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="satisfaction-button"
-                  onClick={() => {
-                    alert('로그인이 필요한 서비스입니다.');
-                    router.push('/user/login');
-                  }}
-                >
-                  만족도
-                </Button>
-              )}
+                ) : dealStatus === '판매완료' && !isSellerUser && !isAuthenticated && (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    className="satisfaction-button"
+                    onClick={() => {
+                      alert('로그인이 필요한 서비스입니다.');
+                      router.push('/user/login');
+                    }}
+                  >
+                    만족도
+                  </Button>
+               )} */}
             </div>
           </div>
         </div>
@@ -559,7 +565,7 @@ function Page({ params }) {
           </div>
         </div>
 
-        {/* 수정하기 버튼은 판매자이고 판매중일 때만 표시 */}
+        {/* 수정하기 버튼은 판매자이고 판매중일 때만 표표시 */}
         {isSellerUser && dealStatus === '판매중' && (
           <div className="edit-button-container">
             <Button

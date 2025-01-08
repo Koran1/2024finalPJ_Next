@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import styles from './interest.module.css';
-import { Link } from '@mui/material';
+import Link from 'next/link';
 import axios from 'axios';
 import useAuthStore from '../../../../store/authStore';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const ProductCard = ({ product }) => {
   const [isFavorite, setIsFavorite] = useState(true);
@@ -12,49 +12,56 @@ const ProductCard = ({ product }) => {
 
   const toggleFavorite = () => {
     if (!isFavorite) {
-      const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainfavorite`
-      const response = axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`)
+      const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainfavorite`;
+      axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`)
         .then((res) => {
-          console.log(res.data);
           if (res.data.success) {
-            console.log(res.data.message)
-          } else {
-            console.log(res.data.message)
+            console.log(res.data.message);
           }
         })
-        .catch((err) => console.log(err))
+        .catch((err) => console.log(err));
     } else {
-      const response = axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite?dealIdx=${product.dealIdx}&userIdx=${user.userIdx}`)
+      axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite?dealIdx=${product.dealIdx}&userIdx=${user.userIdx}`)
         .then((res) => console.log(res.data.message))
-        .catch((err) => console.log(err))
+        .catch((err) => console.log(err));
     }
-
     setIsFavorite(!isFavorite);
   };
 
   return (
-    <div className={styles}>
-
-      <div className="product-card">
-        <div className="card-content">
-          <div className="heart-icon" onClick={toggleFavorite}>
-            {isFavorite ? (
-              <span className="filled-heart">❤️</span>
-            ) : (
-              <span className="empty-heart">🤍</span>
-            )}
+    <div className="product-item">
+      <div className="heart-icon" onClick={toggleFavorite}>
+        {isFavorite ? (
+          <span className="filled-heart">❤️</span>
+        ) : (
+          <span className="empty-heart">🤍</span>
+        )}
+      </div>
+      <Link 
+        href={`/deal/detail/${product.dealIdx}`}
+        style={{ textDecoration: 'none', color: 'inherit' }}
+      >
+        <img
+          className="dealMain-image"
+          src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "/images/defaultImage.png"}
+          alt={product.dealTitle}
+          style={{ width: "180px", height: "200px" }}
+          onError={(e) => {
+            e.target.src = "/images/defaultImage.png";
+          }}
+        />
+        <div className="product-content">
+          <div className="nick">{product.dealSellerNick}</div>
+          <div className="title">{product.dealTitle}</div>
+          <div className="price">
+            {product.dealPrice == 0 ? '나눔' : `${product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
+          </div>
+          <div className="view-count">
+            <VisibilityIcon style={{ fontSize: '1.2rem' }} />
+            <span> {product.dealCount}</span>
           </div>
         </div>
-        <div className="product-info2">
-          <Link href={`/deal/detail/${product.dealIdx}`}>
-            <img src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"} alt={product.dealTitle} className="product-image2" />
-            <div className="seller-name2">{product.dealSellerNick}</div>
-            <div className="product-name2">{product.dealTitle}</div>
-            <div className="product-price2">{product.dealPrice}</div>
-            <div className="description2">{product.dealDescription}</div>
-          </Link>
-        </div>
-      </div>
+      </Link>
     </div>
   );
 };

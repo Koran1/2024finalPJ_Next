@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 20px;
   font-size: 130%;
+  margin-top: 50px;
+  font-family: 'MinSans-Regular';
 }
 
 .purchase-info {
@@ -23,6 +25,7 @@
   border-radius: 5px;
   display: inline-block;
   padding: 10px 20px; /* 버튼의 내부 여백 추가 */
+  font-family: 'MinSans-Regular';
 }
 
 .btn1:hover {
@@ -40,6 +43,7 @@
   display: block; /* 텍스트를 새로운 줄로 만듬 */
   font-weight: bold;
   color: #767474;
+  font-family: 'MinSans-Regular';
 }
 
 .pi{
@@ -47,6 +51,7 @@
   font-size: 18px;
   font-weight: bold;
   color: #767474;
+  font-family: 'MinSans-Regular';
 }
 
 /* 테이블 스타일 */
@@ -55,6 +60,7 @@
   border-collapse: collapse;
   margin-top: 20px;
   font-size: 14px;
+  font-family: 'MinSans-Regular';
 }
 
 .product-table thead {
@@ -80,4 +86,37 @@
 .product-table img {
   border: 1px solid #ddd;
   border-radius: 5px;
+}
+
+.nav-divider {
+    color: #E3E5E8;
+    margin: 0 8px;
+}
+
+/* 판매상태 스타일 */
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.status.active {
+    background-color: #e6f3ff;
+    color: #4D88FF;
+}
+
+.status.completed {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.status.inactive {
+    background-color: #fff5f5;
+    color: #ff6b6b;
+}
+
+/* 테이블 셀 수직 정렬 */
+.product-table td {
+    vertical-align: middle;
 }

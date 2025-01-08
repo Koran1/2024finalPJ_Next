@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 20px;
   font-size: 130%;
+  margin-top: 50px;
+  font-family: 'MinSans-Regular';
 }
 
 
@@ -14,6 +16,7 @@
   border-radius: 5px;
   display: inline-block;
   padding: 10px 20px; /* 버튼의 내부 여백 추가 */
+  font-family: 'MinSans-Regular';
 }
 
 .btn1:hover {
@@ -31,7 +34,7 @@
   display: block; /* 텍스트를 새로운 줄로 만듬 */
   font-weight: bold;
   color: #767474;
-
+  font-family: 'MinSans-Regular';
 }
 
 .nav-links {
@@ -43,7 +46,7 @@
 .purchase-info {
   margin-top: 10px;
   font-size: 14px;
-  
+  font-family: 'MinSans-Regular';
 }
 
 /* 테이블 스타일 */
@@ -52,6 +55,7 @@
   border-collapse: collapse;
   margin-top: 20px;
   font-size: 14px;
+  font-family: 'MinSans-Regular';
 }
 
 .product-table thead {

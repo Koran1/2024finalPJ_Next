@@ -31,6 +31,7 @@ function Page() {
     // 거래 목록 조회
     const fetchDeals = async () => {
         try {
+            setLoading(true); // 로딩 시작
             const response = await axios.get(`${LOCAL_API_BASE_URL}/admin/dealList`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -3,6 +3,7 @@
 /* Padding below the footer and lighter body text */
 
 body {
+  margin-top: 30px;
   padding-top: 3rem;
   padding-bottom: 3rem;
   color: rgb(var(--bs-tertiary-color-rgb));
@@ -15,7 +16,47 @@ body {
 /* Carousel base class */
 .carousel {
   margin-bottom: 4rem;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
 }
+
+/* 캐러셀 컨트롤 버튼 위치 조정 */
+.carousel-control-prev,
+.carousel-control-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5%;
+  min-width: 45px;
+  z-index: 10;
+}
+
+.carousel-control-prev {
+  left: 0;
+  padding-left: 15px;
+  margin-left: 3%;
+}
+
+.carousel-control-next {
+  right: 0;
+  padding-right: 15px;
+  margin-right: 3%;
+}
+
+/* 반응형 ��정 */
+@media (max-width: 768px) {
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 10%;
+  }
+  
+  .carousel-item {
+    height: auto;
+    min-height: 20rem;
+  }
+}
+
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
   bottom: 3rem;
@@ -25,6 +66,15 @@ body {
 /* Declare heights because of positioning of img element */
 .carousel-item {
   height: 32rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
 }
 
 /* Featurettes

@@ -8,9 +8,12 @@ import axios from 'axios';
 
 
 import './dealMain.css';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, IconButton } from '@mui/material';
 import MainProductCard from './MainProductCard';
 import { blue } from '@mui/material/colors';
+import SearchIcon from '@mui/icons-material/Search';
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 
 export default function ProductSearchPage() {
 
@@ -31,6 +34,12 @@ export default function ProductSearchPage() {
   const [favProducts, setFavProducts] = useState([]);
 
   const router = useRouter();
+
+  // 상태 추가
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+  // 정렬 상태 추가
+  const [activeSort, setActiveSort] = useState('latest'); // 'latest', 'views', 'price'
 
   // dealMain 로딩
   useEffect(() => {
@@ -129,39 +138,24 @@ export default function ProductSearchPage() {
       .catch((err) => console.log(err))
   }
 
-  // 정렬 필터 
-  // 1.최신순
+  // 정렬 필수들 수정
   const sortByRegDate = () => {
-    const sortedProducts = [...products]
-      .sort((a, b) =>
-        new Date(b.dealRegDate) - new Date(a.dealRegDate)
-      )
-    console.log(sortedProducts);
-    setProducts(sortedProducts)
-  }
-
-  // 2. 조회순
-  const sortByUserViewCount = () => {
-    const sortedProducts = [...products]
-      .sort((a, b) => {
-        // dealCount를 숫자로 변환하여 비교
-        const aCount = parseInt(a.dealCount) || 0;
-        const bCount = parseInt(b.dealCount) || 0;
-        return bCount - aCount;
-      });
-    console.log("조회순 정렬:", sortedProducts);
+    const sortedProducts = [...products].sort((a, b) => new Date(b.dealRegDate) - new Date(a.dealRegDate));
     setProducts(sortedProducts);
-  }
+    setActiveSort('latest');
+  };
 
-  // 3. 가격순
+  const sortByUserViewCount = () => {
+    const sortedProducts = [...products].sort((a, b) => b.dealCount - a.dealCount);
+    setProducts(sortedProducts);
+    setActiveSort('views');
+  };
+
   const sortByPrice = () => {
-    const sortedProducts = [...products]
-      .sort((a, b) =>
-        b.dealPrice - a.dealPrice
-      )
-    console.log(sortedProducts);
-    setProducts(sortedProducts)
-  }
+    const sortedProducts = [...products].sort((a, b) => a.dealPrice - b.dealPrice);
+    setProducts(sortedProducts);
+    setActiveSort('price');
+  };
 
   // 카테고리별 상품 수를 계산하는 함수 추가
   const getCategoryCount = (category) => {
@@ -171,84 +165,143 @@ export default function ProductSearchPage() {
   };
 
   return (
-    <div className="pd-reg-container">
-      {/* <h1>나의거래 Main</h1> */}
+    <div className="deal-main-wrapper">
       <div className='deal-main-nav'>
-        <Box>
-          <div className='center1'>
-
-            <TextField className='deal-search-bar'
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          padding: '0 20px',
+          gap: '20px'  // 요소들 사이의 간격 추가
+        }}>
+          {/* 왼쪽 여백을 위한 div */}
+          <div style={{ flex: '1' }}></div>
+          
+          {/* 검색창 컨테이너 */}
+          <div className='search-container' style={{ 
+            flex: '2',  // 더 많은 공간 차지
+            display: 'flex',
+            justifyContent: 'center'  // 중앙 정렬
+          }}>
+            <TextField
+              className='deal-search-bar'
               variant="outlined"
-              placeholder="검색어를 입력하세요"
+              placeholder={isSearchFocused ? "" : "상품 검색"}
               value={searchKeyword}
               onChange={handleKeyword}
-              style={{}}
-              sx={{ mb: 2 }}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch();
+                }
+              }}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={handleSearch}>
+                    <SearchIcon style={{ color: '#2F3438' }} />
+                  </IconButton>
+                ),
+              }}
+              sx={{
+                width: '100%',  // TextField가 테이너의 전체 너비 사용
+                maxWidth: '500px'  // 최대 너비 제한
+              }}
             />
-            <Button style={{ borderRadius: '10px', backgroundColor: '#333333', height: '56px', width: '50px' }} variant='outlined' onClick={handleSearch}>
-              <div className='search-text'>검색</div>
-              {/* <img style={{height:'50px', width:'50px'}} src="../images/search_icon.png" alt="Search" className="icon" /> */}
-            </Button>
           </div>
-
-          <div className='btn-nav'>
-
-
-            {/* 상품 등록 버튼 */}
-            <Link href="/deal/write" className="btn123">상품 등록</Link>
-
-
-            {/* 나의 거래 버튼 */}
-            {isAuthenticated && <Link href={`/deal/management`} className="btn123">나의 거래</Link>}
+          
+          {/* 오른쪽 버튼 그룹 */}
+          <div className='btn-nav' style={{ 
+            flex: '1',
+            display: 'flex',
+            alignItems: 'center',
+            marginLeft: '-5px' // 전체를 왼쪽으로 5px 이동
+          }}>
+            <Link 
+              href={isAuthenticated ? "/deal/write" : '/user/login'} 
+              className="nav-link"
+              onClick={(e) => {
+                if (!isAuthenticated) {
+                  e.preventDefault();
+                  alert('로그인이 필요한 서비스입니다.');
+                  router.push('/user/login');
+                }
+              }}
+              style={{ marginRight: '10px' }}
+            >
+              <AppRegistrationIcon sx={{ marginRight: '4px', fontSize: '20px', verticalAlign: 'middle', color: '#4D88FF' }}/>
+              상품등록
+            </Link>
+            <Link 
+              href={isAuthenticated ? `/deal/management` : '/user/login'} 
+              className="nav-link"
+              onClick={(e) => {
+                if (!isAuthenticated) {
+                  e.preventDefault();
+                  alert('로그인이 필요한 서비스입니다.');
+                  router.push('/user/login');
+                }
+              }}
+            >
+              <ListAltIcon sx={{ fontSize: '20px', verticalAlign: 'middle', color: '#4D88FF' }}/>
+              나의거래
+            </Link>
           </div>
         </Box>
       </div>
 
-      {/* 검색을 하지 않았을 때 전체 상품 갯수 보이기 */}
-      {/* 검색 상품 개수 */}
-      <div className="part">상품 {filteredProducts.length || 0}개</div>
+      <div className="content-container">
+        {/* 상품 개수 */}
+        <div className="part">
+          상품 {filteredProducts.length || 0}개
+        </div>
 
-      {/* 카테고리 필터 */}
-      <div className="categories">
-        {[
-          "전체", "텐트/타프", "식품/음료", "휴대용품", "가방/스토리지", "취미/게임", "침구류",
-          "의류/신발", "위생용품", "난방/화로", "반려동물용품", "취사도구", "디지털기기",
-          "안전보안", "뷰티/미용", "테이블/의자", "기타 물품"
-        ].filter(category => 
-          category === "전체" || getCategoryCount(category) > 0
-        ).map((category) => (
-          <button
-            key={category}
-            className={`category ${selectedCategories.includes(category) ? 'active' : ''}`}
-            onClick={() => toggleCategory(category)}>
-            {category} {category !== "전체" && `(${getCategoryCount(category)})`}
-          </button>
-        ))}
-      </div>
-
-      <div className='filter-space'>
-        <a className='f-btn' onClick={sortByRegDate}> 최신순 </a> |
-        <a className='f-btn' onClick={sortByUserViewCount}> 조회순 </a> |
-        <a className='f-btn' onClick={sortByPrice}> 가격순 </a>
-      </div>
-
-      {/* 상품 목록 */}
-      <div className="product-grid-wrapper">
-        <div className="product-grid">
-          {filteredProducts.map((product) => (
-            <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
-
+        {/* 카테고리 */}
+        <div className="categories">
+          {[
+            "전체", "텐트/타프", "식품/음료", "휴대용품", "가방/스토리지", "취미/게임", "침구류",
+            "의류/신발", "위생용품", "난방/화로", "반려동물용품", "취사도구", "디지털기기",
+            "안전보안", "뷰티/미용", "테이블/의자", "기타 물품"
+          ].filter(category => 
+            category === "전체" || getCategoryCount(category) > 0
+          ).map((category) => (
+            <button
+              key={category}
+              className={`category ${selectedCategories.includes(category) ? 'active' : ''}`}
+              onClick={() => toggleCategory(category)}>
+              {category} {category !== "전체" && `(${getCategoryCount(category)})`}
+            </button>
           ))}
         </div>
 
+        {/* 정렬 필터 */}
+        <div className='filter-space'>
+          <a className={`f-btn ${activeSort === 'latest' ? 'active' : ''}`} onClick={sortByRegDate}>
+            최신순
+          </a>
+          <span className="filter-divider">|</span>
+          <a className={`f-btn ${activeSort === 'views' ? 'active' : ''}`} onClick={sortByUserViewCount}>
+            조회순
+          </a>
+          <span className="filter-divider">|</span>
+          <a className={`f-btn ${activeSort === 'price' ? 'active' : ''}`} onClick={sortByPrice}>
+            가격순
+          </a>
+        </div>
+
+        {/* 상품 그리드 */}
+        <div className="product-grid">
+          {filteredProducts.map((product) => (
+            <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
+          ))}
+        </div>
+
+        {/* 캠핑 후기 */}
+        <div className="part">
+          캠핑 후기
+        </div>
       </div>
-
-      <br></br>
-      <div className="part">캠핑 후기</div>
-
-    </div >
-
-
+    </div>
   );
 }
 
