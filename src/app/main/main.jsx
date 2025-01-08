@@ -12,7 +12,7 @@ function Main() {
           </div>
           <div className="carousel-inner">
             <div className="carousel-item active">
-              <img src="/images/reviewImage03.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
+              <img src="/images/reviewImage03.png" alt="Review Image" className="bd-placeholder-img" width="100%" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption text-start">
                   <h1 className='main-title'>양평 캠핑장</h1>
@@ -22,7 +22,7 @@ function Main() {
               </div>
             </div>
             <div className="carousel-item">
-              <img src="/images/reviewImage02.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
+              <img src="/images/reviewImage02.png" alt="Review Image" className="bd-placeholder-img" width="100%" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption">
                   <h1 className='main-title'>서해안 여행계획</h1>
@@ -32,7 +32,7 @@ function Main() {
               </div>
             </div>
             <div className="carousel-item">
-              <img src="/images/reviewImage01.png" alt="Review Image" className="bd-placeholder-img" width="1920px" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
+              <img src="/images/reviewImage01.png" alt="Review Image" className="bd-placeholder-img" width="100%" height="100%" style={{objectFit: 'cover', display: 'block', margin: '0 auto'}} />
               <div className="container">
                 <div className="carousel-caption text-end">
                   <h1 className='main-title'>나만의 아이템</h1>

@@ -3,6 +3,7 @@
 /* Padding below the footer and lighter body text */
 
 body {
+  margin-top: -30px;
   font-family: 'Gyeonggi_Batang_Regular';
   padding-top: 3rem;
   padding-bottom: 3rem;
@@ -21,7 +22,9 @@ body {
 .carousel {
   margin-bottom: 4rem;
   position: relative;
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
   overflow: hidden;
 }
 
@@ -72,13 +75,21 @@ body {
   height: 32rem;
   position: relative;
   overflow: hidden;
+  width: 100vw;
 }
 
 .carousel-item img {
-  width: 100%;
+  width: 100vw;
   height: 100%;
   object-fit: cover;
   position: relative;
+}
+
+/* bd-placeholder-img 스타일 추가 */
+.bd-placeholder-img {
+  width: 100vw;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Featurettes

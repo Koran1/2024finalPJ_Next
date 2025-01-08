@@ -1,10 +1,14 @@
 /* 헤더 이미지 스타일 */
 .camp-header {
     margin: 0 auto;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    overflow: hidden;
 }
 
 .camp-header-image {
-    width: 100%;
+    width: 100vw;
     height: 300px;
     object-fit: cover;
     margin: 0 auto;
