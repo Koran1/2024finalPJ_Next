@@ -1,7 +1,7 @@
 /* 모든 dealMain 관련 스타일을 .deal-main-wrapper로 감싸기 */
 .deal-main-wrapper {
   /* 기존 스타일 유지하면서 스코프 제한 */
-  margin-top: 70px;
+  margin-top: 100px;
 }
 
 .deal-main-wrapper .deal-search-bar {

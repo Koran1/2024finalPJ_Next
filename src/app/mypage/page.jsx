@@ -37,29 +37,32 @@ function Page() {
     // }, [user])
 
     return (
-        <Box display='flex'>
-            <MyPageList />
-            <Box flexGrow={1} p={2} m={1} sx={{ border: '3px solid lightblue', borderRadius: '10px' }}>
-                <h2>내가 올린 상품&nbsp;
-                    <Link href='/deal/management'><ArrowForwardIosIcon /> </Link>
-                </h2>
-                <Stack direction="row">
-                    {products.length > 0 ?
-                        products.map((prod) => {
-                            return <MyPageCard product={prod} key={prod.dealIdx} />
+        <div className='mypage-body'>
 
-                        })
-                        :
-                        <p>등록한 상품이 없습니다!</p>
-                    }
-                </Stack>
+            <Box display='flex'>
+                <MyPageList />
+                <Box flexGrow={1} p={2} m={1} sx={{ border: '3px solid lightblue', borderRadius: '10px'}}>
+                    <h2>내가 올린 상품&nbsp;
+                        <Link href='/deal/management'><ArrowForwardIosIcon /> </Link>
+                    </h2>
+                    <Stack direction="row">
+                        {products.length > 0 ?
+                            products.map((prod) => {
+                                return <MyPageCard product={prod} key={prod.dealIdx} />
 
-                <hr />
-                <h2>내가 작성한 후기&nbsp;
-                    <Link href='/mycamp/mylog/list'><ArrowForwardIosIcon /> </Link>
-                </h2>
+                            })
+                            :
+                            <p>등록한 상품이 없습니다!</p>
+                        }
+                    </Stack>
+
+                    <hr />
+                    <h2>내가 작성한 후기&nbsp;
+                        <Link href='/mycamp/mylog/list'><ArrowForwardIosIcon /> </Link>
+                    </h2>
+                </Box>
             </Box>
-        </Box>
+        </div>
     );
 }
 

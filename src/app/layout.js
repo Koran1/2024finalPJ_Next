@@ -206,7 +206,10 @@ export default function RootLayout({ children }) {
             </div>
           </nav>
         </header>
+        <div className='magin'>
+
         {children}
+        </div>
 
 
         <hr />

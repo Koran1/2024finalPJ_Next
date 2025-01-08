@@ -58,6 +58,9 @@ body {
   color: rgb(var(--bs-tertiary-color-rgb));
 }
 
+.magin{
+  margin-top: 70px;
+}
 
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
