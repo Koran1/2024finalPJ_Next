@@ -18,6 +18,7 @@ import './chat.css';
 import axios from "axios";
 import Link from "next/link";
 import ReportModal from "@/app/deal/detail/[dealIdx]/report/page";
+import LogoutIcon from '@mui/icons-material/Logout';
 import SatisfactionModal from "@/app/deal/detail/[dealIdx]/satisfaction/page";
 
 const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
@@ -98,9 +99,28 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
     setMessage("");
   }
 
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);// 신고 모달 창 열기
   // 채팅 신고
   const handleReportChat = () => {
-    alert("신고하기")
+    setIsReportModalOpen(true);
+  }
+
+  // 채팅 나가기
+  const handleLeaveChat = () => {
+    if (!user) return;
+
+    if (confirm("정말 나가시겠습니까")) {
+      const formData = new FormData();
+      formData.append("room", room);
+      formData.append("userIdx", user.userIdx);
+
+      axios.put(`${LOCAL_API_BASE_URL}/chat/leaveChat`, formData)
+        .then((res) => {
+          console.log(res.data)
+          window.location.reload();
+        })
+        .catch((err) => console.log(err));
+    }
   }
 
   // 판매 완료
@@ -226,13 +246,23 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
             </IconButton>
 
             <div className="hover-caption">
-              <List sx={{ display: "inline" }}>
-                <ListItem disablePadding>
+              <List sx={{ display: "inline" }} >
+                <ListItem disablePadding sx={{
+                  display: "flex", flexDirection: "column",
+                  alignItems: "flex-start"
+                }}>
                   <ListItemButton sx={{ padding: "1px 15px" }} onClick={handleReportChat}>
                     <img src="/siren-siren-svgrepo-com.svg"
-                      width="20px" height="20px" style={{ marginTop: "-4px" }} />
+                      width="20px" height="20px" style={{ marginTop: "-5px" }} />
                     <ListItemText
                       primary="&nbsp;신고하기"
+                      sx={{ whiteSpace: 'nowrap' }}
+                    />
+                  </ListItemButton>
+                  <ListItemButton sx={{ padding: "1px 15px" }} onClick={handleLeaveChat}>
+                    <LogoutIcon />
+                    <ListItemText
+                      primary="나가기"
                       sx={{ whiteSpace: 'nowrap' }}
                     />
                   </ListItemButton>
@@ -256,7 +286,7 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
         }}
         className="chat-list-box"
       >
-        {chat.slice().reverse().map((chat) => {
+        {user && chat.slice().reverse().map((chat) => {
           if (chat.chatSenderIdx === user.userIdx) {
             // Right Chat
             return (
@@ -398,12 +428,14 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
           </Button>
         </Box>
       </Box>
-      {/* <ReportModal
+      <ReportModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
-        dealTitle={item.dealTitle}
-        sellerNick={item.dealSellerNick}
-      /> */}
+        dealTitle={product.dealTitle}
+        sellerNick={product.dealSellerNick}
+        dealIdx={dealIdx}
+        sellerUserIdx={product.dealSellerUserIdx}
+      />
       <SatisfactionModal
         isOpen={isSatisfactionModalOpen}
         onClose={handleSatisfactionModalClose}

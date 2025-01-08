@@ -81,9 +81,9 @@ function Page() {
 
             <Modal open={openModal === "joinTerms1"} onClose={handleCloseModal}>
                 <Box sx={modalStyle}>
-                    <h3>Campers 이용약관</h3>
-                    <Box textAlign='right' mt={2}>
-                        <Button variant='contained' onClick={handleCloseModal}>X</Button>
+                    <Box sx={{ display: "flex", marginBottom: "20px" }} justifyContent="space-between" >
+                        <h2 style={{ display: "inline-block" }}>Campers 이용약관</h2>
+                        <Button variant='outlined' sx={{ color: "black", border: "none", marginTop: "-10px" }} onClick={handleCloseModal}>X</Button>
                     </Box>
                     <Box>
                         <Terms />
@@ -93,15 +93,16 @@ function Page() {
 
             <Modal open={openModal === "joinTerms2"} onClose={handleCloseModal}>
                 <Box sx={modalStyle}>
-                    <h3>Campers 개인정보 수집 및 이용 동의</h3>
-                    <Box textAlign='right' mt={2}>
-                        <Button variant='contained' onClick={handleCloseModal}>X</Button>
+                    <Box sx={{ display: "flex", marginBottom: "20px" }} justifyContent="space-between" >
+                        <h2 style={{ display: "inline-block" }}>Campers 개인정보 수집 및 이용 동의</h2>
+                        <Button variant='outlined' sx={{ color: "black", border: "none", marginTop: "-10px" }} onClick={handleCloseModal}>X</Button>
                     </Box>
                     <Box>
-                        <Privacy />
+                        <Terms />
                     </Box>
                 </Box>
             </Modal>
+
         </div>
     )
 }

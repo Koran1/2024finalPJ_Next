@@ -9,6 +9,10 @@ const useAuthStore = create(
             isAuthenticated: false, // 로그인 여부
             expiresAt: null, // 토큰 만료 시간
 
+            // 회원 정보 변경 시 정보 반영
+            updateUser: (user) => {
+                set({ user });
+            },
 
             // 로그인 처리
             login: (user, token) => {

@@ -1,6 +1,6 @@
 'use client'
-import { Box, Button, FormControl, Stack, TextField } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { Box, Button, ButtonBase, FormControl, Stack, TextField, Typography } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import MyPageList from '../MyPageList';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
@@ -9,11 +9,14 @@ import { postcodeScriptUrl } from 'react-daum-postcode/lib/loadPostcode';
 import '../mypage.css'
 import { debounce } from 'lodash';
 import { useRouter } from 'next/navigation';
+import { AddAPhoto, Image } from '@mui/icons-material';
+import { VisuallyHiddenInput } from './VisuallyHiddenInput';
 
 
 function Page() {
 
-    const { user } = useAuthStore();
+    const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
+    const { user, updateUser } = useAuthStore();
     const router = useRouter();
 
     const initUvo = {
@@ -25,6 +28,7 @@ function Page() {
         userPhone: "",
         userAddr: "",
         userEtc01: null,
+        userProfileImg: null,
     }
 
 
@@ -85,13 +89,17 @@ function Page() {
     const [phoneHelper, setPhoneHelper] = useState("");
     const [mailHelper, setMailHelper] = useState("");
 
+    const [imageUrl, setImageUrl] = useState(null);
+
     // 하나라도 변경 시 조건 충족해야=> 버튼이 활성화
     const isBtnChk =
-        (uvo.userName == originalUvo.userName && uvo.userNickname == originalUvo.userNickname && uvo.userMail == originalUvo.userMail && uvo.userPhone == originalUvo.userPhone)
-        || (uvo.userName != originalUvo.userName && !uvo.userName)
-        || (uvo.userNickname != originalUvo.userNickname && (!uvo.userNickname || !nickPass))
-        || (uvo.userMail != originalUvo.userMail && (!uvo.userMail || mailError || !mailPass))
-        || (uvo.userPhone != originalUvo.userPhone && (!uvo.userPhone || phoneError || !phonePass))
+        ((uvo.userName == originalUvo.userName && uvo.userNickname == originalUvo.userNickname && uvo.userMail == originalUvo.userMail && uvo.userPhone == originalUvo.userPhone)
+            || (uvo.userName != originalUvo.userName && !uvo.userName)
+            || (uvo.userNickname != originalUvo.userNickname && (!uvo.userNickname || !nickPass))
+            || (uvo.userMail != originalUvo.userMail && (!uvo.userMail || mailError || !mailPass))
+            || (uvo.userPhone != originalUvo.userPhone && (!uvo.userPhone || phoneError || !phonePass)))
+        && !imageUrl;
+
 
     // 닉네임, 전화번호, 이메일 중복 확인
     const checkDuplicate = useCallback(
@@ -206,11 +214,21 @@ function Page() {
         if (!user) return;
         console.log('유저 정보 변경하기')
         uvo.userIdx = user.userIdx;
+
         console.log(uvo);
-        axios.put(`${LOCAL_API_BASE_URL}/mypage/changeUserInfo`, uvo)
+        axios.put(`${LOCAL_API_BASE_URL}/mypage/changeUserInfo`, uvo, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        })
             .then((res) => {
                 console.log(res.data);
                 if (res.data.success) {
+                    updateUser({
+                        userIdx: res.data.data.userIdx,
+                        nickname: res.data.data.userNickname,
+                        userEtc01: res.data.data.userEtc01,
+                    })
                     alert("회원 정보가 변경되었습니다!");
                     router.push('/mypage');
                 } else {
@@ -218,6 +236,26 @@ function Page() {
                 }
             })
             .catch((err) => console.log(err));
+    }
+
+    // 프로필 사진 변경
+    const handleFileInput = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUvo({
+            ...uvo, userProfileImg: file
+        })
+
+        // 선택한 프로필 사진 미리 보여주기
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            if (reader.readyState === 2) {
+                console.log(e.target.result)
+                setImageUrl(e.target.result)
+            }
+        }
     }
 
     return (
@@ -239,8 +277,53 @@ function Page() {
                     :
                     <FormControl>
                         <Stack direction="column" spacing={2} alignItems='flex-start'>
-                            <Box>
-
+                            {/* 프로필 사진 수정 */}
+                            <Box
+                                sx={{
+                                    width: 150,
+                                    height: 150,
+                                    position: 'relative',
+                                    m: 10,
+                                }}
+                            >
+                                <img
+                                    alt="sample image"
+                                    src={imageUrl ? imageUrl :
+                                        `${LOCAL_IMG_URL}/user/${originalUvo.userEtc01}` ?? '/default-product-image.jpg'}
+                                    width={150}
+                                    height={150}
+                                    style={{
+                                        width: 150,
+                                        height: 150,
+                                        objectFit: 'cover',
+                                        position: 'absolute',
+                                        borderRadius: 75,
+                                        zIndex: 1,
+                                    }}
+                                />
+                                <ButtonBase
+                                    component="label"
+                                    sx={{
+                                        position: 'absolute',
+                                        width: 150,
+                                        height: 150,
+                                        borderRadius: 75,
+                                        zIndex: 2,
+                                        bgcolor: '#00000077',
+                                    }}
+                                >
+                                    <VisuallyHiddenInput
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileInput}
+                                    />
+                                    <Stack spacing={0.5} alignItems="center">
+                                        <AddAPhoto sx={{ width: 50, height: 50, color: '#FFFFFF' }} />
+                                        <Typography variant="body2" color="#FFFFFF">
+                                            Add a photo
+                                        </Typography>
+                                    </Stack>
+                                </ButtonBase>
                             </Box>
 
                             <TextField className='pp2' type='text' label='이 름' name='userName'

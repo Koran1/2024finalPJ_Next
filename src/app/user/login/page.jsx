@@ -35,12 +35,14 @@ function Page() {
         const token = searchParams.get('token');
         const userIdx = searchParams.get('userIdx');
         const nickname = searchParams.get('nickname');
+        const userEtc01 = searchParams.get('userEtc01');
 
         if (token && userIdx && nickname) {
             alert('로그인 성공');
             const user = {
                 userIdx: userIdx,
-                nickname: nickname
+                nickname: nickname,
+                userEtc01: userEtc01,
             }
             login(user, token);     // zustand login 상태관리
 
@@ -63,7 +65,8 @@ function Page() {
                     console.log(data);
                     const user = {
                         userIdx: data.data.userIdx,
-                        nickname: data.data.userNickname
+                        nickname: data.data.userNickname,
+                        userEtc01: data.data.userEtc01
                     }
                     login(user, data.jwtToken);
                     router.push('/');       // 로그인 성공하면 home으로~

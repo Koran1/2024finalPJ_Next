@@ -8,6 +8,7 @@ import axios from "axios";
 import useAuthStore from "../../../../../store/authStore"; // authStore 가져오기
 
 function Page() {
+    const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const { user } = useAuthStore(); // authStore에서 사용자 정보 가져오기
     const userIdx = user?.userIdx; // userIdx 추출
     const [navMenu, setNavMenu] = useState("/mylog/list");
@@ -27,7 +28,7 @@ function Page() {
     const getMyLogList = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/api/mycamp/mylog/list`, {
+            const response = await axios.get(`${LOCAL_API_BASE_URL}/mycamp/mylog/list`, {
                 params: { userIdx, page, size },
             });
             if (response.data.success) {
@@ -49,10 +50,6 @@ function Page() {
     useEffect(() => {
         getMyLogList();
     }, [page, size, userIdx]);
-
-    // useEffect(() => {
-    //     getMyLogList();
-    // }, []);
 
     // 로딩 중 화면
     if (loading) {

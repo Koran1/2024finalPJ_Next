@@ -5,17 +5,20 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // zustand store 호출
 import useAuthStore from '../../store/authStore';
-import { Avatar, Badge, Button, Menu, MenuItem } from '@mui/material';
+import { Avatar, Badge, Box, Button, Menu, MenuItem, Modal } from '@mui/material';
 
 import Link from 'next/link';
 import { MailOutline } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
 import axios from 'axios';
 import Script from 'next/script';
+import Terms from './user/join/terms/Terms';
+import Privacy from './user/join/terms/Privacy';
 
 // 부모 컴포넌트
 export default function RootLayout({ children }) {
 
+  const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const KAKAO_KEY = process.env.NEXT_PUBLIC_KAKAO_KEY;
   // zustand 상태 가져오기
   const { isAuthenticated, user, logout, isExpired } = useAuthStore();
@@ -113,6 +116,30 @@ export default function RootLayout({ children }) {
       .catch((err) => console.log(err))
   });
 
+
+
+  // 모달 페이지 
+  const [openModal, setOpenModal] = useState(null);
+
+  const handleOpenModal = (modal) => setOpenModal(modal);
+  const handleCloseModal = () => setOpenModal(null);
+
+  // 이용약관 관련 모달 페이지 스타일
+  const modalStyleTermsPolicy = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "80%",
+    height: "80%",
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    overflow: "auto",
+    p: 4,
+  };
+
+  // admin 페이지
   if (pathname.startsWith("/admin")) {
     return (
       <html lang="en">
@@ -157,7 +184,7 @@ export default function RootLayout({ children }) {
                         <MailOutline style={{ color: 'white', width: '40px', height: '40px' }} />
                       </Link>
                     </Badge>
-                    <Avatar className='avatar' onClick={handlePhotoClick} src="/images/kitten-3.jpg" style={{ marginRight: '20px', width: '38px', height: '38px', }} />
+                    <Avatar className='avatar' onClick={handlePhotoClick} src={user.userEtc01 ? `${LOCAL_IMG_URL}/user/${user.userEtc01}` : "/default-product-image.jpg"} style={{ marginRight: '20px', width: '38px', height: '38px', }} />
                     <Menu
                       anchorEl={photo}
                       anchorOrigin={{ vertical: "bottom", horizontal: 'center' }}
@@ -180,12 +207,38 @@ export default function RootLayout({ children }) {
           </nav>
         </header>
         {children}
+
+
         <hr />
         <footer className="container">
           <p className="float-end"><a href="#">Back to top</a></p>
           <p>&copy; 2024-2025 ICT Company, Inc. &middot; <a href="/add/notice">공지사항</a>
-            &middot; <a href="#">이용약관</a>
-            &middot; <a href="#">개인정보처리방침</a></p>
+            &middot; <a href="#" onClick={() => handleOpenModal("joinTerms1")}>이용약관</a>
+            &middot; <a href="#" onClick={() => handleOpenModal("joinTerms2")}>개인정보처리방침</a></p>
+
+          <Modal open={openModal === "joinTerms1"} onClose={handleCloseModal}>
+            <Box sx={modalStyleTermsPolicy}>
+              <Box sx={{ display: "flex", marginBottom: "20px" }} justifyContent="space-between" >
+                <h2 style={{ display: "inline-block" }}>Campers 이용약관</h2>
+                <Button variant='outlined' sx={{ color: "black", border: "none", marginTop: "-10px" }} onClick={handleCloseModal}>X</Button>
+              </Box>
+              <Box>
+                <Terms />
+              </Box>
+            </Box>
+          </Modal>
+
+          <Modal open={openModal === "joinTerms2"} onClose={handleCloseModal}>
+            <Box sx={modalStyleTermsPolicy}>
+              <Box sx={{ display: "flex", marginBottom: "20px" }} justifyContent="space-between" >
+                <h2 style={{ display: "inline-block" }}>Campers 개인정보 수집 및 이용 동의</h2>
+                <Button variant='outlined' sx={{ color: "black", border: "none", marginTop: "-10px" }} onClick={handleCloseModal}>X</Button>
+              </Box>
+              <Box>
+                <Terms />
+              </Box>
+            </Box>
+          </Modal>
         </footer>
       </body>
     </html >
