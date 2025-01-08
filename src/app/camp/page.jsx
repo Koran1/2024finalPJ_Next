@@ -26,6 +26,7 @@ function Page() {
     const [showScrollTop, setShowScrollTop] = useState(false); // 페이지 상단으로 가기
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [hoveredRegion, setHoveredRegion] = useState(''); // 추가
 
     const { user } = useAuthStore();
     const [favList, setFavList] = useState([]);
@@ -220,7 +221,11 @@ function Page() {
                         setSelectedSigungu={setSelectedSigungu}
                         setSigunguList={setSigunguList}
                         setKeyword={setKeyword}
+                        setHoveredRegion={setHoveredRegion}
                     />
+                    <div className="camp-map-guide">
+                        {hoveredRegion || region || '지도를 선택해 주세요'}
+                    </div>
                 </div>
 
                 {/* 검색 및 정렬 영역 */}

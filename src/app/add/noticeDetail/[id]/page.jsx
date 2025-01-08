@@ -58,7 +58,8 @@ function Page({ params }) {
                 margin: '0 auto',
                 padding: 2,
                 border: '1px solid #ddd',
-                borderRadius: 2
+                borderRadius: 2,
+                marginTop: '100px'
             }}
         >
             {/* Title */}

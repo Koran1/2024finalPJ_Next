@@ -36,6 +36,7 @@
     "react-simplemde-editor": "^5.2.0",
     "react-slick": "^0.30.3",
     "react-tabs": "^6.1.0",
+    "react-transition-group": "^4.4.5",
     "simplemde": "^1.11.2",
     "slick-carousel": "^1.8.1",
     "socket.io": "^4.8.1",

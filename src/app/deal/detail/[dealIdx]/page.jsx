@@ -36,6 +36,8 @@ function Page({ params }) {
   const [sellerScore, setSellerScore] = useState(0);
   const [sellerSatisfactions, setSellerSatisfactions] = useState([]);
   const [favoriteStates, setFavoriteStates] = useState({});
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
 
   // isSellerUser를 여기서 먼저 선언
@@ -286,6 +288,27 @@ function Page({ params }) {
     checkSatisfactionRating(); // 모달이 닫힐 때 만족도 등록 여부 다시 확인
   };
 
+  // 이미지 변경 시 currentImageIndex도 업데이트하는 함수 추가
+  const handleImageChange = (src) => {
+    setMainImage(src);
+    setCurrentImageIndex(smallImages.indexOf(src));
+  };
+
+  // 이전/다음 이미지로 이동하는 함수 추가
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    const newIndex = (currentImageIndex - 1 + smallImages.length) % smallImages.length;
+    setMainImage(smallImages[newIndex]);
+    setCurrentImageIndex(newIndex);
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    const newIndex = (currentImageIndex + 1) % smallImages.length;
+    setMainImage(smallImages[newIndex]);
+    setCurrentImageIndex(newIndex);
+  };
+
   // 로딩 중
   if (loading) {
     return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
@@ -318,7 +341,7 @@ function Page({ params }) {
                   src={src || '/default-product-image.jpg'}
                   alt={`작은 이미지 ${index + 1}`}
                   className="small-image"
-                  onClick={() => setMainImage(src)}
+                  onClick={() => handleImageChange(src)}
                   style={{ cursor: 'pointer' }}
                 />
               ))}
@@ -330,6 +353,8 @@ function Page({ params }) {
                 src={mainImage || '/default-product-image.jpg'}
                 alt="상품 이미지"
                 className="product-image"
+                onClick={() => setIsImageModalOpen(true)}
+                style={{ cursor: 'pointer' }}
               />
             </div>
           </div>
@@ -661,6 +686,43 @@ function Page({ params }) {
         onClose={handleSatisfactionModalClose}
         dealIdx={dealIdx}
       />
+      {isImageModalOpen && (
+        <div className="image-modal-overlay" onClick={() => setIsImageModalOpen(false)}>
+          <div className="image-modal-content" onClick={() => setIsImageModalOpen(false)}>
+            <img
+              src={mainImage || '/default-product-image.jpg'}
+              alt="확대된 상품 이미지"
+              className="modal-image"
+              onClick={() => setIsImageModalOpen(false)}
+            />
+            <button 
+              className="close-modal-btn"
+              onClick={() => setIsImageModalOpen(false)}
+            >
+              ✕
+            </button>
+            {smallImages.length > 1 && (
+              <>
+                <button 
+                  className="nav-btn prev-btn"
+                  onClick={handlePrevImage}
+                >
+                  ❮
+                </button>
+                <button 
+                  className="nav-btn next-btn"
+                  onClick={handleNextImage}
+                >
+                  ❯
+                </button>
+                <div className="image-counter">
+                  {currentImageIndex + 1} / {smallImages.length}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

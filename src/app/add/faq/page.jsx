@@ -21,7 +21,7 @@ function Page(props) {
 
     return (
         <div>
-            <Box display="flex">
+            <Box display="flex" style={{ marginTop: '100px' }}>
                 <AddSideBar />
                 <Box flexGrow={1} p={2}>
                     {faqs.map((faq, idx) => {

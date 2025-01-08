@@ -1,7 +1,7 @@
 /* 모든 dealMain 관련 스타일을 .deal-main-wrapper로 감싸기 */
 .deal-main-wrapper {
   /* 기존 스타일 유지하면서 스코프 제한 */
-  margin-top: 100px;
+  margin-top: 70px;
 }
 
 .deal-main-wrapper .deal-search-bar {
@@ -551,7 +551,7 @@
   text-align: left;
 }
 
-/* 기존 스��일에 font-family 추가 */
+/* 기존 스타일에 font-family 추가 */
 .deal-main-wrapper .product-content .title,
 .deal-main-wrapper .product-content .price,
 .deal-main-wrapper .product-content .nick,

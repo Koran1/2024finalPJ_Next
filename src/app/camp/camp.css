@@ -12,26 +12,77 @@
 
 /* 메인 컨테이너 */
 .camp-main-container {
+    position: relative;
     display: flex;
     max-width: 1300px;
     margin: 0 auto;
-    gap: 20px; /* 왼쪽 지도와 오른쪽 컨텐츠 간격 */
+    gap: 20px;
 }
 
 /* 왼쪽 지도 영역 */
 .camp-map-container {
-    flex: 0.3; /* 왼쪽 너비 30% */
-    height: 600px; /* 고정 높이 */
+    position: sticky;
+    top: 100px;
+    flex: 0.3;
+    height: 800px;
     border-radius: 8px;
     overflow: hidden;
+    align-self: flex-start;
+}
+
+/* SVG 지도 크기 조정을 위한 스타일 추가 */
+.camp-map-container svg {
+    margin-top: 220px;
+    width: 100%;
+    height: 100%;
+    transform: scale(1.5);
+    transform-origin: 50% 50%;
+    display: block;
+}
+
+/* 지도 호버 시 툴팁 스타일 */
+.camp-map-container svg path:hover title {
+    position: fixed;
+    transform: none;
+    pointer-events: none;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: -20px;
+    margin-left: 10px;
+}
+
+/* SVG 내부 path 요소들의 크기도 조정 */
+.camp-map-container svg path {
+    transform-origin: center center;
+}
+
+/* 지도 안내 메시지 스타일 수정 */
+.camp-map-guide {
+    position: absolute;
+    top: 460px;
+    left: 38%;
+    transform: translateX(-50%);
+    background-color: rgba(243, 243, 243, 0.9);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    font-weight: 700;
 }
 
 /* 오른쪽 영역 */
 .camp-right-container {
-    flex: 0.7; /* 오른쪽 너비 70% */
+    flex: 0.7;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    margin-left: 20px;
 }
 
 /* 검색 영역 */
@@ -39,9 +90,8 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    padding: 10px;
+    padding: 10px 0; /* 좌우 패딩 제거 */
     border-radius: 8px;
-    /* background-color: #f9f9f9; */
 }
 
 .camp-doNm-select select,
@@ -322,4 +372,9 @@
 /* 페이징 */
 .camp-pagination {
     margin: 0 auto;
+}
+
+/* 키워드 검색 스타일 */
+.camp-search-keyword-container {
+    margin-left: 8px; /* 왼쪽 여백 추가 - 드롭다운과 동일하게 */
 }

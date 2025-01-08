@@ -31,6 +31,39 @@ function Page() {
     const router = useRouter(); // useRouter 초기화
     const [activeTab, setActiveTab] = useState('guide');
     const [logAlign, setLogAlign] = useState('rec');
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 이미지 모달 상태 추가
+    const [currentImageIndex, setCurrentImageIndex] = useState(0); // 현재 이미지 인덱스
+
+    // 이미지 배열 생성
+    const images = useMemo(() => {
+        if (!item) return [];
+        return [
+            item.firstImageUrl,
+            item.campImg2,
+            item.campImg3,
+            item.campImg4
+        ].filter(img => img); // null/undefined 제거
+    }, [item]);
+
+    // 이미지 모달 관련 핸들러들
+    const handleImageClick = () => {
+        setIsImageModalOpen(true);
+    };
+
+    const handlePrevImage = (e) => {
+        e.stopPropagation();
+        setCurrentImageIndex((prev) => 
+            (prev - 1 + images.length) % images.length
+        );
+    };
+
+    const handleNextImage = (e) => {
+        e.stopPropagation();
+        setCurrentImageIndex((prev) => 
+            (prev + 1) % images.length
+        );
+    };
+
     useEffect(() => {
 
         const fetchData = async () => {
@@ -136,6 +169,8 @@ function Page() {
                         alt="캠핑장 사진"
                         onError={(e) => e.target.src = "/images/campImageholder2.png"}
                         className="product-image"
+                        onClick={handleImageClick}
+                        style={{ cursor: 'pointer' }}
                     />
 
                     {/* 캠핑장 정보 섹션 */}
@@ -179,9 +214,6 @@ function Page() {
                         </div>
                     </div>
                 </div>
-
-
-
 
             </div>
 
@@ -245,7 +277,43 @@ function Page() {
 
             {/* 캠핑장 댓글 */}
 
-
+            {/* 이미지 모달 */}
+            {isImageModalOpen && (
+                <div className="image-modal-overlay" onClick={() => setIsImageModalOpen(false)}>
+                    <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <img
+                            src={images[currentImageIndex] || '/images/campImageholder2.png'}
+                            alt="확대된 캠핑장 이미지"
+                            className="modal-image"
+                        />
+                        <button 
+                            className="close-modal-btn"
+                            onClick={() => setIsImageModalOpen(false)}
+                        >
+                            ✕
+                        </button>
+                        {images.length > 1 && (
+                            <>
+                                <button 
+                                    className="nav-btn prev-btn"
+                                    onClick={handlePrevImage}
+                                >
+                                    ❮
+                                </button>
+                                <button 
+                                    className="nav-btn next-btn"
+                                    onClick={handleNextImage}
+                                >
+                                    ❯
+                                </button>
+                                <div className="image-counter">
+                                    {currentImageIndex + 1} / {images.length}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 }
