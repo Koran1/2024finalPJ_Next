@@ -1,0 +1,9 @@
+.admin-qnalist-table-head .MuiTableCell-root {
+    text-align: center;
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.admin-qnalist-table-body .MuiTableCell-root {
+    text-align: center;
+}

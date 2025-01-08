@@ -1,47 +1,105 @@
 "use client"
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import "./campList.css";
 import { Search } from "@mui/icons-material";
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Select, MenuItem, InputLabel, FormControl, IconButton, Button } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Select, MenuItem, InputLabel, FormControl, IconButton, Button, Pagination } from '@mui/material';
 import AdminList from '../AdminList';
 import CurrentTime from '../CurrentTime';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 function Page() {
-    const [filterStatus, setFilterStatus] = useState("전체"); // 검색어 옵션 박스
+    const [filterStatus, setFilterStatus] = useState("all"); // 검색어 옵션 박스
     const [keyword, setKeyword] = useState(""); // 키워드 검색
-    const [searchQuery, setSearchQuery] = useState("");
     const [isComposing, setIsComposing] = useState(false); // 검색 시 Enter 관련
+    const [page, setPage] = useState(1);
+    const [size, setSize] = useState(10);
+    const [totalCount, setTotalCount] = useState(0); // 검색 결과 개수
+    const [totalPages, setTotalPages] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [campList, setCampList] = useState([]);
+
+    const CAMP_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
 
     const inputRef = useRef(null);
+    const router = useRouter(); // useRouter 훅 사용
+    useEffect(() => {
+        fetchData(); // Call the async function
+    }, [page, size, filterStatus]);
+    // Fetch camp list
+    const fetchData = async () => {
+        const searchData = {
+            page: page,
+            size: size,
+            keyword: keyword?.trim() || null, // keyword가 존재하면 trim(), 없으면 null
+            sortOption: filterStatus
+        };
+        setLoading(true);
+        try {
+            const response = await axios.post(`${CAMP_API_BASE_URL}/admin/campList`, searchData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = response.data;
+            if (data.success) {
+                setCampList(data.data.data);
+                setTotalCount(data.data.totalCount);
+                setTotalPages(data.data.totalPages);
 
-    const rows = [
-        { idx: 1, contentId: 100002, name: '야영장1', status: '운영', dateAdded: '2021-12-12', dateModified: '2023-12-11' },
-        { idx: 2, contentId: 100003, name: '야영장2', status: '휴장', dateAdded: '2021-12-11', dateModified: '2024-12-21' },
-        { idx: 3, contentId: 100004, name: '야영장3', status: '운영', dateAdded: '2021-12-11', dateModified: '2024-12-21' },
-        { idx: 4, contentId: 100005, name: '야영장4', status: '휴장', dateAdded: '2021-12-11', dateModified: '2024-12-21' },
-        { idx: 5, contentId: 100006, name: '야영장5', status: '운영', dateAdded: '2021-12-11', dateModified: '2024-12-21' },
-    ];
+                console.log('Fetched camp list:', response);
+            } else {
+            }
+        } catch (error) {
+            console.error('Error fetching camp list:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    // 필터링된 데이터
-    const filteredRows = rows.filter((row) => {
-        return (
-            (filterStatus === '전체' || row.status === filterStatus) &&
-            row.name.includes(searchQuery) 
-        );
-    });
+
 
     // 검색 핸들러
     const handleSearch = () => {
-        setSearchQuery(keyword); 
-        inputRef.current.blur(); 
+        setPage(1);
+        fetchData();
+        inputRef.current.blur();
     };
 
     // 검색 엔터 함수
     const handleKeyUp = (e) => {
         if (!isComposing && e.key === "Enter") {
-            setSearchQuery("");
+            // setKeyword("");
             handleSearch();
         }
+    };
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    // 신규등록 버튼 클릭 핸들러
+    const handleNewRegistration = () => {
+        alert("신규 등록 페이지로 이동합니다.");
+        router.push('/admin/campList/detail');
+    };
+
+    // TableRow 클릭 핸들러
+    const handleRowClick = (row) => {
+        // 객체를 JSON 문자열로 직렬화하고 URL에 안전하게 인코딩
+        const queryString = new URLSearchParams({
+            data: encodeURIComponent(JSON.stringify(row)), // JSON.stringify로 직렬화 후 encodeURIComponent
+        }).toString();
+
+        // 쿼리 파라미터를 사용해 URL을 생성하고, as로 깔끔한 URL 유지
+        router.push(
+            `/admin/campList/detail?${row.campIdx}`, // 실제 경로와 쿼리
+            '/admin/campList/detail' // 표시될 경로
+        );
     };
 
     return (
@@ -86,18 +144,17 @@ function Page() {
                             labelId="filter-status-label"
                             value={filterStatus}
                             onChange={(e) => {
-                                setFilterStatus(e.target.value); 
-                                setSearchQuery(""); 
-                                setKeyword(""); 
+                                setFilterStatus(e.target.value);
+                                setPage(1);
                             }}
                             sx={{
                                 height: '48px',
                                 alignItems: 'center',
                             }}
                         >
-                            <MenuItem value="전체">전체</MenuItem>
-                            <MenuItem value="운영">운영</MenuItem>
-                            <MenuItem value="휴장">휴장</MenuItem>
+                            <MenuItem value="all">전체</MenuItem>
+                            <MenuItem value="open">운영</MenuItem>
+                            <MenuItem value="closed">휴장</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -115,9 +172,9 @@ function Page() {
                             placeholder="검색어 입력"
                             value={keyword}
                             onChange={(e) => setKeyword(e.target.value)}
-                            onKeyUp={handleKeyUp} 
-                            onFocus={() => setKeyword("")} 
-                            inputRef={inputRef} 
+                            onKeyUp={handleKeyUp}
+                            // onFocus={() => setKeyword("")}
+                            inputRef={inputRef}
                             // 옵션 박스랑 위치 맞게 하려면 InputProps가 deprecated이지만 이걸 사용해야 둘의 위치를 맞출 수 있음
                             InputProps={{
                                 style: {
@@ -128,10 +185,10 @@ function Page() {
                         />
 
                         <IconButton
-                            onClick={handleSearch} 
+                            onClick={handleSearch}
                             sx={{
                                 height: '48px',
-                                width: '48px', 
+                                width: '48px',
                             }}
                         >
                             <Search />
@@ -139,16 +196,14 @@ function Page() {
                     </Box>
                     <Box
                         sx={{
-                            marginLeft: 'auto', 
+                            marginLeft: 'auto',
                         }}
                     >
                         <Button
                             variant="contained"
                             color="primary"
                             size="medium"
-                            onClick={() => {
-                                alert("신규 등록 페이지로 이동합니다.");
-                            }}
+                            onClick={handleNewRegistration}
                         >
                             신규 등록
                         </Button>
@@ -169,24 +224,39 @@ function Page() {
                             </TableRow>
                         </TableHead>
                         <TableBody className="admin-camplist-table-body">
-                            {filteredRows.map((row) => (
+                            {campList.map((row) => (
                                 <TableRow
-                                    key={row.idx}
+                                    key={row.campIdx}
                                     sx={{
-                                        backgroundColor: row.status === '휴장' ? '#D9EAFD' : 'inherit', // 휴장인 경우 배경색 설정
+                                        backgroundColor: row.manageSttus === '휴장' ? '#D9EAFD' : 'inherit', // 휴장인 경우 배경색 설정
                                     }}
+                                    onClick={() => handleRowClick(row)} // TableRow 클릭 시 핸들러 호출
+                                    style={{ cursor: 'pointer' }} // 마우스 포인터를 손 모양으로 변경
+                                    hover // 마우스를 올렸을 때 옅은 회색으로 변경
                                 >
-                                    <TableCell>{row.idx}</TableCell>
+                                    <TableCell>{row.campIdx}</TableCell>
                                     <TableCell>{row.contentId}</TableCell>
-                                    <TableCell>{row.name}</TableCell>
-                                    <TableCell>{row.status}</TableCell>
-                                    <TableCell>{row.dateAdded}</TableCell>
-                                    <TableCell>{row.dateModified}</TableCell>
+                                    <TableCell>{row.facltNm}</TableCell>
+                                    <TableCell>{row.manageSttus}</TableCell>
+                                    <TableCell>{row.createdtime}</TableCell>
+                                    <TableCell>{row.modifiedtime}</TableCell>
                                 </TableRow>
                             ))}
+                            {/* Pagination 컴포넌트 추가 */}
                         </TableBody>
 
                     </Table>
+                    <Pagination
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            padding: '16px',
+                        }}
+                        count={totalPages}
+                        page={page}
+                        onChange={handlePageChange}
+                        color="primary"
+                    />
                 </TableContainer>
             </Box>
         </Box>
