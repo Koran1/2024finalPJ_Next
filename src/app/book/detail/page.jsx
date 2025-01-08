@@ -198,7 +198,7 @@ function Page() {
             <hr />
             {/* 캠핑장 정보(이름, 주소, 전화번호) */}
             <div style={{ display: "flex", marginBottom: "20px" }}>
-                <img src={campData.firstImageUrl} style={{ width: '150px', height: '150px', margin: "0 5px", borderRadius: "10px" }} />
+                <a href={`/camp/detail/${formData.campIdx}`}><img src={campData.firstImageUrl} style={{ width: '150px', height: '150px', margin: "0 5px", borderRadius: "10px" }} /></a>
                 <div>
                     <h3>{campData.facltNm}</h3>
                     <div style={{ display: "flex", width: "430px", justifyContent: "space-between", alignItems: "center" }}>
