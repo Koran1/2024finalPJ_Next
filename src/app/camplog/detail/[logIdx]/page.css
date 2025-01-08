@@ -1,4 +1,4 @@
-/* .fade-enter {
+.fade-enter {
   opacity: 0;
   top: calc(${tag.tagY - 107}px) !important;
 }
@@ -18,4 +18,4 @@
   opacity: 0;
   top: calc(${tag.tagY - 107}px) !important;
   transition: opacity 500ms, top 500ms ease-out;
-} */
+}

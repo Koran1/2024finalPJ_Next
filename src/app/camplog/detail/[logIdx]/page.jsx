@@ -66,8 +66,6 @@ function Page({ params }) {
                 const response = await axios.get(apiUrl);
                 const data = response.data;
                 console.log("response : ", response);
-                console.log("data.data.rvo.reportCount : ", data.data.rvo[0].reportCount);
-                console.log("data.data.logVO.logIsActive : ", data.data.logVO.logIsActive);
                 // 신고됐거나 삭제된 로그 글은 들어오면 경고창과 함께 리스트로 이동
                 if (data.data.rvo[0].reportCount >= 3) {
                     alert("3명이상의 유저에게 신고된 로그글 입니다.");
@@ -79,7 +77,6 @@ function Page({ params }) {
                 if (data.success) {
                     setData(data.data);
                     setTagData(data.data.pData.map(item => {
-
                         if (!item.tagData || item.tagData.length === 0) {
                             return [];
                         } else {
@@ -94,10 +91,7 @@ function Page({ params }) {
                             })
                         }
                     }));
-                    setDoRecommend(data.doRecommend);
-                    // 사용자 인지 아닌지 임의로 설정하기
                     setIsWriter(response.data.data.userVO.userIdx === user.userIdx ? true : false);
-                    // setIsWriter(response.data.data.userVO.userIdx === userIdx ? false : true);
                 } else {
                     alert(response.data.message);
                     router.push("/camplog/list");
@@ -111,8 +105,11 @@ function Page({ params }) {
             }
         }
         fetchData();
-    }, [params, baseUrl, data.doRecommend]);
-    // }, [params]);
+    }, [params, baseUrl]);
+    useEffect(() => {
+        setDoRecommend(data.doRecommend);
+        setRecommendCount(data.RecommendCount);
+    }, [data])
 
     const showTagContent = (tagId, order) => {
         setTagData(tagData.map((data, index) => {
@@ -146,16 +143,21 @@ function Page({ params }) {
         router.push(`/deal/detail/${dealIdx}`);
     }
     const handleToogleReCommend = async () => {
-        if (!user) return;
-        try {
-            console.log("클릭함");
-            const apiUrl = `${baseUrl}/camplog/toggleRecommend?logIdx=${data.logVO.logIdx}&userIdx=${user.userIdx}&doRecommend=${doRecommend ? 1 : 0}`;
-            const response = await axios.get(apiUrl);
-            if (response.data.success) {
-                response.data.data === "1" ? setDoRecommend(true) : setDoRecommend(false)
+        if (!isAuthenticated || !token) {
+            alert('로그인이 필요합니다.');
+            router.push('/user/login');
+            return;
+        } else {
+            try {
+                const apiUrl = `${baseUrl}/camplog/toggleRecommend?logIdx=${data.logVO.logIdx}&userIdx=${user.userIdx}&doRecommend=${doRecommend ? 1 : 0}`;
+                const response = await axios.get(apiUrl);
+                if (response.data.success) {
+                    response.data.data === "1" ? setDoRecommend(true) : setDoRecommend(false)
+                    setRecommendCount(RecommendCount => doRecommend ? RecommendCount - 1 : RecommendCount + 1);
+                }
+            } catch (error) {
+                alert("서버 오류 발생");
             }
-        } catch (error) {
-            alert("서버 오류 발생");
         }
     }
     // 기존 로그 글 삭제 함수
@@ -186,25 +188,30 @@ function Page({ params }) {
     }
 
     const logReport = async () => {
-        if (!user) return;
-        const API_URL = `${baseUrl}/camplog/logReport`;
-        const sendData = new FormData();
-        try {
-            console.log("logReport, data.logVO.logIdx", data.logVO.logIdx);
-            console.log("logReport, reportCategory", reportCategory);
-            console.log("logReport, reportContent", reportContent);
-            sendData.append("userIdx", user.userIdx);
-            sendData.append("reportTableIdx", data.logVO.logIdx);
-            sendData.append("reportCategory", reportCategory);
-            sendData.append("reportContent", reportContent);
+        if (!isAuthenticated || !token) {
+            alert('로그인이 필요합니다.');
+            router.push('/user/login');
+            return;
+        } else {
+            const API_URL = `${baseUrl}/camplog/logReport`;
+            const sendData = new FormData();
+            try {
+                console.log("logReport, data.logVO.logIdx", data.logVO.logIdx);
+                console.log("logReport, reportCategory", reportCategory);
+                console.log("logReport, reportContent", reportContent);
+                sendData.append("userIdx", user.userIdx);
+                sendData.append("reportTableIdx", data.logVO.logIdx);
+                sendData.append("reportCategory", reportCategory);
+                sendData.append("reportContent", reportContent);
 
-            // 서버에 저장
-            await axios.post(API_URL, sendData);
+                // 서버에 저장
+                await axios.post(API_URL, sendData);
 
-            // 페이지 새로 고침
-            window.location.reload();
-        } catch (error) {
-            alert("로그(후기)글 신고 오류 : " + error);
+                // 페이지 새로 고침
+                window.location.reload();
+            } catch (error) {
+                alert("로그(후기)글 신고 오류 : " + error);
+            }
         }
     };
 
@@ -252,25 +259,31 @@ function Page({ params }) {
     }, [isShow, commentIdx]);
 
     const commentSubmit = async () => {
-        if (logCommentContent.trim() == "") {
-            alert("댓글을 입력해주세요.")
+        if (!isAuthenticated || !token) {
+            alert('로그인이 필요합니다.');
+            router.push('/user/login');
+            return;
         } else {
-            const { logIdx } = await Promise.resolve(params);
-            const API_URL = `${baseUrl}/camplog/commentWrite`;
-            const data = new FormData();
-            try {
-                data.append("logIdx", logIdx);
-                data.append("logCommentContent", logCommentContent);
+            if (logCommentContent.trim() == "") {
+                alert("댓글을 입력해주세요.")
+            } else {
+                const { logIdx } = await Promise.resolve(params);
+                const API_URL = `${baseUrl}/camplog/commentWrite`;
+                const data = new FormData();
+                try {
+                    data.append("logIdx", logIdx);
+                    data.append("logCommentContent", logCommentContent);
 
-                console.log(data.get("logIdx"));
-                console.log(data.get("logCommentContent"));
-                // 서버에 저장
-                await axios.post(API_URL, data);
+                    console.log(data.get("logIdx"));
+                    console.log(data.get("logCommentContent"));
+                    // 서버에 저장
+                    await axios.post(API_URL, data);
 
-                // 페이지 새로 고침
-                window.location.reload(); // 페이지 새로 고침
-            } catch (error) {
-                alert("댓글 등록 오류 : " + error);
+                    // 페이지 새로 고침
+                    window.location.reload(); // 페이지 새로 고침
+                } catch (error) {
+                    alert("댓글 등록 오류 : " + error);
+                }
             }
         }
     };
@@ -286,27 +299,32 @@ function Page({ params }) {
     }
 
     const replySubmit = async () => {
-        if (!user) return;
-        if (logReplyContent.trim() == "") {
-            alert("답글을 입력해주세요.")
+        if (!isAuthenticated || !token) {
+            alert('로그인이 필요합니다.');
+            router.push('/user/login');
+            return;
         } else {
-            const { logIdx } = await Promise.resolve(params);
-            const API_URL = `${baseUrl}/camplog/commentWrite`;
-            const data = new FormData();
-            try {
-                data.append("logIdx", logIdx);
-                data.append("userIdx", user.userIdx);
-                data.append("logCommentContent", logReplyContent);
-                data.append("commentIdx", commentIdx);
+            if (logReplyContent.trim() == "") {
+                alert("답글을 입력해주세요.")
+            } else {
+                const { logIdx } = await Promise.resolve(params);
+                const API_URL = `${baseUrl}/camplog/commentWrite`;
+                const data = new FormData();
+                try {
+                    data.append("logIdx", logIdx);
+                    data.append("userIdx", user.userIdx);
+                    data.append("logCommentContent", logReplyContent);
+                    data.append("commentIdx", commentIdx);
 
-                // 서버에 저장
-                await axios.post(API_URL, data);
+                    // 서버에 저장
+                    await axios.post(API_URL, data);
 
-                // 페이지 새로 고침
-                window.location.reload();
-            } catch (error) {
-                setError("Error reply data:", error);
-                // alert("답글 등록 오류 : " + error);
+                    // 페이지 새로 고침
+                    window.location.reload();
+                } catch (error) {
+                    setError("Error reply data:", error);
+                    // alert("답글 등록 오류 : " + error);
+                }
             }
         }
     };
@@ -414,7 +432,7 @@ function Page({ params }) {
                                             <circle cx="58" cy="38" r="2" fill="#000" />
                                             <path d="M40 50 Q50 60 60 50" stroke="#000" strokeWidth="2" fill="none" />
                                         </svg>
-                                        <span style={{ fontWeight: "bold" }}>{data.userVO.userNickname}</span>
+                                        <span style={{ fontWeight: "bold" }}>{data.userVO[0].userNickname}</span>
                                         <span style={{ color: "gray" }}>{data.logVO.logRegDate}</span>
                                     </div>
 
@@ -439,7 +457,7 @@ function Page({ params }) {
                                                             </div>
                                                             <div
                                                                 style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "130px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", borderTop: "none", backgroundColor: "white" }}
-                                                                onClick={() => handleModalClick("camplog", "delete")}
+                                                                onClick={handleLogDelete}
                                                             >
                                                                 <span style={{ color: "gray", margin: "17px 67px 0px 10px", fontWeight: "bold" }}>삭제하기</span>
                                                                 <DeleteIcon style={{ fontSize: "30px", marginTop: "13px" }} />
@@ -455,7 +473,7 @@ function Page({ params }) {
                                                         <>
                                                             <div
                                                                 style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "70px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", backgroundColor: "white" }}
-                                                                onClick={() => handleModalClick("camplog", "report")}
+                                                                onClick={() => setModalOpen(true)}
 
                                                             >
                                                                 <span style={{ color: "gray", margin: "17px 67px 0px 10px", fontWeight: "bold" }}>신고하기</span>
@@ -634,9 +652,8 @@ function Page({ params }) {
                                         <ThumbUpOffAltIcon color='primary' style={{ fontSize: "40px", marginTop: "5px" }} />
                                     )}
                             </div>
-                            <span style={{ display: "inline-block", fontSize: "25px", fontWeight: "bold", marginLeft: "30px", verticalAlign: "middle" }}>글 추천하기</span>
+                            <span style={{ display: "inline-block", fontSize: "25px", fontWeight: "bold", marginLeft: "30px", verticalAlign: "middle" }}>{RecommendCount}</span>
                         </>)}
-
                 </Grid2>
                 <Grid2 size={3} />
             </Grid2>

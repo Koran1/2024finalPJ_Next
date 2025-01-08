@@ -9,9 +9,9 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import useAuthStore from '../../../../store/authStore'; // authStore 가져오기
+import { useRouter } from 'next/navigation';
 
 function Page(props) {
-    const { user } = useAuthStore(); // authStore에서 사용자 정보 가져오기
     const [selectedSearch, setSelectedSearch] = useState("all"); // 검색어 옵션 박스
     const [keyword, setKeyword] = useState(""); // 키워드 검색
     const [totalCount, setTotalCount] = useState(0); // 검색 결과 개수
@@ -24,7 +24,8 @@ function Page(props) {
     const [showScrollTop, setShowScrollTop] = useState(false); // 페이지 상단으로 가기
     const [loading, setLoading] = useState(false); // 로딩 상태
     const [error, setError] = useState(null); // 에러 상태
-
+    const router = useRouter();
+    const { isAuthenticated, token, user } = useAuthStore();
     // camplog 리스트 가져오기
     const getCamplogList = async () => {
         setLoading(true);
@@ -123,7 +124,18 @@ function Page(props) {
             <div style={{ textAlign: "center", padding: "20px", color: "red" }}>Error: {error}</div>
         );
     }
-
+    const handleGoLogDetail = (logIdx) => { // 상세 이동함수
+        router.push(`/camplog/detail/${logIdx}`)
+    }
+    const handleLogWrite = () => {
+        if (!isAuthenticated || !token) {
+            alert('로그인이 필요합니다.');
+            router.push('/user/login');
+            return;
+          } else {
+            router.push("/camplog/write");
+          }
+    }
     return (
         <div className="camplog-main-container">
             {/* 검색 영역 */}
@@ -201,7 +213,7 @@ function Page(props) {
             <div className="camplog-list-container">
 
                 {camplogList.length === 0 ? (
-                    <p>등록된 캠핑로그가 없습니다.</p>
+                    <p style={{margin: "0 auto"}}>등록된 캠핑로그가 없습니다.</p>
                 ) : (
                     camplogList.map((list) => {
                         const userStatus0 = list.reporterUserIds ? list.reporterUserIds.split(',') : [];
@@ -241,9 +253,11 @@ function Page(props) {
                                             <span className="date">{list.logRegDate.substring(0, 10)}</span>
                                         </div>
                                     </div>
-                                    <div className="camplog-title"><p>{list.logTitle}</p></div>
-                                    <div className="camplog-content">
-                                        <p>{list.logContent || "내용 없음"}</p>
+                                    <div style={{cursor: "pointer"}} onClick={()=> handleGoLogDetail(list.logIdx)}>
+                                        <div className="camplog-title"><p>{list.logTitle}</p></div>
+                                        <div className="camplog-content">
+                                            <p>{list.logContent || "내용 없음"}</p>
+                                        </div>
                                     </div>
                                     <div className="camplog-info">
                                         <p>
@@ -251,7 +265,7 @@ function Page(props) {
                                             <ChatBubbleOutlineIcon style={{ transform: 'scaleX(-1)' }} /> 댓글수 {list.totalCount} {" "}
                                             {list.campIdx ? (
                                                 <>
-                                                    | <Link href={`/camp/detail/${list.campIdx}`} style={{ textDecoration: 'none' }}>
+                                                    | <Link href={`/camp/detail/${list.campIdx}`} style={{ textDecoration: 'none', cursor: "pointer" }}>
                                                         #{list.facltNm}
                                                     </Link>
                                                 </>
@@ -262,7 +276,8 @@ function Page(props) {
                                 <div className="camplog-thumbnail">
                                     <img
                                         src={list.fileName ? `http://localhost:8080/upload/${list.fileName}` : "/images/campImageholder3.png"}
-                                        alt="캠핑 썸네일"
+                                        alt="캠핑 썸네일" 
+                                        style={{cursor: "pointer"}} onClick={()=> handleGoLogDetail(list.logIdx)}
                                     />
                                 </div>
                             </div>
@@ -273,8 +288,9 @@ function Page(props) {
 
             {/* 글쓰기 버튼 영역 */}
             <div className="camplog-write-container">
-                <Link href="/camplog/write"><Button variant="contained">글쓰기</Button></Link>
+              <Button variant="contained" onClick={handleLogWrite}>글쓰기</Button>
             </div>
+
 
             {/* 페이징 영역 */}
             <div className="camplog-pagination">

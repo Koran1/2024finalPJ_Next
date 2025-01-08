@@ -15,7 +15,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 
-function Page(props) {
+function Page(ㄱ) {
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const imgUrl = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [extraFields, setExtraFields] = useState([]);
@@ -47,7 +47,6 @@ function Page(props) {
     const [showCountForDealList, setShowCountForDealList] = useState(5);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-
     const { user } = useAuthStore();
 
     console.log("tags: ", tags);
@@ -454,7 +453,7 @@ function Page(props) {
                 <span style={{ fontSize: "70px", display: "inline-block" }}> </span><span style={{ display: "inline-block", fontSize: "50px", marginLeft: "33%" }}>캠핑로그 작성</span>
             </header>
             <Grid2 container spacing={2}>
-                <Grid2 size={1} />
+                <Grid2 size={2} />
                 <Grid2 size={1}>
                     {extraFields.some(field => field.previewImg != null) ? (
                         <div style={{ border: "1px solid gray", width: "120px", maxHeight: "50vh", position: "fixed", textAlign: 'center', overflowY: "auto" }}>
@@ -760,7 +759,7 @@ function Page(props) {
                     {extraFields.length > 0 && extraFields.some(field => field.file == null) ?
                         (null) : (<Button variant="contained" style={{ fontSize: "35px", width: "400px", marginTop: "20px" }} onClick={createNewField}>+</Button>)}
                 </Grid2>
-                <Grid2 size={4} />
+                <Grid2 size={3} />
 
             </Grid2>
             <Modal
