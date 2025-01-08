@@ -9,6 +9,7 @@
 }
 
 .search-text{
+  font-family: 'MinSans-Regular';
   color: white;
   font-size: 15px;
 }
@@ -54,9 +55,9 @@
   margin-bottom: 10px;
 }
 
-.nick {
+/* .nick {
   font-size: 15px;
-}
+} */
 
 .title {
   font-size: 17px;
@@ -94,6 +95,7 @@
 .category:hover {
   background-color: #dadada;
 }
+
 
 .category.active {
   background-color: #2F3438;
@@ -169,6 +171,8 @@
 }
 
 .btn123 {
+  padding-left: 16px;
+  font-family: 'MinSans-Regular';
   color: #767474;
   font-size: 10%;
   font-size: 17px;
@@ -179,7 +183,6 @@
   text-align: end;
   margin: 5px;
   transition: all 0.3s ease;
-  font-family: "Do Hyeon, sans-serif";
   
 }
 
@@ -189,6 +192,7 @@
 }
 
 .part {
+  font-family: 'MinSans-Regular';
   font-size: 16px;
   margin-left: 7px;
   font-weight: bold;
@@ -204,6 +208,7 @@
 }
 
 .f-btn {
+  font-family: 'MinSans-Regular';
   text-decoration: none;
   color: #767474;
   font-size: 16px;
@@ -281,29 +286,39 @@
 }
 
 .pd-reg-container .nick {
-  font-size: 16px;
-  font-weight: bold;
+  font-family: 'MinSans-Regular';
+  font-size: 14px;
   color: #525050;
 }
+
+@font-face {
+  font-family: 'MinSans-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/MinSans-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 .pd-reg-container .title {
-  font-size: 17px;
-  font-weight: bold;
-  color: #525050;
+  font-family: 'MinSans-Regular';
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
+  overflow-wrap: break-word;
   display: -webkit-box;
-  -webkit-line-clamp: 2;  /* 최대 2줄 */
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
-  word-wrap: break-word;
-  line-height: 1.2em;
-  height: 2.4em;  /* line-height * 2 */
+  font-size: 16px;
+  line-height: 20px;
+  color: rgb(47, 52, 56);
 }
 
+
 .pd-reg-container .price {
-  font-size: 18px;
+  font-family: 'MinSans-Regular';
+  font-size: 16px;
   font-weight: bold;
-  color: rgb(15, 15, 158);
+  color: #2F3438;
 }
 
 .pd-reg-container .favor {
