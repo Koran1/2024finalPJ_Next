@@ -21,22 +21,22 @@ export default function UsageGuide({ item }) {
             {/* 이미지 섹션 */}
             <div className="image-section">
                 <img
-                    src={item.campImg2
-                        ? item.campImg2
+                    src={item.campImg3
+                        ? item.campImg3
                         : "/images/campImageholder2.png"}
                     alt="캠핑장 사진1"
                     onError={(e) => e.target.src = "/images/campImageholder2.png"}
                 />
                 <img
-                    src={item.campImg3
-                        ? item.campImg3
+                    src={item.campImg4
+                        ? item.campImg4
                         : "/images/campImageholder2.png"}
                     alt="캠핑장 사진2"
                     onError={(e) => e.target.src = "/images/campImageholder2.png"}
                 />
                 <img
-                    src={item.campImg4
-                        ? item.campImg4
+                    src={item.campImg5
+                        ? item.campImg5
                         : "/images/campImageholder2.png"}
                     alt="캠핑장 사진3"
                     onError={(e) => e.target.src = "/images/campImageholder2.png"}

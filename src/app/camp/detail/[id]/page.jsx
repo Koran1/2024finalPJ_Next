@@ -130,8 +130,8 @@ function Page() {
                     <img
                         src={item.firstImageUrl
                             ? item.firstImageUrl
-                            : item.campImg2
-                                ? item.campImg2
+                            : item.campImg3
+                                ? item.campImg3
                                 : "/images/campImageholder2.png"}
                         alt="캠핑장 사진"
                         onError={(e) => e.target.src = "/images/campImageholder2.png"}
@@ -171,9 +171,9 @@ function Page() {
 
                         {/* 예약 및 수정 버튼 */}
                         <div className="action-buttons">
-                            <button className="reserve-btn" 
-                                onClick={()=> userIdx > 0 ? router.push(`/book/write?campIdx=${campIdx}`) : 
-                                (alert("로그인 후 예약작성이 가능합니다")) }
+                            <button className="reserve-btn"
+                                onClick={() => userIdx > 0 ? router.push(`/book/write?campIdx=${campIdx}`) :
+                                    (alert("로그인 후 예약작성이 가능합니다"))}
                             >예약하기</button>
                             {/* <button className="info-request-btn" onClick={() => { alert("report 창으로") }}>정보수정 요청</button> */}
                         </div>
