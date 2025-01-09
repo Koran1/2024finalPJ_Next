@@ -239,7 +239,7 @@ function Page(ㄱ) {
                 } else {
                     if (response.data.message === "거래 중인 상품이 없습니다.") {
                         setShowLinkModal(true);
-                    }else {
+                    } else {
                         alert(response.data.message);
                     }
                 }
@@ -456,7 +456,10 @@ function Page(ㄱ) {
         setConfirmedCampIdx(selectedCampIdx);
         setShowCampModal(false);
     }
-
+    window.addEventListener("beforeunload", function (event) { // 새로고침시 물어보는 confirm창창
+        event.preventDefault();
+        event.returnValue = ""; 
+    });
     return (
         <>
             <header >
@@ -687,7 +690,7 @@ function Page(ㄱ) {
                                                                                     {tag.dealIdx != null ?
                                                                                         (
                                                                                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                                                                <img src={`${imgUrl}/${linkList.filter(list => list.dealIdx === tag.dealIdx).map(list => list.fileName)}`}
+                                                                                                <img src={`${imgUrl}/deal/${linkList.filter(list => list.dealIdx === tag.dealIdx).map(list => list.fileName)}`}
                                                                                                     alt=''
                                                                                                     style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px" }}>
                                                                                                 </img>
@@ -787,9 +790,9 @@ function Page(ㄱ) {
                         <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>상품사진</TableCell>
-                                    <TableCell>상품명</TableCell>
-                                    <TableCell>가격</TableCell>
+                                    <TableCell >상품사진</TableCell>
+                                    <TableCell style={{paddingRight: "50px"}}>상품명</TableCell>
+                                    <TableCell>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;가격</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -800,15 +803,15 @@ function Page(ㄱ) {
                                                 <TableRow key={list.dealIdx} onClick={() => handleSelectedDealIdx(list.dealIdx)} style={{ backgroundColor: list.dealIdx === selectedDealIdx ? "#A9A9A9" : "white" }} >
                                                     <TableCell >
                                                         <div style={{ width: "fit-content", position: "relative" }}>
-                                                            <img src={`${imgUrl}/${list.fileName}`} alt='' style={{ width: '100px', height: '100px', filter: list.dealIdx === selectedDealIdx ? "brightness(0.5)" : "brightness(1)" }} ></img>
+                                                            <img src={`${imgUrl}/deal/${list.fileName}`} alt='' style={{ width: '100px', height: '100px', filter: list.dealIdx === selectedDealIdx ? "brightness(0.5)" : "brightness(1)" }} ></img>
                                                             {list.dealIdx === selectedDealIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
                                                         </div>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <p>{list.dealTitle}</p>
+                                                        <p style={{ fontWeight: "bold" }}>{list.dealTitle}</p>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <p>{list.dealPrice}</p>
+                                                        <p style={{ fontWeight: "bold" }}>{handleCurrencyToWon(list.dealPrice)} 원</p>
                                                     </TableCell>
                                                 </TableRow>
                                             );

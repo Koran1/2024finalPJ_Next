@@ -565,6 +565,10 @@ function EditPage({ params }) {
         judgeIsChange();
     }, [logTitle,logDefaultContent, confirmedCampIdx, extraFields, tags]);  
 
+    window.addEventListener("beforeunload", function (event) { // 새로고침시 물어보는 confirm창창
+        event.preventDefault();
+        event.returnValue = "";
+    });
     return (
         <>
             <header>

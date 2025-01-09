@@ -629,7 +629,7 @@ function Page({ params }) {
                                                                                     {tag.dealIdx ?
                                                                                         (
                                                                                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                                                                <img src={`${imgUrl}/${data.fNameByDealIdx[tag.dealIdx]}`}
+                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx[tag.dealIdx]}`}
                                                                                                     alt=''
                                                                                                     style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px", cursor: "pointer" }}
                                                                                                     onClick={() => handleGoDeal(tag.dealIdx)}>
