@@ -459,23 +459,21 @@ function EditPage({ params }) {
         setShowCountForDealList(5);
     }, [dealKeyWord]);
 
-    const handleGetLinked = () => {
-        setConfirmedDealIdx(selectedDealIdx);
-        selectedDealIdx != 0 && alert("상품연동이 완료되었습니다.");
-        setShowLinkModal(false);
-    }
-    useEffect(() => {
-        setTags(tags.map(tag => {
-            return (
-                tag.showContent ?
-                    ({
-                        ...tag,
-                        dealIdx: confirmedDealIdx
-                    })
-                    : ({ ...tag })
-            );
-        }))
-    }, [confirmedDealIdx]);
+      const handleGetLinked = () => {
+                setTags(tags.map(tag => {
+                    if(tag.showContent) {
+                        return {
+                            ...tag, dealIdx: selectedDealIdx
+                        }
+                    }
+                    return tag;
+                }))
+                selectedDealIdx &&  selectedDealIdx != tags.find(tag => tag.showContent == true).dealIdx &&  alert("상품연동이 완료되었습니다.");
+            setShowLinkModal(false);
+        }
+        useEffect(() => {
+            setSelectedDealIdx(null);
+        }, [showLinkModal]);
     const handleCurrencyToWon = (price) => {
         return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(price);
     }
