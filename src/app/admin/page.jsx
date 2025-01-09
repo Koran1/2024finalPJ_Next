@@ -55,8 +55,11 @@ function Page() {
             <FormControl className='fcontrol'>
                 {/* 수직정렬 */}
                 <Stack direction="column" spacing={1} alignItems='center'>
+                    {/* <div className='logo-admin'>CAMPERS</div> */}
                     <Avatar src='./globe.svg' />
+                    <hr />
                     <div className='p1'>Admin Login</div>
+                    <hr />
                     <hr />
                     <TextField className='text-login' type='text' label='아이디' name='userId' value={adminvo.userId} onChange={changeAdminvo} />
                     <TextField className='text-login' type='password' label='패스워드' name='userPw' value={adminvo.userPw} onChange={changeAdminvo} />

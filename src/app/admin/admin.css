@@ -5,6 +5,13 @@
   font-style: normal;
 }
 
+.logo-admin {
+  display: grid;
+  justify-content: center;
+  font-size: 250%;
+  font-family: 'Jaro', sans-serif;
+}
+
 .container-box {
   display: grid;
   justify-content: center;
