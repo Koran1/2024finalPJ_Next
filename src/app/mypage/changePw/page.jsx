@@ -91,42 +91,46 @@ function Page() {
     return (
         <Box display='flex'>
             <MyPageList />
-            <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
+            <Box flexGrow={1} p={2} m={1} >
                 <div className='page-text'>비밀번호 확인</div>
-                <Box>
+                <Box sx={{ display: 'flex', marginLeft: '20px', marginTop: '15px', marginBottom: '20px' }}>
                     <TextField className='pp1' type='password' name='userPw'
                         label='비밀번호'
                         value={uvo.userPw}
                         disabled={isPwChecked}
                         onChange={changeUvo} />
-                    <Button variant='contained' color='primary'
+                    <Button sx={{ display: 'flex', alignItems: 'center', height: '56px' }}
+                        variant='contained' color='primary'
                         disabled={isPwChecked}
                         onClick={checkPw}>비밀번호 확인</Button>
                 </Box>
 
                 {isPwChecked &&
-                    <>
-                        <h2>비밀번호 변경</h2>
+                    <div className='pw-change'>
+                        <div className='pw-txt'>비밀번호 변경</div>
                         <Stack spacing={2} direction={'column'}>
 
-                            <TextField error={pwError && uvo.newUserPw} type='password' label='패스워드'
+                            <TextField className='pw-change-box'
+                                error={pwError && uvo.newUserPw} type='password' label='패스워드'
                                 name='newUserPw' value={uvo.newUserPw} onChange={changeUvo}
                                 placeholder='특수, 대소문자 1개씩 포함, 공백 불가, 6~15자'
                                 helperText={!uvo.newUserPw ? "" : pwError ? "올바르지 못한 비밀번호입니다" :
                                     "사용 가능한 비밀번호 입니다!"
                                 } />
 
-                            <TextField error={uvo.newUserPw !== uvo.newUserPw2 && uvo.newUserPw2}
+                            <TextField className='pw-change-box'
+                                error={uvo.newUserPw !== uvo.newUserPw2 && uvo.newUserPw2}
                                 type='password' name='newUserPw2'
                                 label='비밀번호 확인'
                                 value={uvo.newUserPw2}
                                 onChange={changeUvo} />
 
-                            <Button variant='contained' color='primary'
+                            <Button className='pw-change-box'
+                                variant='contained' color='primary'
                                 disabled={!isPwValid}
                                 onClick={changePw}>비밀번호 변경</Button>
                         </Stack>
-                    </>
+                    </div>
                 }
             </Box>
         </Box>

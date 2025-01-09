@@ -113,8 +113,10 @@ function Page() {
                 </TableContainer>
 
                 {/* 제출 & 취소 버튼 */}
-                <Box textAlign="center">
-                    <Button variant="contained" color="primary"
+                <Box
+                    textAlign="center">
+                    <Button  sx={{ margin:'20px' }}
+                    variant="contained" color="primary"
                         disabled={emptyCheck}
                         onClick={handleSubmit}>제출
                     </Button>

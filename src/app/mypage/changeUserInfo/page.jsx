@@ -261,119 +261,124 @@ function Page() {
     return (
         <Box display='flex' >
             <MyPageList />
-            <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
-                <div className='page-text'>회원 정보 수정</div>
+            <Box flexGrow={1} p={2} m={1}>
+                <div className='page-text'>회원정보 수정</div>
                 {!isPwChecked ?
-                    <Box>
-                        <TextField className='pp1' type='password' name='userPw'
+                    <Box sx={{ display: 'flex', height: '50vh', width: '100vh', marginLeft: '20px', marginTop: '15px' }}>
+                        <TextField 
+                        className='pp1' type='password' name='userPw'
                             label='비밀번호'
                             value={uvo.userPw}
                             onChange={changeUvo} />
-                        <Button variant='contained' color='primary'
+                        <Button sx={{ display: 'flex', alignItems: 'center' , height: '56px'}}
+                            variant='contained' color='primary'
                             disabled={isPwChecked}
                             onClick={checkPw}>비밀번호 확인</Button>
                     </Box>
 
                     :
-                    <FormControl>
-                        <Stack direction="column" spacing={2} alignItems='flex-start'>
+                    <FormControl sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh', width: '100vh' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             {/* 프로필 사진 수정 */}
-                            <Box
-                                sx={{
-                                    width: 150,
-                                    height: 150,
-                                    position: 'relative',
-                                    m: 10,
-                                }}
-                            >
-                                <img
-                                    alt="sample image"
-                                    src={imageUrl ? imageUrl :
-                                        `${LOCAL_IMG_URL}/user/${originalUvo.userEtc01}` ?? '/default-product-image.jpg'}
-                                    width={150}
-                                    height={150}
-                                    style={{
-                                        width: 150,
-                                        height: 150,
-                                        objectFit: 'cover',
-                                        position: 'absolute',
-                                        borderRadius: 75,
-                                        zIndex: 1,
-                                    }}
-                                />
-                                <ButtonBase
-                                    component="label"
+                            <div className='add-photo'>
+                                <Box
                                     sx={{
-                                        position: 'absolute',
                                         width: 150,
                                         height: 150,
-                                        borderRadius: 75,
-                                        zIndex: 2,
-                                        bgcolor: '#00000077',
+                                        position: 'relative',
+                                        m: 10,
                                     }}
                                 >
-                                    <VisuallyHiddenInput
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleFileInput}
+                                    <img
+                                        alt="sample image"
+                                        src={imageUrl ? imageUrl :
+                                            `${LOCAL_IMG_URL}/user/${originalUvo.userEtc01}` ?? '/default-product-image.jpg'}
+                                        width={150}
+                                        height={150}
+                                        style={{
+                                            width: 150,
+                                            height: 150,
+                                            objectFit: 'cover',
+                                            position: 'absolute',
+                                            borderRadius: 75,
+                                            zIndex: 1,
+                                        }}
                                     />
-                                    <Stack spacing={0.5} alignItems="center">
-                                        <AddAPhoto sx={{ width: 50, height: 50, color: '#FFFFFF' }} />
-                                        <Typography variant="body2" color="#FFFFFF">
-                                            Add a photo
-                                        </Typography>
-                                    </Stack>
-                                </ButtonBase>
-                            </Box>
+                                    <ButtonBase
+                                        component="label"
+                                        sx={{
+                                            position: 'absolute',
+                                            width: 150,
+                                            height: 150,
+                                            borderRadius: 75,
+                                            zIndex: 2,
+                                            bgcolor: '#00000077',
+                                        }}
+                                    >
+                                        <VisuallyHiddenInput
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileInput}
+                                        />
+                                        <Stack spacing={0.5} alignItems="center">
+                                            <AddAPhoto sx={{ width: 50, height: 50, color: '#FFFFFF' }} />
+                                            <Typography variant="body2" color="#FFFFFF">
+                                                Add a photo
+                                            </Typography>
+                                        </Stack>
+                                    </ButtonBase>
+                                </Box>
+                            </div>
+                            <Stack direction="column" spacing={2} alignItems='flex-start'>
+                                <TextField className='pp1' type='text' label='이 름' name='userName'
+                                    value={uvo.userName} onChange={changeUvo} />
 
-                            <TextField className='pp2' type='text' label='이 름' name='userName'
-                                value={uvo.userName} onChange={changeUvo} />
+                                <TextField className='pp1'
+                                    type='text' label='닉네임'
+                                    name='userNickname' value={uvo.userNickname}
+                                    disabled />
 
-                            <TextField className='pp2'
-                                type='text' label='닉네임'
-                                name='userNickname' value={uvo.userNickname}
-                                disabled />
-
-                            {/* <TextField className='pp2' error={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && !nickPass}
+                                {/* <TextField className='pp2' error={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && !nickPass}
                                 type='text' label='닉네임'
                                 name='userNickname' value={uvo.userNickname}
                                 helperText={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && (nickHelper ? nickHelper : "중복검사 중...")} onChange={changeUvo}
                                 disabled /> */}
 
 
-                            <Box>
-                                <TextField error={uvo.userMail && uvo.userMail != originalUvo.userMail && (!mailDupl || mailError)}
-                                    type='text' label='이메일'
-                                    name='userMail' value={uvo.userMail}
-                                    helperText={uvo.userMail && uvo.userMail != originalUvo.userMail && (mailError ? "올바르지 못한 이메일입니다"
-                                        : mailHelper ? mailHelper : "중복 검사 중...")}
-                                    onChange={changeUvo} />
-                                <Button variant='contained' sx={{ ml: 2 }}
-                                    disabled={!uvo.userMail || mailError || uvo.userMail == originalUvo.userMail} onClick={handleSendMail}>인증번호 발송</Button>
-                            </Box>
+                                <Box>
+                                    <TextField error={uvo.userMail && uvo.userMail != originalUvo.userMail && (!mailDupl || mailError)}
+                                        type='text' label='이메일'
+                                        name='userMail' value={uvo.userMail}
+                                        helperText={uvo.userMail && uvo.userMail != originalUvo.userMail && (mailError ? "올바르지 못한 이메일입니다"
+                                            : mailHelper ? mailHelper : "중복 검사 중...")}
+                                        onChange={changeUvo} />
+                                    <Button variant='contained' sx={{ ml: 2 }}
+                                        disabled={!uvo.userMail || mailError || uvo.userMail == originalUvo.userMail} onClick={handleSendMail}>인증번호 발송</Button>
+                                </Box>
 
-                            <Box>
-                                <TextField type='text' label='인증번호 확인'
-                                    disabled={!mailNum} name="chkMailNum" value={chkMailNum}
-                                    onChange={(e) => setChkMailNum(e.target.value)} />
-                                <Button disabled={!mailNum} variant='contained'
-                                    sx={{ ml: 2 }} onClick={handleMailChk}>인증번호 확인</Button>
-                            </Box>
+                                <Box>
+                                    <TextField type='text' label='인증번호 확인'
+                                        disabled={!mailNum} name="chkMailNum" value={chkMailNum}
+                                        onChange={(e) => setChkMailNum(e.target.value)} />
+                                    <Button disabled={!mailNum} variant='contained'
+                                        sx={{ ml: 2 }} onClick={handleMailChk}>인증번호 확인</Button>
+                                </Box>
 
-                            <TextField className='pp2' error={uvo.userPhone && uvo.userPhone != originalUvo.userPhone && !phonePass || phoneError} type='text' label='전화번호'
-                                name='userPhone' value={uvo.userPhone}
-                                helperText={
-                                    !uvo.userPhone || uvo.userPhone == originalUvo.userPhone ? "" : phoneError ? "올바르지 못한 전화번호입니다"
-                                        : phoneHelper ? phoneHelper : "중복검사 중..."} onChange={changeUvo} />
+                                <TextField className='pp2' error={uvo.userPhone && uvo.userPhone != originalUvo.userPhone && !phonePass || phoneError} type='text' label='전화번호'
+                                    name='userPhone' value={uvo.userPhone}
+                                    helperText={
+                                        !uvo.userPhone || uvo.userPhone == originalUvo.userPhone ? "" : phoneError ? "올바르지 못한 전화번호입니다"
+                                            : phoneHelper ? phoneHelper : "중복검사 중..."} onChange={changeUvo} />
 
-                            <Box>
-                                <TextField type='text' label='주 소' name='userAddr'
-                                    value={uvo.userAddr} onChange={changeUvo} />
-                                <Button variant='contained' onClick={handleAddr} sx={{ ml: 2 }}>주소 찾기</Button>
-                            </Box>
+                                <Box>
+                                    <TextField type='text' label='주 소' name='userAddr'
+                                        value={uvo.userAddr} onChange={changeUvo} />
+                                    <Button variant='contained' onClick={handleAddr} sx={{ ml: 2 }}>주소 찾기</Button>
+                                </Box>
+                                <Button variant='contained' disabled={isBtnChk} onClick={handleChangeUserInfo}>수정</Button>
 
-                            <Button variant='contained' disabled={isBtnChk} onClick={handleChangeUserInfo}>수정</Button>
-                        </Stack>
+                            </Stack>
+                        </Box>
                     </FormControl>
                 }
             </Box >

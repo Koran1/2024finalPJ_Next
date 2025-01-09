@@ -20,7 +20,7 @@ export default function MyPageList() {
     };
 
     return (
-        <List
+        <List className="mypage-list-nav"
             sx={{ width: '100%', minWidth: 240, maxWidth: 360, bgcolor: 'background.paper', borderRight: '1px solid black' }}
             component="nav"
             aria-labelledby="nested-list-subheader"
