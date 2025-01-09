@@ -4,6 +4,7 @@ import { Avatar, FormControl, TextField, Stack, Button } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import './admin.css';
 
 function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
@@ -55,7 +56,8 @@ function Page() {
                 {/* 수직정렬 */}
                 <Stack direction="column" spacing={1} alignItems='center'>
                     <Avatar src='./globe.svg' />
-                    <div className='p1'>로그인</div>
+                    <div className='p1'>Admin Login</div>
+                    <hr />
                     <TextField className='text-login' type='text' label='아이디' name='userId' value={adminvo.userId} onChange={changeAdminvo} />
                     <TextField className='text-login' type='password' label='패스워드' name='userPw' value={adminvo.userPw} onChange={changeAdminvo} />
                     <Button fullWidth variant='contained' disabled={isBtnChk} onClick={checkAdmin2}>Sign in</Button>

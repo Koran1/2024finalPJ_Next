@@ -3,6 +3,7 @@ import { List, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Typogr
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import './admin.css';
 
 export default function AdminList() {
     const router = useRouter();
@@ -29,8 +30,8 @@ export default function AdminList() {
             aria-labelledby="nested-list-subheader"
             subheader={
                 <ListSubheader component="div" id="nested-list-subheader" sx={{ fontSize: '32px', borderBottom: '1px solid lightgray' }}>
-                    <Link href="/admin/main/">
-                        Admin Page
+                    <Link className="ad-txt" href="/admin/main/">
+                        관리자 페이지
                     </Link>
                 </ListSubheader>
             }

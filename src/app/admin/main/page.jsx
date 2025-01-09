@@ -6,7 +6,7 @@ function Page() {
     return (
         <Box display='flex'>
             <AdminList />
-            <Box flexGrow={1} p={2} m={1} sx={{ border: '1px solid black' }}>
+            <Box flexGrow={1} p={2} m={1}>
                 <h1>Here is Admin Main Page</h1>
             </Box>
         </Box>

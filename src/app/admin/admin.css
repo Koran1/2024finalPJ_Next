@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'MinSans-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/MinSans-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .container-box {
   display: grid;
   justify-content: center;
@@ -5,6 +12,25 @@
   align-items: center;
   min-height: 500px;
 }
+
+text{
+  font-family: 'MinSans-Regular';
+}
+
+body{
+  font-family: 'MinSans-Regular';
+}
+
+a {
+  text-decoration: none;
+  font-family: 'MinSans-Regular';
+}
+
+.ad-txt{
+  color: #333333;
+  font-size: 20px;
+}
+
 
 .p1 {
   font-size: 19px;
