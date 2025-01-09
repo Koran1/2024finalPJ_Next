@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 export default function Page({ posts }) {
     const ITEMS_PER_PAGE = 3; // 한 번에 불러올 아이템 수
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+    const imgUrl = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
 
     // 더보기 버튼 핸들러
     const loadMore = () => {
@@ -21,7 +22,7 @@ export default function Page({ posts }) {
                             <div key={index} style={{ textAlign: 'center', padding: '10px', border: '1px solid #ddd' }}>
                                 {/* 이미지 */}
                                 <img
-                                    src={post.logThumbnail ? post.logThumbnail : "/images/campImageholder2.png"}
+                                    src={post.logThumbnail ? `${imgUrl}/${post.logThumbnail}` : "/images/campImageholder2.png"}
                                     alt={post.logTitle}
                                     style={{ width: '100%', height: '250px', objectFit: 'cover', borderRadius: '8px' }}
                                 />
@@ -37,7 +38,7 @@ export default function Page({ posts }) {
                                         color: '#666',
                                     }}
                                 >
-                                    <p>{post.userIdx}</p>
+                                    <p>{post.userNickname}</p>
                                     <p style={{ fontWeight: 'bold', color: '#000' }}>❤️ {post.logRecommend}</p>
                                 </div>
                             </div>
