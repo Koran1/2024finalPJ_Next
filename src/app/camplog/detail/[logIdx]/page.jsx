@@ -38,6 +38,7 @@ function Page({ params }) {
     const [logCommentList, setLogCommentList] = useState([]);       // 댓글 리스트
     const [logReplyList, setLogReplyList] = useState([]);       // 답글 리스트
     const [userNickname, setUserNickname] = useState([]);           // 유저 닉네임
+    const [userImg, setUserImg] = useState([]);           // 유저 프로필 사진
     const [commentReportInfo, setReportInfo] = useState([]);       // 댓글 신고 정보(승인여부, 횟수)
     const [logCommentContent, setLogCommentContent] = useState(""); // 댓글 내용
     const [logReplyContent, setLogReplyContent] = useState("");     // 답글 내용
@@ -50,7 +51,7 @@ function Page({ params }) {
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);// 삭제 모달 창 열기
     const [isReportModalOpen, setReportModalOpen] = useState(false);// 신고 모달 창 열기
     const [selectedComment, setSelectedComment] = useState("");     // 선택된 댓글 정보
-    const [reportCategory, setReportCategory] = useState("스팸홍보 / 도배글 입니다."); // 신고 사유 선택 값
+    const [reportCategory, setReportCategory] = useState("스팸홍보 / 도배글 입니다.                               "); // 신고 사유 선택 값
     const [reportContent, setReportContent] = useState("");         // 신고 내용
     // const [disableCommentCount, setDisableCommentCount] = useState(0); // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
     const [logWriterNickname, setLogWriterNickname] = useState("");
@@ -230,6 +231,7 @@ function Page({ params }) {
                     setLogCommentList(commentsList);
                     setLogReplyList(replysList);
                     setUserNickname(res.data.data.userNicknameMap);
+                    setUserImg(res.data.data.userImgMap);
                     setReportInfo(res.data.data.rvo);
                     // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
                     // setDisableCommentCount (res.data.data.lcvo.filter(comment => comment.logCommentIsActive == 0).length);
@@ -775,7 +777,7 @@ function Page({ params }) {
                                                 <>
                                                     <div style={{ display: "flex", justifyContent: "space-between", margin: "20px 0", alignItems: "center" }}>
                                                         {/* 유저 아바타 */}
-                                                        <Avatar />
+                                                        <Avatar src={userImg[comment.userIdx] ? `${imgUrl}/user/${userImg[comment.userIdx]}` : '/default-product-image.jpg'} />
                                                         {/* 유저 닉네임 */}
                                                         <span style={{ flexGrow: "1", marginLeft: "20px" }}>
                                                             <a>{userNickname[comment.userIdx]}</a>
@@ -879,7 +881,7 @@ function Page({ params }) {
                                                                     <div style={{ marginLeft: '50px' }}>
                                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: "20px 0" }}>
                                                                             <a style={{ marginRight: "20px" }}>ㄴ</a>
-                                                                            <Avatar />
+                                                                            <Avatar src={userImg[comment.userIdx] ? `${imgUrl}/user/${userImg[comment.userIdx]}` : '/default-product-image.jpg'} />
                                                                             <span style={{ flexGrow: '1', marginLeft: '20px' }}>
                                                                                 <a>{userNickname[reply.userIdx]}</a>
                                                                             </span>
