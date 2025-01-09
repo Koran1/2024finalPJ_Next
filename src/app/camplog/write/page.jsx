@@ -48,8 +48,6 @@ function Page(ㄱ) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const { user } = useAuthStore();
-
-    console.log("tags: ", tags);
     const iscanWrite = () => {
 
         if (logTitle.length === 0) { // 제목 여부
@@ -377,22 +375,21 @@ function Page(ㄱ) {
     }, [dealKeyWord]);
 
     const handleGetLinked = () => {
-        setConfirmedDealIdx(selectedDealIdx);
-        selectedDealIdx != null && alert("상품연동이 완료되었습니다.");
+            setTags(tags.map(tag => {
+                if(tag.showContent) {
+                    return {
+                        ...tag, dealIdx: selectedDealIdx
+                    }
+                }
+                return tag;
+            }))
+            selectedDealIdx &&  selectedDealIdx != tags.find(tag => tag.showContent == true).dealIdx &&  alert("상품연동이 완료되었습니다.");
         setShowLinkModal(false);
     }
     useEffect(() => {
-        setTags(tags.map(tag => {
-            return (
-                tag.showContent ?
-                    ({
-                        ...tag,
-                        dealIdx: confirmedDealIdx
-                    })
-                    : ({ ...tag })
-            );
-        }))
-    }, [confirmedDealIdx]);
+        setSelectedDealIdx(null);
+    }, [showLinkModal]);
+    
     const handleCurrencyToWon = (price) => {
         return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(price);
     }
@@ -458,9 +455,11 @@ function Page(ㄱ) {
     }
     window.addEventListener("beforeunload", function (event) { // 새로고침시 물어보는 confirm창창
         event.preventDefault();
-        event.returnValue = ""; 
+        event.returnValue = "";
+
     });
-  
+    console.log("tags: ", tags)
+
     return (
         <>
             <header >
@@ -791,8 +790,8 @@ function Page(ㄱ) {
                         <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell >상품사진</TableCell>
-                                    <TableCell style={{paddingRight: "50px"}}>상품명</TableCell>
+                                    <TableCell>상품사진</TableCell>
+                                    <TableCell style={{ paddingRight: "50px" }}>상품명</TableCell>
                                     <TableCell>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;가격</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -805,7 +804,7 @@ function Page(ㄱ) {
                                                     <TableCell >
                                                         <div style={{ width: "fit-content", position: "relative" }}>
                                                             <img src={`${imgUrl}/deal/${list.fileName}`} alt='' style={{ width: '100px', height: '100px', filter: list.dealIdx === selectedDealIdx ? "brightness(0.5)" : "brightness(1)" }} ></img>
-                                                            {list.dealIdx === selectedDealIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
+                                                            {list.dealIdx === selectedDealIdx   &&  <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
                                                         </div>
                                                     </TableCell>
                                                     <TableCell>
