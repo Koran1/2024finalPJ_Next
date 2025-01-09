@@ -18,8 +18,8 @@ function Page({ params }) {
     // 로그 내용 변수
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const imgUrl = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
-    
-    
+
+
     const router = useRouter();
     const [isIconHover, setIsIconHover] = useState(false);
     const [data, setData] = useState([]);
@@ -31,7 +31,7 @@ function Page({ params }) {
     const [RecommendCount, setRecommendCount] = useState(0);
     // const [isModalOpen, setModalOpen] = useState(false);            // 모달 창 열기
     // const [reportValue, setReportValue] = useState(1);              // 신고 사유 선택 값
-    
+
     // 댓글 변수
     // const logIdx = useSearchParams().get('logIdx');
     // const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL; // baesUrl 이랑 동일
@@ -83,13 +83,13 @@ function Page({ params }) {
                         if (!item.tagData || item.tagData.length === 0) {
                             return [];
                         } else {
-                            
+
                             return item.tagData.map(tag => {
                                 return {
                                     ...tag,
                                     isShow: false,
                                     isLinkShow: false,
-                                    nodeRef: React.createRef(), 
+                                    nodeRef: React.createRef(),
                                 }
                             })
                         }
@@ -426,13 +426,14 @@ function Page({ params }) {
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0 0 20px", width: "100%" }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
+                                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
                                             <circle cx="50" cy="50" r="48" fill="#ccc" stroke="#999" strokeWidth="2" />
                                             <circle cx="50" cy="40" r="20" fill="#fff" />
                                             <circle cx="42" cy="38" r="2" fill="#000" />
                                             <circle cx="58" cy="38" r="2" fill="#000" />
                                             <path d="M40 50 Q50 60 60 50" stroke="#000" strokeWidth="2" fill="none" />
-                                        </svg>
+                                        </svg> */}
+                                        <Avatar sx={{ width: "50px", height: "50px" }} src={data.userVO[0].userEtc01 ? `${imgUrl}/user/${data.userVO[0].userEtc01}` : '/default-product-image.jpg'} />
                                         <span style={{ fontWeight: "bold" }}>{data.userVO[0].userNickname}</span>
                                         <span style={{ color: "gray" }}>{data.logVO.logRegDate}</span>
                                     </div>
@@ -440,7 +441,7 @@ function Page({ params }) {
                                     <div style={{ position: "relative", width: "auto" }}>
                                         <MoreVertIcon
                                             fontSize="large"
-                                            style={{ color: isIconHover ? "#333333" : "#A9A9A9", marginRight: "30px",  cursor: "pointer" }}
+                                            style={{ color: isIconHover ? "#333333" : "#A9A9A9", marginRight: "30px", cursor: "pointer" }}
                                             onMouseOver={() => setIsIconHover(true)}
                                             onMouseOut={() => setIsIconHover(false)}
                                             onClick={() => setToggleIcon(!toggleIcon)}
@@ -450,35 +451,37 @@ function Page({ params }) {
                                                 <>
                                                     {toggleIcon &&
                                                         <>
-                                                            <div style={{ position: "absolute", 
-                                                            transform: "translate(-50%, -50%)", 
-                                                            left: "110px", 
-                                                            top: "70px", 
-                                                            width: "190px", 
-                                                            height: "60px", 
-                                                            display: "flex", 
-                                                            justifyContent: "start", 
-                                                            border: "1px solid gray", 
-                                                            backgroundColor: "white", 
-                                                            cursor: "pointer"
-                                                         }}
+                                                            <div style={{
+                                                                position: "absolute",
+                                                                transform: "translate(-50%, -50%)",
+                                                                left: "110px",
+                                                                top: "70px",
+                                                                width: "190px",
+                                                                height: "60px",
+                                                                display: "flex",
+                                                                justifyContent: "start",
+                                                                border: "1px solid gray",
+                                                                backgroundColor: "white",
+                                                                cursor: "pointer"
+                                                            }}
                                                                 onClick={handleLogEdit}
                                                             >
                                                                 <span style={{ color: "gray", margin: "17px 67px 0px 10px", fontWeight: "bold", }}>수정하기</span>
                                                                 <ModeIcon style={{ fontSize: "30px", marginTop: "13px" }} />
                                                             </div>
                                                             <div
-                                                                style={{ position: "absolute", 
-                                                                    transform: "translate(-50%, -50%)", 
-                                                                    left: "110px", 
-                                                                    top: "130px", 
-                                                                    width: "190px", 
+                                                                style={{
+                                                                    position: "absolute",
+                                                                    transform: "translate(-50%, -50%)",
+                                                                    left: "110px",
+                                                                    top: "130px",
+                                                                    width: "190px",
                                                                     height: "60px",
-                                                                    display: "flex", 
-                                                                    justifyContent: "start", 
-                                                                    border: "1px solid gray", 
-                                                                    borderTop: "none", 
-                                                                    backgroundColor: "white", 
+                                                                    display: "flex",
+                                                                    justifyContent: "start",
+                                                                    border: "1px solid gray",
+                                                                    borderTop: "none",
+                                                                    backgroundColor: "white",
                                                                     cursor: "pointer"
                                                                 }}
                                                                 // onClick={handleLogDelete}
@@ -497,17 +500,18 @@ function Page({ params }) {
                                                     {toggleIcon &&
                                                         <>
                                                             <div
-                                                                style={{ position: "absolute", 
-                                                                    transform: "translate(-50%, -50%)", 
+                                                                style={{
+                                                                    position: "absolute",
+                                                                    transform: "translate(-50%, -50%)",
                                                                     left: "110px",
-                                                                    top: "70px", 
-                                                                    width: "190px", 
-                                                                    height: "60px", 
-                                                                    display: "flex", 
-                                                                    ustifyContent: "start", 
-                                                                    border: "1px solid gray", 
-                                                                    backgroundColor: "white", 
-                                                                    cursor: "pointer"    
+                                                                    top: "70px",
+                                                                    width: "190px",
+                                                                    height: "60px",
+                                                                    display: "flex",
+                                                                    ustifyContent: "start",
+                                                                    border: "1px solid gray",
+                                                                    backgroundColor: "white",
+                                                                    cursor: "pointer"
                                                                 }}
                                                                 onClick={() => handleModalClick("", "report")}
 
@@ -701,7 +705,7 @@ function Page({ params }) {
                 <div style={{ maxWidth: "2000px", width: "50%", margin: "0 auto" }}>
                     {/* useState 사용해서 운영자가 신고 승인한 댓글 출력(공백)할 때마다 갯수 줄이기 */}
                     {/* <p>댓글 {logCommentList.length + logReplyList.length - disableCommentCount}개</p> */}
-                    <p>댓글 <b style={{color: "#1976D2"}}>{logCommentList.length + logReplyList.length}</b> 개</p>
+                    <p>댓글 <b style={{ color: "#1976D2" }}>{logCommentList.length + logReplyList.length}</b> 개</p>
                     {/* 댓글 리스트 div 시작 */}
                     <div>
                         {logCommentList.length == 0 && logReplyList.length == 0 ? (

@@ -37,6 +37,7 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 );
 
 function Page() {
+    const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const { user } = useAuthStore(); // authStore에서 사용자 정보 가져오기
     const userIdx = user?.userIdx; // userIdx 추출
     const [navMenu, setNavMenu] = useState("/book/list");
@@ -74,7 +75,7 @@ function Page() {
     const getMyBookList = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/api/book/list`, {
+            const response = await axios.get(`${baseUrl}/book/list`, {
                 params: { userIdx },
             });
             console.log("서버 응답 데이터:", response.data);

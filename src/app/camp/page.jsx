@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 import useAuthStore from "../../../store/authStore";
 
 function Page() {
+    const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const [campList, setCampList] = useState([]); // 캠핑장 리스트
     const [page, setPage] = useState(1);
     const [size, setSize] = useState(10);
@@ -65,7 +66,7 @@ function Page() {
         if (region) {
             const getSigunguList = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/api/camp/sigungu?doNm2=${region}`);
+                    const response = await axios.get(`${baseUrl}/camp/sigungu?doNm2=${region}`);
                     setSigunguList(response.data.data);
                     setSelectedSigungu("");
                     getCampList();
@@ -84,7 +85,7 @@ function Page() {
         try {
             setLoading(false);
             console.log("Fetching data with params:", { region, selectedSigungu, page, size, sortOption });
-            const response = await axios.get(`http://localhost:8080/api/camp/list`, {
+            const response = await axios.get(`${baseUrl}/camp/list`, {
                 params: {
                     page,
                     size,

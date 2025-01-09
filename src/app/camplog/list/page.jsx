@@ -2,7 +2,7 @@
 "use client";
 import './camploglist.css';
 import { Search } from "@mui/icons-material";
-import { InputLabel, FormControl, MenuItem, Select, TextField, IconButton, Link, Button, Pagination, InputAdornment } from "@mui/material";
+import { InputLabel, FormControl, MenuItem, Select, TextField, IconButton, Link, Button, Pagination, InputAdornment, Avatar } from "@mui/material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
@@ -12,6 +12,8 @@ import useAuthStore from '../../../../store/authStore'; // authStore 가져오�
 import { useRouter } from 'next/navigation';
 
 function Page(props) {
+    const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+    const imgUrl = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [selectedSearch, setSelectedSearch] = useState("all"); // 검색어 옵션 박스
     const [keyword, setKeyword] = useState(""); // 키워드 검색
     const [totalCount, setTotalCount] = useState(0); // 검색 결과 개수
@@ -32,7 +34,7 @@ function Page(props) {
         setLoading(true);
         const searchKeyword = keyword?.trim() || null;
         try {
-            const response = await axios.get(`http://localhost:8080/api/camplog/list`, {
+            const response = await axios.get(`${baseUrl}/camplog/list`, {
                 params: {
                     keyword: searchKeyword,
                     option: selectedSearch,
@@ -143,7 +145,7 @@ function Page(props) {
     return (
         <div className="camplog-main-container">
             {/* 검색 영역 */}
-            <div style={{display: "flex", justifyContent: "space-between"}}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div className="camplog-search-container">
                     {/* 드롭다운 영역 */}
                     <FormControl
@@ -188,7 +190,7 @@ function Page(props) {
                     </IconButton>
                 </div>
                 {/* 글쓰기 버튼 영역 */}
-                <div className="camplog-write-container" style={{height: "40px", marginTop:"20px"}}>
+                <div className="camplog-write-container" style={{ height: "40px", marginTop: "20px" }}>
                     <Button variant="contained" onClick={handleLogWrite}>글쓰기</Button>
                 </div>
             </div>
@@ -260,7 +262,8 @@ function Page(props) {
                             <div key={list.logIdx} className="camplog-list-item">
                                 <div className="camplog-content-wrapper">
                                     <div className="camplog-nickname">
-                                        <AccountCircleIcon className="camplog-nickname-icon" />
+                                        {/* <AccountCircleIcon className="camplog-nickname-icon" /> */}
+                                        <Avatar sx={{ width: "36px", height: "36px" }} src={list.userEtc01 ? `${imgUrl}/user/${list.userEtc01}` : '/default-product-image.jpg'} />
                                         <div className="camplog-nickname-text">
                                             <span className="name">{list.userNickname}</span>
                                             <span className="date">{list.logRegDate.substring(0, 10)}</span>
@@ -288,7 +291,7 @@ function Page(props) {
                                 </div>
                                 <div className="camplog-thumbnail">
                                     <img
-                                        src={list.fileName ? `http://localhost:8080/upload/${list.fileName}` : "/images/campImageholder3.png"}
+                                        src={list.fileName ? `${imgUrl}/${list.fileName}` : "/images/campImageholder3.png"}
                                         alt="캠핑 썸네일"
                                         style={{ cursor: "pointer" }} onClick={() => handleGoLogDetail(list.logIdx)}
                                     />
