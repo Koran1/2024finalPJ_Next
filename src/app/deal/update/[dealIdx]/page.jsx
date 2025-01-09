@@ -25,7 +25,7 @@ function Page() {
     dealDirectContent: '',
     dealCount: '1',
     dealRegDate: new Date().toISOString(),
-    priceOption: '가격 입력'
+    deal03: '가격 입력'
   });
   const [isFormValid, setIsFormValid] = useState(false);
   const [initialFormData, setInitialFormData] = useState(null);
@@ -75,7 +75,7 @@ function Page() {
           dealDirectContent: dealData.dealDirectContent || '',
           dealCount: (dealData.dealCount || 1).toString(),
           dealRegDate: dealData.dealRegDate || new Date().toISOString(),
-          priceOption: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
+          deal03: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
         });
 
         setInitialFormData({
@@ -89,7 +89,7 @@ function Page() {
           dealDirectContent: dealData.dealDirectContent || '',
           dealCount: (dealData.dealCount || 1).toString(),
           dealRegDate: dealData.dealRegDate || new Date().toISOString(),
-          priceOption: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
+          deal03: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
         });
 
         // 이미지 설정
@@ -382,7 +382,7 @@ function Page() {
   const handlePriceOptionChange = (value) => {
     setFormData(prev => ({
       ...prev,
-      priceOption: value,
+      deal03: value,
       dealPrice: value === "나눔" ? '0' : prev.dealPrice
     }));
   };
@@ -769,10 +769,10 @@ function Page() {
           <label>
             <input
               type="radio"
-              name="priceOption"
+              name="deal03"
               value="가격 입력"
               onChange={e => handlePriceOptionChange(e.target.value)}
-              checked={formData.priceOption === "가격 입력"}
+              checked={formData.deal03 === "가격 입력"}
             />
             가격 입력
           </label>
@@ -805,16 +805,16 @@ function Page() {
                   e.target.blur();
                 }
               }}
-              disabled={formData.priceOption === "나눔"}
+              disabled={formData.deal03 === "나눔"}
             />
           </div>
           <label>
             <input
               type="radio"
-              name="priceOption"
+              name="deal03"
               value="나눔"
               onChange={e => handlePriceOptionChange(e.target.value)}
-              checked={formData.priceOption === "나눔"}
+              checked={formData.deal03 === "나눔"}
             />
             나눔
           </label>

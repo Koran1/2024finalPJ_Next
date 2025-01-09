@@ -29,8 +29,6 @@ function Page({ params }) {
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [viewCount, setViewCount] = useState(0);  // 조회수 상태 추가
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [isSatisfactionModalOpen, setIsSatisfactionModalOpen] = useState(false);
-  const [hasSatisfactionRating, setHasSatisfactionRating] = useState(false); // 만족도 등록 여부 상태 추가
   const [sellerOtherDeals, setSellerOtherDeals] = useState([]);
   const [sellerOtherFiles, setSellerOtherFiles] = useState([]);
   const [sellerScore, setSellerScore] = useState(0);
@@ -38,6 +36,7 @@ function Page({ params }) {
   const [favoriteStates, setFavoriteStates] = useState({});
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [sellerCampLogs, setSellerCampLogs] = useState([]);
 
 
   // isSellerUser를 여기서 먼저 선언
@@ -112,16 +111,6 @@ function Page({ params }) {
   useEffect(() => {
     getFavoriteCount();
   }, [dealIdx]);
-
-  // 만족도 등록 여부 확인 함수
-  const checkSatisfactionRating = async () => {
-    await axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction?dealIdx=${dealIdx}`)
-      .then((res) => {
-        console.log(res.data);
-        setHasSatisfactionRating(res.data.data);
-      })
-      .catch((err) => console.log(err));
-  };
 
   // 판매자의 다른 상품 조회 함수
   const fetchSellerOtherDeals = async () => {
@@ -247,6 +236,23 @@ function Page({ params }) {
     }
   };
 
+  // useEffect 수정
+  useEffect(() => {
+    const fetchSellerCampLogs = async () => {
+      try {
+        if (!item?.dealSellerUserIdx) return;
+        
+        const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-camplogs/${item.dealSellerUserIdx}`);
+        setSellerCampLogs(response.data.success ? response.data.data : []);
+      } catch (error) {
+        console.error('판매자의 캠핑장 후기 조회 실패:', error);
+        setSellerCampLogs([]);
+      }
+    };
+
+    fetchSellerCampLogs();
+  }, [item?.dealSellerUserIdx, LOCAL_API_BASE_URL]);
+
   // item이 null일 경우 처리 추가
   if (!item) {
     return (
@@ -280,12 +286,6 @@ function Page({ params }) {
       console.error('상태 변경 실패:', error);
       alert('상태 변경에 실패했습니다.');
     }
-  };
-
-  // 만족도 모달 닫힐 때 만족도 상태 다시 확인
-  const handleSatisfactionModalClose = () => {
-    setIsSatisfactionModalOpen(false);
-    checkSatisfactionRating(); // 모달이 닫힐 때 만족도 등록 여부 다시 확인
   };
 
   // 이미지 변경 시 currentImageIndex도 업데이트하는 함수 추가
@@ -545,31 +545,6 @@ function Page({ params }) {
               >
                 {dealStatus === '판매중' ? '판매중' : '판매완료'}
               </Button>
-
-              {/* 판매 완료이고 판매자가 아닐 때만 만족도 버튼 표시 */}
-              {/* {dealStatus === '판매완료' && !isSellerUser && isAuthenticated ? ( 
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="satisfaction-button"
-                  onClick={() => setIsSatisfactionModalOpen(true)}
-                  disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
-                >
-                  {/* {hasSatisfactionRating ? '만족도 등록 완료' : '만족도'} 
-                </Button>
-                ) : dealStatus === '판매완료' && !isSellerUser && !isAuthenticated && (
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className="satisfaction-button"
-                    onClick={() => {
-                      alert('로그인이 필요한 서비스입니다.');
-                      router.push('/user/login');
-                    }}
-                  >
-                    만족도
-                  </Button>
-               )} */}
             </div>
           </div>
         </div>
@@ -665,64 +640,37 @@ function Page({ params }) {
         </div>
 
         <div className="seller-reviews">
-          <h5>판매자의 캠핑장 후기</h5>
+          <h5>판매자의 캠핑장 후기 상품</h5>
           <hr />
-
           <div className="review-grid">
-            {/* 후기 컴포넌트들이 들어갈 자리 */}
-          </div>
-        </div>
-      </div>
-      <ReportModal
-        isOpen={isReportModalOpen}
-        onClose={() => setIsReportModalOpen(false)}
-        dealIdx={item.dealIdx}
-        dealTitle={item.dealTitle}
-        sellerNick={item.dealSellerNick}
-        sellerUserIdx={item.dealSellerUserIdx}
-      />
-      <SatisfactionModal
-        isOpen={isSatisfactionModalOpen}
-        onClose={handleSatisfactionModalClose}
-        dealIdx={dealIdx}
-      />
-      {isImageModalOpen && (
-        <div className="image-modal-overlay" onClick={() => setIsImageModalOpen(false)}>
-          <div className="image-modal-content" onClick={() => setIsImageModalOpen(false)}>
-            <img
-              src={mainImage || '/default-product-image.jpg'}
-              alt="확대된 상품 이미지"
-              className="modal-image"
-              onClick={() => setIsImageModalOpen(false)}
-            />
-            <button 
-              className="close-modal-btn"
-              onClick={() => setIsImageModalOpen(false)}
-            >
-              ✕
-            </button>
-            {smallImages.length > 1 && (
-              <>
-                <button 
-                  className="nav-btn prev-btn"
-                  onClick={handlePrevImage}
-                >
-                  ❮
-                </button>
-                <button 
-                  className="nav-btn next-btn"
-                  onClick={handleNextImage}
-                >
-                  ❯
-                </button>
-                <div className="image-counter">
-                  {currentImageIndex + 1} / {smallImages.length}
+            {sellerCampLogs.length > 0 ? (
+              sellerCampLogs.map((log) => (
+                <div key={log.logIdx} className="review-item" onClick={() => router.push(`/camplog/detail/${log.logIdx}`)}>
+                  <div className="review-thumbnail">
+                    <img
+                      src={log.fileName ? `http://localhost:8080/upload/${log.fileName}` : "/images/campImageholder3.png"}
+                      alt="캠핑 후기 썸네일" 
+                      className="review-thumbnail-img"
+                    />
+                  </div>
+                  <div className="review-content">
+                    <h6>{log.logTitle}</h6>
+                  </div>
                 </div>
-              </>
+              ))
+            ) : (
+              <div style={{ 
+                gridColumn: "1 / -1", 
+                textAlign: "center", 
+                padding: "40px 0",
+                color: "#666"
+              }}>
+                판매자가 작성한 캠핑장 후기가 존재하지 않습니다.
+              </div>
             )}
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 }

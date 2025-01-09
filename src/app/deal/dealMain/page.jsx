@@ -16,30 +16,19 @@ import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 
 export default function ProductSearchPage() {
-
-  const [selectedCategories, setSelectedCategories] = useState('전체'); // 선택된 카테고리 상태
-
+  const [selectedCategories, setSelectedCategories] = useState('전체');
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
-  const [products, setProducts] = useState([]);                 // 데이터 상태 
-  const [loading, setLoading] = useState(true);           // 로딩 상태
-  const [error, setError] = useState(null);               // 에러 상태
-
-  // 검색어
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
-
-  // store - authStore 에 있는 정보를 사용한다.
   const { user, isAuthenticated } = useAuthStore();
-
   const [favProducts, setFavProducts] = useState([]);
-
   const router = useRouter();
-
-  // 상태 추가
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-
-  // 정렬 상태 추가
-  const [activeSort, setActiveSort] = useState('latest'); // 'latest', 'views', 'price'
+  const [activeSort, setActiveSort] = useState('latest');
+  const [sellerCampLogs, setSellerCampLogs] = useState([]);
 
   // dealMain 로딩
   useEffect(() => {
@@ -84,7 +73,6 @@ export default function ProductSearchPage() {
     fetchData();
   }, [LOCAL_API_BASE_URL]);
 
-
   // 찜 목록
   useEffect(() => {
     if (user == null) return
@@ -95,7 +83,34 @@ export default function ProductSearchPage() {
       })
   }, [user])
 
+  // 캠핑 후기 useEffect
+  useEffect(() => {
+    const fetchCampLogs = async () => {
+      try {
+        // 실제 서버의 캠핑 후기 목록을 가져오는 엔드포인트로 수정
+        const response = await axios.get(`${LOCAL_API_BASE_URL}/camplog/list`, {
+          params: {
+            page: 1,
+            size: 6,
+            sortOption: 'latest'
+          }
+        });
 
+        if (response.data.success) {
+          // 응답 데이터 구조에 맞게 수정
+          const logsWithThumbnails = response.data.data.data.map(log => ({
+            ...log,
+            fileName: log.fileName // 썸네일 이미지 파일명
+          }));
+          setSellerCampLogs(logsWithThumbnails);
+        }
+      } catch (error) {
+        console.error('캠핑 후기 조회 실패:', error);
+      }
+    };
+
+    fetchCampLogs();
+  }, [LOCAL_API_BASE_URL]);
 
   // 로딩 & 에러 처리
   if (loading) return <div>Loading...</div>;
@@ -296,9 +311,26 @@ export default function ProductSearchPage() {
           ))}
         </div>
 
-        {/* 캠핑 후기 */}
-        <div className="part">
-          캠핑 후기
+        {/* 캠핑 후기 섹션 추가 */}
+        <div className="seller-reviews">
+          <h5>캠핑장 후기 상품</h5>
+          <hr />
+          <div className="review-grid">
+            {sellerCampLogs.slice(0, 6).map((log) => (
+              <div key={log.logIdx} className="review-item" onClick={() => router.push(`/camplog/detail/${log.logIdx}`)}>
+                <div className="review-thumbnail">
+                  <img
+                    src={log.fileName ? `http://localhost:8080/upload/${log.fileName}` : "/images/campImageholder3.png"}
+                    alt="캠핑 후기 썸네일" 
+                    className="review-thumbnail-img"
+                  />
+                </div>
+                <div className="review-content">
+                  <h6>{log.logTitle}</h6>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

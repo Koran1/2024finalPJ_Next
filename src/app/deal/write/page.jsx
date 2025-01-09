@@ -22,7 +22,7 @@ function Page() {
     dealDirectContent: '',
     dealCount: '1',
     dealRegDate: new Date().toISOString(),
-    priceOption: '나눔'
+    deal03: '나눔'
   });
   const [isFormValid, setIsFormValid] = useState(false);
 
@@ -151,7 +151,7 @@ function Page() {
 
     // 기본 데이터 추가
     Object.keys(formData).forEach(key => {
-      if (key !== 'file' && key !== 'priceOption') {
+      if (key !== 'file' && key !== 'deal03') {
         submitData.append(key, formData[key]);
       }
     });
@@ -297,7 +297,7 @@ function Page() {
   const handlePriceOptionChange = (value) => {
     setFormData(prev => ({
       ...prev,
-      priceOption: value,
+      deal03: value,
       dealPrice: value === "나눔" ? '0' : prev.dealPrice
     }));
   };
@@ -666,10 +666,10 @@ function Page() {
           <label>
             <input
               type="radio"
-              name="priceOption"
+              name="deal03"
               value="가격 입력"
               onChange={e => handlePriceOptionChange(e.target.value)}
-              checked={formData.priceOption === "가격 입력"}
+              checked={formData.deal03 === "가격 입력"}
             />
             가격 입력
           </label>
@@ -709,16 +709,16 @@ function Page() {
               onWheel={(e) => e.target.blur()}
               min="0"
               step="1" // 정수 단위로만 입력 가능하도록 설정
-              disabled={formData.priceOption === "나눔"}
+              disabled={formData.deal03 === "나눔"}
             />
           </div>
           <label>
             <input
               type="radio"
-              name="priceOption"
+              name="deal03"
               value="나눔"
               onChange={e => handlePriceOptionChange(e.target.value)}
-              checked={formData.priceOption === "나눔"}
+              checked={formData.deal03 === "나눔"}
             />
             나눔
           </label>

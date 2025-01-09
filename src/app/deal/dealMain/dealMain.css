@@ -563,3 +563,86 @@
 .deal-main-wrapper .btn123 {
   font-family: 'MinSans-Regular';
 }
+
+
+/* 캠핑 후기 스타일 */
+.deal-main-wrapper .seller-reviews {
+  margin: 52px 0;
+}
+
+.deal-main-wrapper .seller-reviews h5 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-family: 'MinSans-Regular';
+  color: #525050;
+}
+
+.deal-main-wrapper .review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+  margin-top: 26px;
+}
+
+.deal-main-wrapper .review-item {
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.deal-main-wrapper .review-item:hover {
+  transform: translateY(-5px);
+}
+
+.deal-main-wrapper .review-thumbnail {
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+  position: relative;
+  background-color: #f5f5f5;
+}
+
+.deal-main-wrapper .review-thumbnail-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.deal-main-wrapper .review-item:hover .review-thumbnail-img {
+  transform: scale(1.05);
+}
+
+.deal-main-wrapper .review-content {
+  padding: 13px 0;
+}
+
+.deal-main-wrapper .review-content h6 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-family: 'MinSans-Regular';
+  color: #525050;
+}
+
+.deal-main-wrapper hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 20px 0;
+}
+
+/* hr 스타일 수정 */
+.deal-main-wrapper .seller-reviews hr {
+  border: none;
+  height: 1px;
+  background-color: #e9ecef;  /* 옅은 회색으로 변경 */
+  margin: 15px 0 25px 0;  /* 위아래 여백 조정 */
+  opacity: 0.8;  /* 투명도 추가로 더 부드럽게 */
+}
