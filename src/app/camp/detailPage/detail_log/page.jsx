@@ -24,6 +24,7 @@ export default function Page({ posts }) {
                                 <img
                                     src={post.logThumbnail ? `${imgUrl}/${post.logThumbnail}` : "/images/campImageholder2.png"}
                                     alt={post.logTitle}
+                                    onError={(e) => e.target.src = "/images/campImageholder2.png"}
                                     style={{ width: '100%', height: '250px', objectFit: 'cover', borderRadius: '8px' }}
                                 />
                                 {/* 제목 */}
