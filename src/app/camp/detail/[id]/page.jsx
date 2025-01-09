@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import './detail.css'
 import Map from './../../detailPage/detail_map/page'
 import './../../detailPage/detail_map/detail_map.css'
@@ -39,9 +39,9 @@ function Page() {
         if (!item) return [];
         return [
             item.firstImageUrl,
-            item.campImg2,
             item.campImg3,
-            item.campImg4
+            item.campImg4,
+            item.campImg5
         ].filter(img => img); // null/undefined 제거
     }, [item]);
 
@@ -52,14 +52,14 @@ function Page() {
 
     const handlePrevImage = (e) => {
         e.stopPropagation();
-        setCurrentImageIndex((prev) => 
+        setCurrentImageIndex((prev) =>
             (prev - 1 + images.length) % images.length
         );
     };
 
     const handleNextImage = (e) => {
         e.stopPropagation();
-        setCurrentImageIndex((prev) => 
+        setCurrentImageIndex((prev) =>
             (prev + 1) % images.length
         );
     };
@@ -286,7 +286,7 @@ function Page() {
                             alt="확대된 캠핑장 이미지"
                             className="modal-image"
                         />
-                        <button 
+                        <button
                             className="close-modal-btn"
                             onClick={() => setIsImageModalOpen(false)}
                         >
@@ -294,13 +294,13 @@ function Page() {
                         </button>
                         {images.length > 1 && (
                             <>
-                                <button 
+                                <button
                                     className="nav-btn prev-btn"
                                     onClick={handlePrevImage}
                                 >
                                     ❮
                                 </button>
-                                <button 
+                                <button
                                     className="nav-btn next-btn"
                                     onClick={handleNextImage}
                                 >
