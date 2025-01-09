@@ -108,7 +108,7 @@ function Page({ params }) {
             }
         }
         fetchData();
-    }, [params, baseUrl]);
+    }, [params, baseUrl, user]);
 
     useEffect(() => {
         setDoRecommend(data.doRecommend);

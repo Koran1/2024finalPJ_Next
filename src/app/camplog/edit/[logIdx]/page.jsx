@@ -50,7 +50,7 @@ function EditPage({ params }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isLogSame, setIssLogSame] = useState(true);
     const { isAuthenticated, token, user } = useAuthStore();
-    
+
 
     // 기존 데이터 불러오기
     useEffect(() => {
@@ -72,7 +72,7 @@ function EditPage({ params }) {
                             id: Date.now() + data.order,
                             text: data.logContent || "",
                             file: null,
-                            fileName: data.fileName || null, 
+                            fileName: data.fileName || null,
                             previewUrl: null,
                             isThumbnail: data.isTumbnail === "1" ? true : false
                         }
@@ -84,18 +84,18 @@ function EditPage({ params }) {
                     const tmp2 = data.pData.flatMap(item => item.tagData || []);
                     setTags(tmp2.map(tag => {
                         return {
-                            ...tag, 
-                            tagId: parseInt(tag.tagId), 
-                            tagX: parseFloat(tag.tagX), 
-                            tagY: parseFloat(tag.tagY), 
-                            fieldId: tmp1[parseInt(tag.fieldIdx) - 1].id, 
-                            nodeRef: React.createRef(), 
-                            text: tag.tagContent, 
+                            ...tag,
+                            tagId: parseInt(tag.tagId),
+                            tagX: parseFloat(tag.tagX),
+                            tagY: parseFloat(tag.tagY),
+                            fieldId: tmp1[parseInt(tag.fieldIdx) - 1].id,
+                            nodeRef: React.createRef(),
+                            text: tag.tagContent,
                             fieldIdx: tag.fieldIdx
                         }
                     }))
                 }
-                
+
             } catch (error) {
                 console.error("Error fetching data:", error);
                 alert("데이터를 불러오는데 실패했습니다.");
@@ -137,14 +137,14 @@ function EditPage({ params }) {
             return "ok"
         }
     }
-    
+
     const createNewField = () => {
         if (extraFields.length < 10) {
             setExtraFields([...extraFields, {
                 id: Date.now(),
                 file: null,
                 text: "",
-                previewImg: null,
+                previewUrl: null,
                 showOverlay: false,
                 isThumbnail: false
             }]);
@@ -188,9 +188,9 @@ function EditPage({ params }) {
                         field.id === id ?
                             {
                                 ...field,
-                                file: file, 
-                                fileName: null, 
-                                previewUrl: e.target.result, 
+                                file: file,
+                                fileName: null,
+                                previewUrl: e.target.result,
                                 showOverlay: false,
                             }
                             : field
@@ -225,16 +225,18 @@ function EditPage({ params }) {
 
             setTags(tags => [
                 ...tags,
-                { tagX: x, 
-                  tagY: y, 
-                  tagId: Date.now(), 
-                  fieldId: fieldId, 
-                  fieldIdx: extraFields.filter(field => field.id === fieldId).find(field => field.fieldIdx) ,  
-                  showContent: false, 
-                  text: "", 
-                  showModal: true,  
-                  dealIdx: 0, 
-                  nodeRef: React.createRef() }
+                {
+                    tagX: x,
+                    tagY: y,
+                    tagId: Date.now(),
+                    fieldId: fieldId,
+                    fieldIdx: extraFields.filter(field => field.id === fieldId).find(field => field.fieldIdx),
+                    showContent: false,
+                    text: "",
+                    showModal: true,
+                    dealIdx: 0,
+                    nodeRef: React.createRef()
+                }
             ]);
             handleImgOverlay(fieldId);
         }
@@ -244,9 +246,9 @@ function EditPage({ params }) {
         setTags(tags.map(tag => {
             if (tag.tagId === tagId) {
                 if (tag.showContent) {
-                    return { ...tag, showContent: false};
+                    return { ...tag, showContent: false };
                 } else {
-                    return { ...tag, showContent: true,showModal: true  }
+                    return { ...tag, showContent: true, showModal: true }
                 }
             }
             return { ...tag, showContent: false };
@@ -280,30 +282,37 @@ function EditPage({ params }) {
     };
 
     const handleOpenLinkModal = async () => {
-        const apiUrl = `${baseUrl}/camplog/linkmodal/${1}`; // userIdx대신 임시값
-        try {
-            const response = await axios.get(apiUrl);
-            console.log("response: ", response);
-            if (response.data.success) {
-                const data = response.data.data;
-                setLinkList(data.map(data => {
-                    return (
-                        {
-                            ...data,
-                            isLinked: false,
-                            tagId: ""
-                        }
-                    )
-                }));
-                setShowLinkModal(true);
-            } else {
-                if (response.data.message === "데이터를 불러오는 중에 문제가 발생했습니다.") {
-                    alert(response.data.message);
+        if (!user) {
+            alert("로그인 상태가 아닙니다.");
+            return;
+        } else {
+            const apiUrl = `${baseUrl}/camplog/linkmodal/${user.userIdx}`; // userIdx대신 임시값
+            try {
+                const response = await axios.get(apiUrl);
+                console.log("response: ", response);
+                if (response.data.success) {
+                    const data = response.data.data;
+                    setLinkList(data.map(data => {
+                        return (
+                            {
+                                ...data,
+                                isLinked: false,
+                                tagId: ""
+                            }
+                        )
+                    }));
+                    setShowLinkModal(true);
+                } else {
+                    if (response.data.message === "거래 중인 상품이 없습니다.") {
+                        setShowLinkModal(true);
+                    } else {
+                        alert(response.data.message);
+                    }
                 }
+            } catch (error) {
+                console.error("error: " + error);
+                alert("서버 오류 발생");
             }
-        } catch (error) {
-            console.error("error: " + error);
-            alert("서버 오류 발생");
         }
     }
     const handleChangeThumbnail = (fieldID) => {
@@ -333,21 +342,21 @@ function EditPage({ params }) {
         })
         );
     }
-    
+
     const handIsAuthenticated = () => {
         if (!isAuthenticated || !token) {
             alert('로그인이 필요합니다.');
             router.push('/user/login');
             return;
-          } else {
+        } else {
             handleUpdate();
-          }
+        }
     }
     const handleUpdate = async () => {
         if (iscanWrite() === "ok") {
             const { logIdx } = await Promise.resolve(params);
             const apiUrl = `${baseUrl}/camplog/update`;
-            
+
             const contentData = [
                 {
                     logContent: logDefaultContent,
@@ -358,16 +367,16 @@ function EditPage({ params }) {
                     logContentOrder: index + 1
                 }))
             ].filter(item => item.logContent != "");
-            
+
             const mpFiles = extraFields.filter(item => item.file != null).map(field => field.file);
-            
+
             const beforeFile = data.pData.filter((item, index) => index != 0).map(item => item.fileName);
-            const afterFile =  extraFields.map(item => item.fileName);
-            const deleteOrders = [] ;
+            const afterFile = extraFields.map(item => item.fileName);
+            const deleteOrders = [];
             console.log("beforeFile: ", beforeFile);
             console.log("afterFile: ", afterFile);
-            for (let i= 0; i < beforeFile.length; i++) {
-                if(beforeFile[i] != afterFile[i]) {
+            for (let i = 0; i < beforeFile.length; i++) {
+                if (beforeFile[i] != afterFile[i]) {
                     deleteOrders.push(i + 1);
                 }
             }
@@ -377,14 +386,14 @@ function EditPage({ params }) {
                     fileOrder: index + 1,
                     isThumbnail: field.isThumbnail ? 1 : 0,
                     isFileThere: field.file ? true : false,
-                    file: field.file, 
+                    file: field.file,
                 })).filter(data => data.isFileThere == true)
             ];
             console.log("fileData: ", fileData);
             console.log("extrafield: ", extraFields);
 
             const tagData = tags.map(tag => ({
-                logIdx: logIdx, 
+                logIdx: logIdx,
                 fieldIdx: tag.fieldIdx,
                 tagX: tag.tagX,
                 tagY: tag.tagY,
@@ -398,7 +407,7 @@ function EditPage({ params }) {
                 cvo: { campIdx: confirmedCampIdx },
                 lvo: { logTitle: logTitle, logIdx: logIdx },
                 lcvo: { contentData: contentData },
-                fvo: fileData.length > 0 ? { fileData: fileData, deleteOrders: deleteOrders} : null,
+                fvo: fileData.length > 0 ? { fileData: fileData, deleteOrders: deleteOrders } : null,
                 tvo: tagData.length > 0 ? { tagData: tagData } : null,
             };
 
@@ -473,9 +482,9 @@ function EditPage({ params }) {
     const handleCampModal = async () => {
         const apiUrl = `${baseUrl}/camplog/campmodal?userIdx=${1}&campIdx=${LinkedCampIdx}`;// userIdx 임시값
         try {
-            if (campData.length > 0 ) {
+            if (campData.length > 0) {
                 setShowCampModal(true);
-            }else {
+            } else {
                 setShowCampModal(true);
                 const response = await axios.get(apiUrl);
                 setIsLoading(false);
@@ -484,16 +493,16 @@ function EditPage({ params }) {
                     const data = response.data.data
                     setCampData(data);
                     setFilteredCampList(data.filter(list =>
-                    list.facltNm.toLowerCase().includes(campKeyWord.toLowerCase())
-                ));
-            } else {
-                if (response.data.message === "데이터를 불러오는 중에 문제가 발생했습니다.") {
-                    alert(response.data.message);
+                        list.facltNm.toLowerCase().includes(campKeyWord.toLowerCase())
+                    ));
                 } else {
-                    alert(response.data.message);
+                    if (response.data.message === "데이터를 불러오는 중에 문제가 발생했습니다.") {
+                        alert(response.data.message);
+                    } else {
+                        alert(response.data.message);
+                    }
                 }
             }
-        }
         } catch (error) {
             console.error("error: " + error);
             alert("서버 오류 발생");
@@ -538,47 +547,48 @@ function EditPage({ params }) {
         const isContentSame = logDefaultContent === data.pData[0].logContent;
         const isconfirmedIdxSame = confirmedCampIdx == data.logVO.campIdx;
         const bfFile = data.pData.flatMap(item => item.fileName || []);
-        const afFile = extraFields.map(item => item.fileName ? item.fileName: null);
+        const afFile = extraFields.map(item => item.fileName ? item.fileName : null);
         const isFileSame = bfFile.length === afFile.length && bfFile.every((value, index) => value === afFile[index])
         const bfTag = data.pData.flatMap(item => item.tagData || []).map(tag => {
             return {
-                text: tag.tagContent, 
+                text: tag.tagContent,
                 dealIdx: tag.dealIdx
             }
         });
         const afTag = tags.map(tag => {
-            return{
-                text: tag.text, 
+            return {
+                text: tag.text,
                 dealIdx: tag.dealIdx
             }
         });
-           const isTagSame = 
-           bfTag.length === afTag.length && 
-           bfTag.every(
-               (value, index) =>
-                   value.text == afTag[index].text && 
-                   value.dealIdx == afTag[index].dealIdx
-           );        
+        const isTagSame =
+            bfTag.length === afTag.length &&
+            bfTag.every(
+                (value, index) =>
+                    value.text == afTag[index].text &&
+                    value.dealIdx == afTag[index].dealIdx
+            );
         setIssLogSame(isTitleSame && isContentSame && isconfirmedIdxSame && isFileSame && isTagSame);
     }
     useEffect(() => {
         judgeIsChange();
-    }, [logTitle,logDefaultContent, confirmedCampIdx, extraFields, tags]);  
+    }, [logTitle, logDefaultContent, confirmedCampIdx, extraFields, tags]);
 
     window.addEventListener("beforeunload", function (event) { // 새로고침시 물어보는 confirm창창
         event.preventDefault();
         event.returnValue = "";
     });
+    console.log("extrafields: ", extraFields);
     return (
         <>
             <header>
                 <span style={{ fontSize: "70px", display: "inline-block" }}> </span>
-                <span style={{ display: "inline-block", fontSize: "50px", marginLeft: "43%"}}>캠핑로그 수정</span>
+                <span style={{ display: "inline-block", fontSize: "50px", marginLeft: "43%" }}>캠핑로그 수정</span>
             </header>
             <Grid2 container spacing={2}>
                 <Grid2 size={2} />
                 <Grid2 size={1}>
-                    {extraFields.some(field => field.previewImg != null) ? (
+                    {extraFields.some(field => field.previewUrl != null) ? (
                         <div style={{ border: "1px solid gray", width: "120px", maxHeight: "50vh", position: "fixed", textAlign: 'center', overflowY: "auto" }}>
                             <style>
                                 {/* 이미지바 스크롤 CSS */}
@@ -598,7 +608,7 @@ function EditPage({ params }) {
                                                     }
                                                     `}
                             </style>
-                            {extraFields.filter(field => field.previewImg != null).map(field => {
+                            {extraFields.filter(field => field.previewUrl != null).map(field => {
                                 return (
                                     <div key={field.id}>
                                         {field.isThumbnail ? (<span style={{ color: "red" }}>대표사진</span>) : ""}
@@ -624,9 +634,9 @@ function EditPage({ params }) {
                 </Grid2>
                 <Grid2 size={6} textAlign={'center'}>
                     <Button variant="outlined" style={{ float: "left", marginRight: "10px" }} onClick={() => handleCampModal()}>+ 장소 추가</Button>
-                    <span style={{ fontWeight: "bold", fontSize: "20px", float: "left" }}>{ campData ? campData.filter(camp => camp.campIdx == confirmedCampIdx).map(camp => camp.facltNm) : data.facltNm}</span>
-                    <Button variant="contained" style={{float: "right"   }} disabled={isLogSame} onClick={handIsAuthenticated}>수정</Button>
-                    <Button variant="outlined" style={{float: "right", marginRight: "50px"  }} onClick={handleCancel}>취소</Button>
+                    <span style={{ fontWeight: "bold", fontSize: "20px", float: "left" }}>{campData ? campData.filter(camp => camp.campIdx == confirmedCampIdx).map(camp => camp.facltNm) : data.facltNm}</span>
+                    <Button variant="contained" style={{ float: "right" }} disabled={isLogSame} onClick={handIsAuthenticated}>수정</Button>
+                    <Button variant="outlined" style={{ float: "right", marginRight: "50px" }} onClick={handleCancel}>취소</Button>
                     <br />
                     <TextField id="outlined-basic" label="제목을 입력해주세요." value={logTitle} variant="outlined" onChange={(e) => setLogTitle(e.target.value)} style={{ marginTop: "30px" }} fullWidth inputProps={{ maxLength: 50 }} />
                     <TextField id="outlined-basic" label="내용을 입력해주세요." value={logDefaultContent} variant="outlined" onChange={(e) => setLogDefaultContent(e.target.value)} fullWidth multiline minRows={5} maxRows={20} style={{ marginTop: "20px" }} inputProps={{ maxLength: 1000 }} />
@@ -798,19 +808,19 @@ function EditPage({ params }) {
                                                                                     </span>
                                                                                     <br />
                                                                                     <br />
-                                                                                    {tag.dealIdx  ?
+                                                                                    {tag.dealIdx ?
                                                                                         (
                                                                                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                                                                <img src={`${imgUrl}/${data.fNameByDealIdx[tag.dealIdx]}`}
+                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx[tag.dealIdx]}`}
                                                                                                     alt=''
                                                                                                     style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px" }}>
                                                                                                 </img>
                                                                                                 <div style={{ width: '55%', height: '110px', display: "block", margin: "10px" }}>
                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "20px", marginBottom: "20px" }}>
-                                                                                                    {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
+                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
                                                                                                     </p>
                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "17px" }}>
-                                                                                                     {handleCurrencyToWon(data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원
+                                                                                                        {handleCurrencyToWon(data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원
                                                                                                     </p>
                                                                                                 </div>
                                                                                             </div>
@@ -880,7 +890,7 @@ function EditPage({ params }) {
                             </div>
                         )
                     })}
-                    {extraFields.length > 0 && extraFields.some(field => field.previewImg == null) ?
+                    {extraFields.length > 0 && extraFields.some(field => field.previewUrl == null && field.fileName == null) ?
                         (null) : (<Button variant="contained" style={{ fontSize: "35px", width: "400px", marginTop: "20px" }} onClick={createNewField}>+</Button>)}
                 </Grid2>
                 <Grid2 size={3} />
@@ -901,8 +911,8 @@ function EditPage({ params }) {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>상품사진</TableCell>
-                                    <TableCell>상품명</TableCell>
-                                    <TableCell>가격</TableCell>
+                                    <TableCell style={{ paddingRight: "50px" }}>상품명</TableCell>
+                                    <TableCell>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;가격</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -913,15 +923,15 @@ function EditPage({ params }) {
                                                 <TableRow key={list.dealIdx} onClick={() => handleSelectedDealIdx(list.dealIdx)} style={{ backgroundColor: list.dealIdx === selectedDealIdx ? "#A9A9A9" : "white" }} >
                                                     <TableCell >
                                                         <div style={{ width: "fit-content", position: "relative" }}>
-                                                            <img src={`${imgUrl}/${list.fileName}`} alt='' style={{ width: '100px', height: '100px', filter: list.dealIdx === selectedDealIdx ? "brightness(0.5)" : "brightness(1)" }} ></img>
+                                                            <img src={`${imgUrl}/deal/${list.fileName}`} alt='' style={{ width: '100px', height: '100px', filter: list.dealIdx === selectedDealIdx ? "brightness(0.5)" : "brightness(1)" }} ></img>
                                                             {list.dealIdx === selectedDealIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
                                                         </div>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <p>{list.dealTitle}</p>
+                                                        <p style={{ fontWeight: "bold" }}>{list.dealTitle}</p>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <p>{list.dealPrice}</p>
+                                                        <p style={{ fontWeight: "bold" }}>{handleCurrencyToWon(list.dealPrice)} 원</p>
                                                     </TableCell>
                                                 </TableRow>
                                             );
@@ -947,7 +957,7 @@ function EditPage({ params }) {
                     </TableContainer>
                     <div style={{ width: "100%", height: "10%", backgroundColor: "white", display: "flex", justifyContent: "center", borderTop: "1px solid black" }}>
                         <Button style={{ margin: "20px", height: "30px" }} variant="outlined" onClick={() => setShowLinkModal(false)}>취소</Button>
-                        <Button style={{ margin: "20px", height: "30px" }}  variant="contained" onClick={handleGetLinked}>확인</Button>
+                        <Button style={{ margin: "20px", height: "30px" }} variant="contained" onClick={handleGetLinked}>확인</Button>
                     </div>
                 </div>
             </Modal>
@@ -955,7 +965,7 @@ function EditPage({ params }) {
             <Modal
                 open={showCampModal}
                 onClose={() => setShowCampModal(false)}
-                >
+            >
                 <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "600px", height: "700px", backgroundColor: "white" }}>
                     <div style={{ margin: "20px 0 10px 40px", border: "1px solid lightgray", width: "80%", display: 'inline-block', height: "5%" }}>
                         <Search />
@@ -980,7 +990,7 @@ function EditPage({ params }) {
                                 color={"action"}
                                 style={{ margin: "0 10px", cursor: nowPage === 1 ? "" : "pointer" }}
                                 onClick={() => setNowPage(nowPage === 1 ? 1 : nowPage - 1)}
-                                />
+                            />
                             <div style={{ display: "flex", alignItems: "center" }}>
                                 <span style={{ fontSize: "18px", color: "black" }}>{nowPage}</span>
                                 <span style={{ fontSize: "18px", color: "black", margin: "0 5px" }}>/</span>
@@ -997,7 +1007,7 @@ function EditPage({ params }) {
                                     label="행정구역"
                                     value={selectedDoNm2}
                                     onChange={(e) => setSelectedDoNm2(e.target.value)}
-                                    >
+                                >
                                     <MenuItem value="전체">전체</MenuItem>
                                     <MenuItem value="서울특별시">서울특별시</MenuItem>
                                     <MenuItem value="부산광역시">부산광역시</MenuItem>
@@ -1020,89 +1030,89 @@ function EditPage({ params }) {
                             </FormControl>
                         </div>
                     </div>
-                    {isLoading ? 
-                    (
-                        <CircularProgress style={{ margin: "180px 0px 270px 275px" }} />
-                    )
-                    : 
-                    (
-                        filteredCampList.length > 0 ?
-                            (
-                                <Grid2 container spacing={0} height="80%" justifyContent="center">
-                                    {Array.from(filteredCampList).sort((a, b) => a.campIdx == confirmedCampIdx ? -1 : b.campIdx == confirmedCampIdx ? 1 : 0)
-                                        .slice(offset, offset + 6).map((camp, index) => {
-                                            return (
-                                                <div key={index}>
-                                                    <Grid2 textAlign="center" padding="0 20px 0 20px" onClick={() => handleSelectCamp(camp.campIdx)} style={{ backgroundColor: camp.campIdx == selectedCampIdx ? "#A9A9A9" : "white" }} >
-                                                        {
-                                                            camp.firstImageUrl ?
-                                                                (
-                                                                    <div style={{ width: "fit-content", position: "relative" }}>
-                                                                        <img
-                                                                            src={camp.firstImageUrl}
-                                                                            alt=''
-                                                                            style={{ width: '210px', height: '112.5px', borderRadius: "8px", display: "inline-block", marginBottom: "5px", filter: camp.campIdx == selectedCampIdx ? "brightness(0.5)" : "brightness(1)" }}>
-                                                                        </img>
-                                                                        {camp.campIdx == selectedCampIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
-                                                                    </div>)
-                                                                :
-                                                                (camp.campImg2 ?
-                                                                    (<div style={{ width: "fit-content", position: "relative" }}>
-                                                                        <img
-                                                                            src={camp.campImg2}
-                                                                            alt=''
-                                                                            style={{ width: '210px', height: '112.5px', borderRadius: "8px", display: "inline-block", marginBottom: "5px", filter: camp.campIdx == selectedCampIdx ? "brightness(0.5)" : "brightness(1)" }}>
-                                                                        </img>
-                                                                        {camp.campIdx == selectedCampIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
-                                                                    </div>)
+                    {isLoading ?
+                        (
+                            <CircularProgress style={{ margin: "180px 0px 270px 275px" }} />
+                        )
+                        :
+                        (
+                            filteredCampList.length > 0 ?
+                                (
+                                    <Grid2 container spacing={0} height="80%" justifyContent="center">
+                                        {Array.from(filteredCampList).sort((a, b) => a.campIdx == confirmedCampIdx ? -1 : b.campIdx == confirmedCampIdx ? 1 : 0)
+                                            .slice(offset, offset + 6).map((camp, index) => {
+                                                return (
+                                                    <div key={index}>
+                                                        <Grid2 textAlign="center" padding="0 20px 0 20px" onClick={() => handleSelectCamp(camp.campIdx)} style={{ backgroundColor: camp.campIdx == selectedCampIdx ? "#A9A9A9" : "white" }} >
+                                                            {
+                                                                camp.firstImageUrl ?
+                                                                    (
+                                                                        <div style={{ width: "fit-content", position: "relative" }}>
+                                                                            <img
+                                                                                src={camp.firstImageUrl}
+                                                                                alt=''
+                                                                                style={{ width: '210px', height: '112.5px', borderRadius: "8px", display: "inline-block", marginBottom: "5px", filter: camp.campIdx == selectedCampIdx ? "brightness(0.5)" : "brightness(1)" }}>
+                                                                            </img>
+                                                                            {camp.campIdx == selectedCampIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
+                                                                        </div>)
                                                                     :
-                                                                    (camp.campImg3 ?
+                                                                    (camp.campImg2 ?
                                                                         (<div style={{ width: "fit-content", position: "relative" }}>
                                                                             <img
-                                                                                src={camp.campImg3}
+                                                                                src={camp.campImg2}
                                                                                 alt=''
                                                                                 style={{ width: '210px', height: '112.5px', borderRadius: "8px", display: "inline-block", marginBottom: "5px", filter: camp.campIdx == selectedCampIdx ? "brightness(0.5)" : "brightness(1)" }}>
                                                                             </img>
                                                                             {camp.campIdx == selectedCampIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
                                                                         </div>)
                                                                         :
-                                                                        (
-                                                                            <div style={{ width: "fit-content", position: "relative" }}>
-                                                                                <div style={{ width: '210px', height: '112.5px', display: "inline-block", borderRadius: "8px", backgroundColor: camp.campIdx == selectedCampIdx ? "#A9A9A9" : "lightgray" }}></div>
+                                                                        (camp.campImg3 ?
+                                                                            (<div style={{ width: "fit-content", position: "relative" }}>
+                                                                                <img
+                                                                                    src={camp.campImg3}
+                                                                                    alt=''
+                                                                                    style={{ width: '210px', height: '112.5px', borderRadius: "8px", display: "inline-block", marginBottom: "5px", filter: camp.campIdx == selectedCampIdx ? "brightness(0.5)" : "brightness(1)" }}>
+                                                                                </img>
                                                                                 {camp.campIdx == selectedCampIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
-                                                                            </div>
-                                                                        )))}
-    
-                                                        <div style={{ textAlign: "left" }}>
-                                                            <p style={{ fontWeight: 'bold', fontSize: "15px", marginBottom: "0" }}>{camp.facltNm.length > 14 ? camp.facltNm.substring(0, 15) : camp.facltNm}</p>
-                                                            <span style={{ fontSize: "12px", color: "#1976D2", }}>{camp.doNm2}</span>
-                                                            <ChevronRight color="action" fontSize='small' style={{ color: "#1976D2" }} />
-                                                            <span style={{ fontSize: "12px", color: "#1976D2" }}>{camp.sigunguNm}</span>
-                                                        </div>
-                                                    </Grid2>
-                                                </div>
-                                            );
-                                        })}
-                                    {/* 홀수 개 항목일 때 빈 그리드 추가 */}
-                                    {filteredCampList.slice(offset, offset + 6).length % 2 === 1 && (
-                                        <Grid2 xs={6} padding="0 20px 0 20px" >
-                                            <div style={{ width: '210px', height: '112.5px', backgroundColor: "white", display: "inline-block", borderRadius: "8px" }}></div>
-                                        </Grid2>
-                                    )}
-                                </Grid2>
-                            )
-                            :
-                            (
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    height: "79%"
-                                }}>
-                                    등록된 캠핑장이 없습니다.
-                                </div>
-                            )
-                    )}
+                                                                            </div>)
+                                                                            :
+                                                                            (
+                                                                                <div style={{ width: "fit-content", position: "relative" }}>
+                                                                                    <div style={{ width: '210px', height: '112.5px', display: "inline-block", borderRadius: "8px", backgroundColor: camp.campIdx == selectedCampIdx ? "#A9A9A9" : "lightgray" }}></div>
+                                                                                    {camp.campIdx == selectedCampIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
+                                                                                </div>
+                                                                            )))}
+
+                                                            <div style={{ textAlign: "left" }}>
+                                                                <p style={{ fontWeight: 'bold', fontSize: "15px", marginBottom: "0" }}>{camp.facltNm.length > 14 ? camp.facltNm.substring(0, 15) : camp.facltNm}</p>
+                                                                <span style={{ fontSize: "12px", color: "#1976D2", }}>{camp.doNm2}</span>
+                                                                <ChevronRight color="action" fontSize='small' style={{ color: "#1976D2" }} />
+                                                                <span style={{ fontSize: "12px", color: "#1976D2" }}>{camp.sigunguNm}</span>
+                                                            </div>
+                                                        </Grid2>
+                                                    </div>
+                                                );
+                                            })}
+                                        {/* 홀수 개 항목일 때 빈 그리드 추가 */}
+                                        {filteredCampList.slice(offset, offset + 6).length % 2 === 1 && (
+                                            <Grid2 xs={6} padding="0 20px 0 20px" >
+                                                <div style={{ width: '210px', height: '112.5px', backgroundColor: "white", display: "inline-block", borderRadius: "8px" }}></div>
+                                            </Grid2>
+                                        )}
+                                    </Grid2>
+                                )
+                                :
+                                (
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        height: "79%"
+                                    }}>
+                                        등록된 캠핑장이 없습니다.
+                                    </div>
+                                )
+                        )}
                     <div style={{ width: "100%", height: "10%", backgroundColor: "white", display: "flex", justifyContent: "center", borderTop: "1px solid black" }}>
                         <Button style={{ margin: "20px", height: "30px" }} variant="outlined" onClick={() => setShowCampModal(false)}>취소</Button>
                         <Button style={{ margin: "20px", height: "30px" }} variant="contained" onClick={handleCampLinked}>확인</Button>
