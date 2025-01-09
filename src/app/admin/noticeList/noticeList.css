@@ -1,11 +1,11 @@
-.admin-faqList-table-head 
+.admin-noticeList-table-head 
 .MuiTableCell-root {
     text-align: center;
     background-color: #f0f0f0; 
     font-weight: bold;
 }
 
-.admin-faqList-table-body
+.admin-noticeList-table-body
 .MuiTableCell-root {
     text-align: center;
 }

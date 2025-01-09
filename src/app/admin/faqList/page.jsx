@@ -1,14 +1,32 @@
 "use client"
 import "./faqList.css";
-import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { Search } from "@mui/icons-material";
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Select, MenuItem, InputLabel, FormControl, IconButton, Button, Pagination, Checkbox } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Select, MenuItem, InputLabel, FormControl, IconButton, Button, Pagination, Checkbox, Modal, Typography, TextareaAutosize } from '@mui/material';
 import AdminList from '../AdminList';
 import CurrentTime from '../CurrentTime';
 import axios from "axios";
+import CloseIcon from '@mui/icons-material/Close';
+import Link from "next/link";
+
+// 모달 스타일 정의
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 800,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    borderRadius: '8px',
+};
 
 function Page() {
+    const [selectedFAQs, setSelectedFAQs] = useState([]);
     const [adminFAQList, setAdminFAQList] = useState([]); // 관리자 사용자 정보 리스트
     const [selectedSearch, setSelectedSearch] = useState("all"); // 검색어 옵션 박스
     const [keyword, setKeyword] = useState(""); // 키워드 검색
@@ -20,10 +38,13 @@ function Page() {
     const [loading, setLoading] = useState(false); // 로딩 상태
     const [error, setError] = useState(null); // 에러 상태
 
+    const [selectedFaq, setSelectedFaq] = useState(null); // 선택된 공지사항
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
+
     const CAMP_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const inputRef = useRef(null);
 
-    // Admin noticeList 리스트 가져오기
+    // Admin FAQList 리스트 가져오기
     const getAdminFAQList = async () => {
         setLoading(true);
         const searchKeyword = keyword?.trim() || null;
@@ -79,6 +100,73 @@ function Page() {
         setPage(1);
     };
 
+    // 게시글 보이기 토글 함수
+    const handleToggleStatus = async () => {
+        console.log("selectedFAQs: ", selectedFAQs);
+        if (selectedFAQs.length === 0) {
+            alert("선택된 게시글이 없습니다.");
+            return;
+        }
+
+        try {
+            const form = new FormData();
+            form.append("selectedFAQs", selectedFAQs)
+            console.log(selectedFAQs)
+            const response = await axios.put(
+                `${CAMP_API_BASE_URL}/admin/updateFAQStatus`, form
+            );
+
+            if (response.data.success) {
+                alert(response.data.message);
+                setSelectedFAQs([]); // 선택 상태 초기화
+                getAdminFAQList(); // 상태 변경 후 목록 갱신
+            } else {
+                alert(response.data.message);
+            }
+        } catch (err) {
+            console.error("Error updating notice status:", err);
+            alert("FAQ 상태 업데이트 오류");
+        }
+    };
+
+
+    // 공지사항명 클릭 시 모달 열기
+    const handleModalClick = (faq) => {
+        setSelectedFaq(faq);
+        setIsModalOpen(true);
+    }
+
+    // 모달 닫기
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedFaq(null);
+    }
+
+    // 모달 변경 사항 저장
+    const handleSaveChanges = async () => {
+        if (!selectedFaq) {
+            alert("선택된 자주 묻는 질문이 없습니다.");
+            return;
+        }
+
+        const faqIdx = selectedFaq.faqIdx;
+        const faqStatus = selectedFaq.faqStatus;
+
+        try {
+            const response = await axios.put(`${CAMP_API_BASE_URL}/admin/getAdminUpdateFAQModal`, { faqIdx, faqStatus },);
+            if (response.data.success) {
+                alert("자주 묻는 질문 정보 업데이트 성공");
+                await getAdminFAQList();
+                handleCloseModal();
+            } else {
+                alert("자주 묻는 질문 정보 업데이트 실패");
+            }
+        } catch (err) {
+            console.log("자주 묻는 질문 정보 업데이트 중 오류: ", err.message);
+            alert("자주 묻는 질문 정보 업데이트 오류");
+        }
+    }
+
     // 로딩 중 화면
     if (loading) {
         return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
@@ -123,6 +211,7 @@ function Page() {
                                 backgroundColor: '#1976D2',
                             },
                         }}
+                        onClick={handleToggleStatus}
                     >
                         게시글 OFF
                     </Button>
@@ -218,12 +307,17 @@ function Page() {
                                 {/* 체크박스 헤더 */}
                                 <TableCell padding="checkbox">
                                     <Checkbox
-                                        indeterminate={adminFAQList.some((list) => list.isChecked) && adminFAQList.some((list) => !list.isChecked)}
-                                        checked={adminFAQList.every((list) => list.isChecked)}
+                                        indeterminate={
+                                            selectedFAQs.length > 0 &&
+                                            selectedFAQs.length < adminFAQList.length
+                                        }
+                                        checked={selectedFAQs.length === adminFAQList.length}
                                         onChange={(event) => {
                                             const isChecked = event.target.checked;
-                                            setAdminFAQList((prevList) =>
-                                                prevList.map((item) => ({ ...item, isChecked }))
+                                            setSelectedFAQs(
+                                                isChecked
+                                                    ? adminFAQList.map((item) => item.faqIdx)
+                                                    : []
                                             );
                                         }}
                                     />
@@ -234,7 +328,7 @@ function Page() {
                                 <TableCell>게시글 보이기</TableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody className="admin-noticeList-table-body">
+                        <TableBody className="admin-faqList-table-body">
                             {adminFAQList.map((list, index) => (
                                 <TableRow
                                     key={list.faqIdx}
@@ -246,21 +340,28 @@ function Page() {
                                     {/* 체크박스 열 */}
                                     <TableCell padding="checkbox">
                                         <Checkbox
-                                            checked={list.isChecked || false}
+                                            checked={selectedFAQs.includes(list.faqIdx)}
                                             onChange={(event) => {
                                                 const isChecked = event.target.checked;
-                                                setAdminFAQList((prevList) =>
-                                                    prevList.map((item, idx) =>
-                                                        idx === index
-                                                            ? { ...item, isChecked }
-                                                            : item
-                                                    )
+                                                setSelectedFAQs((prev) =>
+                                                    isChecked
+                                                        ? [...prev, list.faqIdx]
+                                                        : prev.filter((id) => id !== list.faqIdx)
                                                 );
                                             }}
                                         />
                                     </TableCell>
                                     <TableCell>{list.faqIdx}</TableCell>
-                                    <TableCell>{list.faqQuestion}</TableCell>
+                                    <TableCell
+                                        onClick={() => handleModalClick(list)}
+                                        sx={{
+                                            cursor: "pointer",
+                                            textDecoration: "underline",
+                                            color: "#1976D2"
+                                        }}
+                                    >
+                                        {list.faqQuestion}
+                                    </TableCell>
                                     <TableCell>{list.faqReg.substring(0, 10)}</TableCell>
                                     <TableCell>{list.faqStatus}</TableCell>
                                 </TableRow>
@@ -304,23 +405,145 @@ function Page() {
                                 marginLeft: 'auto',
                             }}
                         >
-                            <Button
-                                variant="outlined"
-                                size="medium"
-                                sx={{
-                                    height: '80%', 
-                                    fontWeight: 'bold',
-                                    borderRadius: '4px',
-                                    '&:hover': {
-                                        backgroundColor: '#9DBDFF',
-                                    },
-                                }}
-                            >
-                                작성하기
-                            </Button>
+                            <Link href="/admin/faqList/write">
+                                <Button
+                                    variant="outlined"
+                                    size="medium"
+                                    sx={{
+                                        height: '80%',
+                                        fontWeight: 'bold',
+                                        borderRadius: '4px',
+                                        '&:hover': {
+                                            backgroundColor: '#9DBDFF',
+                                        },
+                                    }}
+                                >
+                                    작성하기
+                                </Button>
+                            </Link>
                         </Box>
                     </Box>
                 </TableContainer>
+                {/* 모달창 */}
+                <Modal
+                    open={isModalOpen}
+                    onClose={handleCloseModal}
+                    aria-labelledby="notice-details-modal-title"
+                    aria-describedby="notice-details-modal-description"
+                >
+                    <Box sx={{ ...modalStyle, position: "relative" }}>
+                        <IconButton
+                            onClick={handleCloseModal}
+                            sx={{
+                                position: "absolute",
+                                top: 8,
+                                right: 8,
+                                color: "black",
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+
+                        <Box sx={{ marginTop: 3 }}>
+                            {selectedFaq ? (
+                                <TableContainer component={Paper}>
+                                    <Table>
+                                        <TableBody>
+                                            <TableRow>
+                                                <TableCell component="th" scope="row"><strong>자주 묻는 질문 Question</strong></TableCell>
+                                                <TableCell>
+                                                    <TextareaAutosize
+                                                        minRows={6}
+                                                        placeholder="FAQ 질문을 입력하세요."
+                                                        value={selectedFaq.faqQuestion || ""}
+                                                        onChange={(e) => {
+                                                            const updatedFAQ = { ...selectedFaq, faqQuestion: e.target.value };
+                                                            setSelectedFaq(updatedFAQ);
+                                                        }}
+                                                        style={{ width: "100%", padding: "8px" }}
+                                                        disabled
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component="th" scope="row"><strong>자주 묻는 질문 Answer</strong></TableCell>
+                                                <TableCell>
+                                                    <TextareaAutosize
+                                                        minRows={6}
+                                                        placeholder="FAQ 답변을 입력하세요."
+                                                        value={selectedFaq.faqAnswer || ""}
+                                                        onChange={(e) => {
+                                                            const updatedFAQ = { ...selectedFaq, faqAnswer: e.target.value };
+                                                            setSelectedFaq(updatedFAQ);
+                                                        }}
+                                                        style={{ width: "100%", padding: "8px" }}
+                                                        disabled
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component="th" scope="row"><strong>등록 일자</strong></TableCell>
+                                                <TableCell>
+                                                    <TextField
+                                                        value={selectedFaq.faqReg.substring(0, 10) || ""}
+                                                        variant="standard"
+                                                        fullWidth
+                                                        disabled
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell component="th" scope="row"><strong>게시글 보이기</strong></TableCell>
+                                                <TableCell>
+                                                    <FormControl fullWidth>
+                                                        <Select
+                                                            value={selectedFaq?.faqStatus || ""} // 기본값 설정
+                                                            onChange={(e) => {
+                                                                const updatedFAQ = { ...selectedFaq, faqStatus: e.target.value };
+                                                                setSelectedFaq(updatedFAQ);
+                                                            }}
+                                                            displayEmpty
+                                                        >
+                                                            <MenuItem value="on">ON</MenuItem>
+                                                            <MenuItem value="off">OFF</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            ) : (
+                                <Typography id="faq-details-modal-description" sx={{ mt: 2 }}>
+                                    FAQ 정보를 불러오는 중입니다...
+                                </Typography>
+                            )}
+                            <Box
+                                mt={2}
+                                display="flex"
+                                justifyContent="center"  // 가로 방향 중앙 정렬
+                                alignItems="center"      // 세로 방향 중앙 정렬
+                            >
+                                {/* 저장 버튼 추가 */}
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleSaveChanges}
+                                    sx={{ mr: 2 }}
+                                >
+                                    저장
+                                </Button>
+                                <Link href={`/admin/faqList/update/${selectedFaq?.faqIdx}`}>
+                                    <Button
+                                        variant="outlined"
+                                    >
+                                        수정
+                                    </Button>
+                                </Link>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Modal>
             </Box>
         </Box>
     );
