@@ -85,7 +85,7 @@ function Page({ params }) {
                         if (!item.tagData || item.tagData.length === 0) {
                             return [];
                         } else {
-
+                            
                             return item.tagData.map(tag => {
                                 return {
                                     ...tag,
@@ -96,7 +96,7 @@ function Page({ params }) {
                             })
                         }
                     }));
-                    setIsWriter(response.data.data.userVO.userIdx === user ? true : false);
+                    setIsWriter(response.data.data.userVO[0].userIdx === user.userIdx ? true : false);
                 } else {
                     alert(response.data.message);
                     router.push("/camplog/list");
@@ -111,6 +111,7 @@ function Page({ params }) {
         }
         fetchData();
     }, [params, baseUrl]);
+
     useEffect(() => {
         setDoRecommend(data.doRecommend);
         setRecommendCount(data.RecommendCount);
@@ -451,7 +452,7 @@ function Page({ params }) {
                                     <div style={{ position: "relative", width: "auto" }}>
                                         <MoreVertIcon
                                             fontSize="large"
-                                            style={{ color: isIconHover ? "#333333" : "#A9A9A9", marginRight: "30px" }}
+                                            style={{ color: isIconHover ? "#333333" : "#A9A9A9", marginRight: "30px",  cursor: "pointer" }}
                                             onMouseOver={() => setIsIconHover(true)}
                                             onMouseOut={() => setIsIconHover(false)}
                                             onClick={() => setToggleIcon(!toggleIcon)}
@@ -461,14 +462,37 @@ function Page({ params }) {
                                                 <>
                                                     {toggleIcon &&
                                                         <>
-                                                            <div style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "70px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", backgroundColor: "white" }}
+                                                            <div style={{ position: "absolute", 
+                                                            transform: "translate(-50%, -50%)", 
+                                                            left: "110px", 
+                                                            top: "70px", 
+                                                            width: "190px", 
+                                                            height: "60px", 
+                                                            display: "flex", 
+                                                            justifyContent: "start", 
+                                                            border: "1px solid gray", 
+                                                            backgroundColor: "white", 
+                                                            cursor: "pointer"
+                                                         }}
                                                                 onClick={handleLogEdit}
                                                             >
                                                                 <span style={{ color: "gray", margin: "17px 67px 0px 10px", fontWeight: "bold", }}>수정하기</span>
                                                                 <ModeIcon style={{ fontSize: "30px", marginTop: "13px" }} />
                                                             </div>
                                                             <div
-                                                                style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "130px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", borderTop: "none", backgroundColor: "white" }}
+                                                                style={{ position: "absolute", 
+                                                                    transform: "translate(-50%, -50%)", 
+                                                                    left: "110px", 
+                                                                    top: "130px", 
+                                                                    width: "190px", 
+                                                                    height: "60px",
+                                                                    display: "flex", 
+                                                                    justifyContent: "start", 
+                                                                    border: "1px solid gray", 
+                                                                    borderTop: "none", 
+                                                                    backgroundColor: "white", 
+                                                                    cursor: "pointer"
+                                                                }}
                                                                 // onClick={handleLogDelete}
                                                                 onClick={() => handleModalClick("", "delete")}
                                                             >
@@ -485,7 +509,18 @@ function Page({ params }) {
                                                     {toggleIcon &&
                                                         <>
                                                             <div
-                                                                style={{ position: "absolute", transform: "translate(-50%, -50%)", left: "110px", top: "70px", width: "190px", height: "60px", display: "flex", justifyContent: "start", border: "1px solid gray", backgroundColor: "white" }}
+                                                                style={{ position: "absolute", 
+                                                                    transform: "translate(-50%, -50%)", 
+                                                                    left: "110px",
+                                                                    top: "70px", 
+                                                                    width: "190px", 
+                                                                    height: "60px", 
+                                                                    display: "flex", 
+                                                                    ustifyContent: "start", 
+                                                                    border: "1px solid gray", 
+                                                                    backgroundColor: "white", 
+                                                                    cursor: "pointer"    
+                                                                }}
                                                                 onClick={() => handleModalClick("", "report")}
 
                                                             >
@@ -675,10 +710,10 @@ function Page({ params }) {
             {/* 댓글 */}
             <div>
                 <hr />
-                <div style={{ maxWidth: "2000px", width: "80%", margin: "0 auto" }}>
+                <div style={{ maxWidth: "2000px", width: "50%", margin: "0 auto" }}>
                     {/* useState 사용해서 운영자가 신고 승인한 댓글 출력(공백)할 때마다 갯수 줄이기 */}
                     {/* <p>댓글 {logCommentList.length + logReplyList.length - disableCommentCount}개</p> */}
-                    <p>댓글 {logCommentList.length + logReplyList.length}개</p>
+                    <p>댓글 <b style={{color: "#1976D2"}}>{logCommentList.length + logReplyList.length}</b> 개</p>
                     {/* 댓글 리스트 div 시작 */}
                     <div>
                         {logCommentList.length == 0 && logReplyList.length == 0 ? (

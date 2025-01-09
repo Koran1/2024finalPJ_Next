@@ -26,6 +26,7 @@ function Page(props) {
     const [error, setError] = useState(null); // 에러 상태
     const router = useRouter();
     const { isAuthenticated, token, user } = useAuthStore();
+    const [searchedWord, setSearchedWord] = useState("");
     // camplog 리스트 가져오기
     const getCamplogList = async () => {
         setLoading(true);
@@ -75,6 +76,7 @@ function Page(props) {
 
     // 검색 함수
     const handelSearch = () => {
+        setSearchedWord(keyword);
         setPage(1);
         getCamplogList();
         setKeyword("");
@@ -82,7 +84,9 @@ function Page(props) {
 
     // 검색 엔터 함수
     const handleKeyUp = (e) => {
-        if (!isComposing && e.key === "Enter") {
+            setKeyword(e.target.value);
+        if (e.key === "Enter") {
+            setSearchedWord(e.target.value);
             setPage(1);
             getCamplogList();
             setKeyword("");
@@ -128,13 +132,13 @@ function Page(props) {
         router.push(`/camplog/detail/${logIdx}`)
     }
     const handleLogWrite = () => {
-        if (!isAuthenticated || !token) {
+        if (!user) {
             alert('로그인이 필요합니다.');
             router.push('/user/login');
             return;
-          } else {
+        } else {
             router.push("/camplog/write");
-          }
+        }
     }
     return (
         <div className="camplog-main-container">
@@ -172,7 +176,6 @@ function Page(props) {
                     label="검색어 입력"
                     variant="standard"
                     sx={{ width: 250 }}
-                    onChange={(e) => setKeyword(e.target.value)}
                     onKeyUp={handleKeyUp}
                 />
 
@@ -184,42 +187,45 @@ function Page(props) {
                 </IconButton>
             </div>
 
+            <div style={{display: "flex", justifyContent: "space-between"}}>
             {/* 검색 결과 영역 */}
-            <div className="camplog-result-container">
-                <p>
-                    <span className="search-result-blue">검색어</span>에 대한 검색결과가
-                    <span className="search-result-blue"> 총 {totalCount} 건</span> 있습니다.
-                </p>
-            </div>
+            {searchedWord && (
+                <div className="camplog-result-container">
+                    <p>
+                        <span><b className="search-result-blue">{searchedWord}</b>에 대한 검색결과가  총   <b className="search-result-blue">{totalCount}건</b> 있습니다.</span> 
+                    </p>
+                </div>
+            )}
 
             {/* 정렬 옵션 영역 */}
-            <div className="camplog-sort-container">
+            <div className="camplog-sort-container" style={{marginLeft: "auto"}}>
                 <span
                     onClick={() => handleSort("latest")}
                     className={sortOption === "latest" ? "active" : ""}
-                >
+                    >
                     최신순
                 </span>{" "}
                 |
                 <span
                     onClick={() => handleSort("likes")}
                     className={sortOption === "likes" ? "active" : ""}
-                >
+                    >
                     공감순
                 </span>
             </div>
-            
+            </div>
+
             {/* 리스트 영역 */}
             <div className="camplog-list-container">
 
                 {camplogList.length === 0 ? (
-                    <p style={{margin: "0 auto"}}>등록된 캠핑로그가 없습니다.</p>
+                    <p style={{ margin: "0 auto" }}>등록된 캠핑로그가 없습니다.</p>
                 ) : (
                     camplogList.map((list) => {
                         const userStatus0 = list.reporterUserIds ? list.reporterUserIds.split(',') : [];
                         const currUserStatus0 = userStatus0.includes(String(user?.userIdx));
                         const status1 = list.reportStatus === "1";
-                      
+
                         // reportStatus = 1인 경우, 아예 리스트에서 안 보이게 하기!
                         if (status1) {
                             return null;
@@ -253,7 +259,7 @@ function Page(props) {
                                             <span className="date">{list.logRegDate.substring(0, 10)}</span>
                                         </div>
                                     </div>
-                                    <div style={{cursor: "pointer"}} onClick={()=> handleGoLogDetail(list.logIdx)}>
+                                    <div style={{ cursor: "pointer" }} onClick={() => handleGoLogDetail(list.logIdx)}>
                                         <div className="camplog-title"><p>{list.logTitle}</p></div>
                                         <div className="camplog-content">
                                             <p>{list.logContent || "내용 없음"}</p>
@@ -276,8 +282,8 @@ function Page(props) {
                                 <div className="camplog-thumbnail">
                                     <img
                                         src={list.fileName ? `http://localhost:8080/upload/${list.fileName}` : "/images/campImageholder3.png"}
-                                        alt="캠핑 썸네일" 
-                                        style={{cursor: "pointer"}} onClick={()=> handleGoLogDetail(list.logIdx)}
+                                        alt="캠핑 썸네일"
+                                        style={{ cursor: "pointer" }} onClick={() => handleGoLogDetail(list.logIdx)}
                                     />
                                 </div>
                             </div>
@@ -288,7 +294,7 @@ function Page(props) {
 
             {/* 글쓰기 버튼 영역 */}
             <div className="camplog-write-container">
-              <Button variant="contained" onClick={handleLogWrite}>글쓰기</Button>
+                <Button variant="contained" onClick={handleLogWrite}>글쓰기</Button>
             </div>
 
 

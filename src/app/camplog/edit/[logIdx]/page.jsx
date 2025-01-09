@@ -13,6 +13,7 @@ import './page.css';
 import CheckIcon from '@mui/icons-material/Check';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useRouter } from 'next/navigation';
+import useAuthStore from '../../../../../store/authStore';
 
 function EditPage({ params }) {
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
