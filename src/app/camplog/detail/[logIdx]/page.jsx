@@ -18,9 +18,8 @@ function Page({ params }) {
     // 로그 내용 변수
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const imgUrl = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
-
-    const { user } = useAuthStore();
-
+    
+    
     const router = useRouter();
     const [isIconHover, setIsIconHover] = useState(false);
     const [data, setData] = useState([]);
@@ -32,7 +31,7 @@ function Page({ params }) {
     const [RecommendCount, setRecommendCount] = useState(0);
     // const [isModalOpen, setModalOpen] = useState(false);            // 모달 창 열기
     // const [reportValue, setReportValue] = useState(1);              // 신고 사유 선택 값
-
+    
     // 댓글 변수
     // const logIdx = useSearchParams().get('logIdx');
     // const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL; // baesUrl 이랑 동일
@@ -55,7 +54,7 @@ function Page({ params }) {
     const [reportContent, setReportContent] = useState("");         // 신고 내용
     // const [disableCommentCount, setDisableCommentCount] = useState(0); // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
     const [logWriterNickname, setLogWriterNickname] = useState("");
-
+    const { user } = useAuthStore();
     // 로그 내용 함수들
     useEffect(() => {
         const fetchData = async () => {
@@ -79,7 +78,6 @@ function Page({ params }) {
                 }
                 if (data.success) {
                     setData(data.data);
-                    // console.log("Writer NickName : ", data.data.userVO);
                     setLogWriterNickname(data.data.userVO[0].userNickname);
                     setTagData(data.data.pData.map(item => {
                         if (!item.tagData || item.tagData.length === 0) {
@@ -91,12 +89,12 @@ function Page({ params }) {
                                     ...tag,
                                     isShow: false,
                                     isLinkShow: false,
-                                    nodeRef: React.createRef()
+                                    nodeRef: React.createRef(), 
                                 }
                             })
                         }
                     }));
-                    setIsWriter(response.data.data.userVO[0].userIdx === user.userIdx ? true : false);
+                    setIsWriter(user ? (response.data.data.userVO[0].userIdx === user.userIdx ? true : false) : false);
                 } else {
                     alert(response.data.message);
                     router.push("/camplog/list");
@@ -202,9 +200,6 @@ function Page({ params }) {
             const API_URL = `${baseUrl}/camplog/logReport`;
             const sendData = new FormData();
             try {
-                console.log("logReport, data.logVO.logIdx", data.logVO.logIdx);
-                console.log("logReport, reportCategory", reportCategory);
-                console.log("logReport, reportContent", reportContent);
                 sendData.append("userIdx", user.userIdx);
                 sendData.append("reportTableIdx", data.logVO.logIdx);
                 sendData.append("reportCategory", reportCategory);
@@ -227,16 +222,11 @@ function Page({ params }) {
         try {
             setLoading(true);
             const { logIdx } = await Promise.resolve(params);
-            console.log("getComm logIdx : ", logIdx);
             const API_URL = `${baseUrl}/camplog/commentList?logIdx=${logIdx}`;
             await axios.get(API_URL)
                 .then((res) => {
-                    console.log("res : ", res);
-                    console.log("rvo : ", res.data.data.rvo);
                     const commentsList = res.data.data.lcvo.filter(comment => !comment.commentIdx);
                     const replysList = res.data.data.lcvo.filter(comment => comment.commentIdx);
-                    console.log("commentsList : ", commentsList);
-                    console.log("replyList : ", replysList);
                     setLogCommentList(commentsList);
                     setLogReplyList(replysList);
                     setUserNickname(res.data.data.userNicknameMap);
@@ -280,9 +270,6 @@ function Page({ params }) {
                     data.append("logIdx", logIdx);
                     data.append("logCommentContent", logCommentContent);
 
-                    console.log("userIdx : ", user.userIdx);
-                    console.log(data.get("logIdx"));
-                    console.log(data.get("logCommentContent"));
                     // 서버에 저장
                     await axios.post(API_URL, data);
 
@@ -335,6 +322,7 @@ function Page({ params }) {
             }
         }
     };
+    console.log("tagData: ", tagData)
 
     const commentDelete = async (comm) => {
         const API_URL = `${baseUrl}/camplog/commentDelete`;
@@ -869,7 +857,6 @@ function Page({ params }) {
                                                     }
 
                                                     // 신고 횟수 3회 이상이면 모든 유저에게 신고된 답글로 표시
-                                                    // console.log(`reportIdx : ${reportReply.logCommentIdx} ,reportCount : ${reportReply.reportCount}`);
                                                     if (reportReply && reply.logCommentIsActive != 0 && reportReply.reportCount >= limitCount) {
                                                         return (
                                                             <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
@@ -935,7 +922,8 @@ function Page({ params }) {
                                                             multiline
                                                             maxRows={5}
                                                             margin="normal"
-                                                            inputRef={replyTextFieldRef}  // TextField에 ref 연결
+                                                            inputRef={replyTextFieldRef}  // TextField에 ref 연결 
+                                                            inputProps={{ maxLength: 100 }}
                                                         />
                                                     </div>
                                                     <div style={{ marginTop: "20px", textAlign: "right" }}>
@@ -968,6 +956,7 @@ function Page({ params }) {
                             multiline
                             maxRows={5}
                             margin="normal"
+                            inputProps={{ maxLength: 100 }}
                         />
                     </div>
                     {/* 댓글 등록 버튼 */}

@@ -84,7 +84,7 @@ function Page(props) {
 
     // 검색 엔터 함수
     const handleKeyUp = (e) => {
-            setKeyword(e.target.value);
+        setKeyword(e.target.value);
         if (e.key === "Enter") {
             setSearchedWord(e.target.value);
             setPage(1);
@@ -143,76 +143,83 @@ function Page(props) {
     return (
         <div className="camplog-main-container">
             {/* 검색 영역 */}
-            <div className="camplog-search-container">
-                {/* 드롭다운 영역 */}
-                <FormControl
-                    variant="standard"
-                    sx={{ minWidth: 120, marginRight: 2 }}
-                >
-                    <InputLabel id="camplog-select-label">전체</InputLabel>
-                    <Select
-                        labelId="camplog-select-label"
-                        id="camplog-select"
-                        value={selectedSearch}
-                        onChange={(e) => {
-                            const selectedValue = e.target.value;
-                            setSelectedSearch(selectedValue);
-                            setKeyword("");
-                            setPage(1);
-                            getCamplogList();
-
-                            console.log("옵션 변경:", { option: selectedSearch, keyword });
-                        }}
-                    >
-                        <MenuItem value="all">전체</MenuItem>
-                        <MenuItem value="title">제목</MenuItem>
-                        <MenuItem value="content">내용</MenuItem>
-                    </Select>
-                </FormControl>
-
-                {/* 검색어 입력 영역 */}
-                <TextField
-                    id="keyword-search"
-                    label="검색어 입력"
-                    variant="standard"
-                    sx={{ width: 250 }}
-                    onKeyUp={handleKeyUp}
-                />
-
-                {/* 돋보기 아이콘 */}
-                <IconButton
-                    onClick={handelSearch}
-                >
-                    <Search sx={{ fontSize: 20 }} />
-                </IconButton>
-            </div>
-
             <div style={{display: "flex", justifyContent: "space-between"}}>
-            {/* 검색 결과 영역 */}
-            {searchedWord && (
-                <div className="camplog-result-container">
-                    <p>
-                        <span><b className="search-result-blue">{searchedWord}</b>에 대한 검색결과가  총   <b className="search-result-blue">{totalCount}건</b> 있습니다.</span> 
-                    </p>
-                </div>
-            )}
+                <div className="camplog-search-container">
+                    {/* 드롭다운 영역 */}
+                    <FormControl
+                        variant="standard"
+                        sx={{ minWidth: 120, marginRight: 2 }}
+                    >
+                        <InputLabel id="camplog-select-label">전체</InputLabel>
+                        <Select
+                            labelId="camplog-select-label"
+                            id="camplog-select"
+                            value={selectedSearch}
+                            onChange={(e) => {
+                                const selectedValue = e.target.value;
+                                setSelectedSearch(selectedValue);
+                                setKeyword("");
+                                setPage(1);
+                                getCamplogList();
 
-            {/* 정렬 옵션 영역 */}
-            <div className="camplog-sort-container" style={{marginLeft: "auto"}}>
-                <span
-                    onClick={() => handleSort("latest")}
-                    className={sortOption === "latest" ? "active" : ""}
+                                console.log("옵션 변경:", { option: selectedSearch, keyword });
+                            }}
+                        >
+                            <MenuItem value="all">전체</MenuItem>
+                            <MenuItem value="title">제목</MenuItem>
+                            <MenuItem value="content">내용</MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    {/* 검색어 입력 영역 */}
+                    <TextField
+                        id="keyword-search"
+                        label="검색어 입력"
+                        variant="standard"
+                        sx={{ width: 250 }}
+                        onKeyUp={handleKeyUp}
+                    />
+
+                    {/* 돋보기 아이콘 */}
+                    <IconButton
+                        onClick={handelSearch}
                     >
-                    최신순
-                </span>{" "}
-                |
-                <span
-                    onClick={() => handleSort("likes")}
-                    className={sortOption === "likes" ? "active" : ""}
-                    >
-                    공감순
-                </span>
+                        <Search sx={{ fontSize: 20 }} />
+                    </IconButton>
+                </div>
+                {/* 글쓰기 버튼 영역 */}
+                <div className="camplog-write-container" style={{height: "40px", marginTop:"20px"}}>
+                    <Button variant="contained" onClick={handleLogWrite}>글쓰기</Button>
+                </div>
             </div>
+
+
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                {/* 검색 결과 영역 */}
+                {searchedWord && (
+                    <div className="camplog-result-container">
+                        <p>
+                            <span><b className="search-result-blue">{searchedWord}</b>에 대한 검색결과가  총   <b className="search-result-blue">{totalCount}건</b> 있습니다.</span>
+                        </p>
+                    </div>
+                )}
+
+                {/* 정렬 옵션 영역 */}
+                <div className="camplog-sort-container" style={{ marginLeft: "auto" }}>
+                    <span
+                        onClick={() => handleSort("latest")}
+                        className={sortOption === "latest" ? "active" : ""}
+                    >
+                        최신순
+                    </span>{" "}
+                    |
+                    <span
+                        onClick={() => handleSort("likes")}
+                        className={sortOption === "likes" ? "active" : ""}
+                    >
+                        공감순
+                    </span>
+                </div>
             </div>
 
             {/* 리스트 영역 */}
@@ -292,10 +299,6 @@ function Page(props) {
                 )}
             </div>
 
-            {/* 글쓰기 버튼 영역 */}
-            <div className="camplog-write-container">
-                <Button variant="contained" onClick={handleLogWrite}>글쓰기</Button>
-            </div>
 
 
             {/* 페이징 영역 */}

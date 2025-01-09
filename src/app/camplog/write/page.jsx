@@ -41,9 +41,9 @@ function Page(ㄱ) {
     const [filteredCampList, setFilteredCampList] = useState([]);
     const isExfieldFilled = () => extraFields.some(field => field.text.length > 0 || field.file != null);
     const [selectedCampIdx, setSelectedCampIdx] = useState(0);
-    const [selectedDealIdx, setSelectedDealIdx] = useState(0);
+    const [selectedDealIdx, setSelectedDealIdx] = useState(null);
     const [confirmedCampIdx, setConfirmedCampIdx] = useState(0);
-    const [confirmedDealIdx, setConfirmedDealIdx] = useState(0);
+    const [confirmedDealIdx, setConfirmedDealIdx] = useState(null);
     const [showCountForDealList, setShowCountForDealList] = useState(5);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
@@ -165,12 +165,12 @@ function Page(ㄱ) {
 
             setTags(tags => [
                 ...tags.map(tag => {
-                    return{
-                        ...tag, 
+                    return {
+                        ...tag,
                         showContent: false
                     }
                 }),
-                { tagX: x, tagY: y, tagId: Date.now(), fieldID: fieldID, showContent: true, text: "", showModal: true, fieldIdx: filedIdx, dealIdx: 0, nodeRef: React.createRef() }
+                { tagX: x, tagY: y, tagId: Date.now(), fieldID: fieldID, showContent: true, text: "", showModal: true, fieldIdx: filedIdx, dealIdx: null, nodeRef: React.createRef() }
             ]);
             handleImgOverlay(fieldID);
         }
@@ -216,32 +216,37 @@ function Page(ㄱ) {
     };
 
     const handleOpenLinkModal = async () => {
-        if (!user) return;
-
-        const apiUrl = `${baseUrl}/camplog/linkmodal/${user.userIdx}`; // userIdx대신 임시값
-        try {
-            const response = await axios.get(apiUrl);
-            console.log("response: ", response);
-            if (response.data.success) {
-                const data = response.data.data;
-                setLinkList(data.map(data => {
-                    return (
-                        {
-                            ...data,
-                            isLinked: false,
-                            tagId: ""
-                        }
-                    )
-                }));
-                setShowLinkModal(true);
-            } else {
-                if (response.data.message === "데이터를 불러오는 중에 문제가 발생했습니다.") {
-                    alert(response.data.message);
+        if (!user) {
+            alert("로그인 상태가 아닙니다.");
+            return;
+        } else {
+            const apiUrl = `${baseUrl}/camplog/linkmodal/${user.userIdx}`; // userIdx대신 임시값
+            try {
+                const response = await axios.get(apiUrl);
+                console.log("response: ", response);
+                if (response.data.success) {
+                    const data = response.data.data;
+                    setLinkList(data.map(data => {
+                        return (
+                            {
+                                ...data,
+                                isLinked: false,
+                                tagId: ""
+                            }
+                        )
+                    }));
+                    setShowLinkModal(true);
+                } else {
+                    if (response.data.message === "거래 중인 상품이 없습니다.") {
+                        setShowLinkModal(true);
+                    }else {
+                        alert(response.data.message);
+                    }
                 }
+            } catch (error) {
+                console.error("error: " + error);
+                alert("서버 오류 발생");
             }
-        } catch (error) {
-            console.error("error: " + error);
-            alert("서버 오류 발생");
         }
     }
     const handleChangeThumbnail = (fieldID) => {
@@ -355,7 +360,7 @@ function Page(ㄱ) {
 
     const handleSelectedDealIdx = (dealIdx) => {
         if (selectedDealIdx === dealIdx) {
-            setSelectedDealIdx(0)
+            setSelectedDealIdx(null)
         } else {
             setSelectedDealIdx(dealIdx)
         }
@@ -373,7 +378,7 @@ function Page(ㄱ) {
 
     const handleGetLinked = () => {
         setConfirmedDealIdx(selectedDealIdx);
-        selectedDealIdx != 0 && alert("상품연동이 완료되었습니다.");
+        selectedDealIdx != null && alert("상품연동이 완료되었습니다.");
         setShowLinkModal(false);
     }
     useEffect(() => {
@@ -679,7 +684,7 @@ function Page(ㄱ) {
                                                                                     </span>
                                                                                     <br />
                                                                                     <br />
-                                                                                    {tag.dealIdx > 0 ?
+                                                                                    {tag.dealIdx != null ?
                                                                                         (
                                                                                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                                                                                                 <img src={`${imgUrl}/${linkList.filter(list => list.dealIdx === tag.dealIdx).map(list => list.fileName)}`}
