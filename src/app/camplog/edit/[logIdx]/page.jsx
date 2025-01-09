@@ -52,6 +52,7 @@ function EditPage({ params }) {
     const { isAuthenticated, token, user } = useAuthStore();
 
 
+    console.log("extraField: , " , extraFields);
     // 기존 데이터 불러오기
     useEffect(() => {
         const fetchData = async () => {
@@ -222,6 +223,7 @@ function EditPage({ params }) {
             const img = e.target.getBoundingClientRect();
             const x = e.clientX - img.left;
             const y = e.clientY - img.top;
+            const fieldIdx = extraFields.findIndex(field => field.id === fieldId) + 1;
 
             setTags(tags => [
                 ...tags,
@@ -230,7 +232,7 @@ function EditPage({ params }) {
                     tagY: y,
                     tagId: Date.now(),
                     fieldId: fieldId,
-                    fieldIdx: extraFields.filter(field => field.id === fieldId).find(field => field.fieldIdx),
+                    fieldIdx: fieldIdx,
                     showContent: false,
                     text: "",
                     showModal: true,
@@ -288,10 +290,10 @@ function EditPage({ params }) {
         } else {
             const apiUrl = `${baseUrl}/camplog/linkmodal/${user.userIdx}`; // userIdx대신 임시값
             try {
-                const response = await axios.get(apiUrl);
-                console.log("response: ", response);
-                if (response.data.success) {
-                    const data = response.data.data;
+                const dealData = await axios.get(apiUrl);
+                console.log("dealData: ", dealData);
+                if (dealData.data.success) {
+                    const data = dealData.data.data;
                     setLinkList(data.map(data => {
                         return (
                             {
@@ -373,14 +375,11 @@ function EditPage({ params }) {
             const beforeFile = data.pData.filter((item, index) => index != 0).map(item => item.fileName);
             const afterFile = extraFields.map(item => item.fileName);
             const deleteOrders = [];
-            console.log("beforeFile: ", beforeFile);
-            console.log("afterFile: ", afterFile);
             for (let i = 0; i < beforeFile.length; i++) {
                 if (beforeFile[i] != afterFile[i]) {
                     deleteOrders.push(i + 1);
                 }
             }
-            console.log("deleteOrders: ", deleteOrders);
             const fileData = [
                 ...extraFields.map((field, index) => ({
                     fileOrder: index + 1,
@@ -389,8 +388,6 @@ function EditPage({ params }) {
                     file: field.file,
                 })).filter(data => data.isFileThere == true)
             ];
-            console.log("fileData: ", fileData);
-            console.log("extrafield: ", extraFields);
 
             const tagData = tags.map(tag => ({
                 logIdx: logIdx,
@@ -576,7 +573,6 @@ function EditPage({ params }) {
         event.preventDefault();
         event.returnValue = "";
     });
-    console.log("extrafields: ", extraFields);
     return (
         <>
             <header>
@@ -809,7 +805,7 @@ function EditPage({ params }) {
                                                                                     {tag.dealIdx ?
                                                                                         (
                                                                                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx[tag.dealIdx]}`}
+                                                                                                <img src={`${imgUrl}/deal/${linkList.length > 0 ? linkList.find(data => data.dealIdx == tag.dealIdx).fileName : data.fNameByDealIdx.find(data => data.dealIdx == tag.dealIdx).fileName}`}
                                                                                                     alt=''
                                                                                                     style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px" }}>
                                                                                                 </img>

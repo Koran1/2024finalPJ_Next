@@ -49,7 +49,8 @@ function Page(ㄱ) {
     const [isLoading, setIsLoading] = useState(true);
     const { user } = useAuthStore();
     const iscanWrite = () => {
-
+        
+       
         if (logTitle.length === 0) { // 제목 여부
             return "noTitle"
         }
@@ -159,7 +160,7 @@ function Page(ㄱ) {
             const x = e.clientX - img.left;
             const y = e.clientY - img.top;
 
-            const filedIdx = extraFields.findIndex(field => field.id === fieldID) + 1;
+            const fieldIdx = extraFields.findIndex(field => field.id === fieldID) + 1;
 
             setTags(tags => [
                 ...tags.map(tag => {
@@ -168,7 +169,7 @@ function Page(ㄱ) {
                         showContent: false
                     }
                 }),
-                { tagX: x, tagY: y, tagId: Date.now(), fieldID: fieldID, showContent: true, text: "", showModal: true, fieldIdx: filedIdx, dealIdx: null, nodeRef: React.createRef() }
+                { tagX: x, tagY: y, tagId: Date.now(), fieldID: fieldID, showContent: true, text: "", showModal: true, fieldIdx: fieldIdx, dealIdx: null, nodeRef: React.createRef() }
             ]);
             handleImgOverlay(fieldID);
         }
@@ -212,7 +213,6 @@ function Page(ㄱ) {
             );
         }));
     };
-
     const handleOpenLinkModal = async () => {
         if (!user) {
             alert("로그인 상태가 아닙니다.");
@@ -458,7 +458,6 @@ function Page(ㄱ) {
         event.returnValue = "";
 
     });
-    console.log("tags: ", tags)
 
     return (
         <>

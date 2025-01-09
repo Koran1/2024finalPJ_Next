@@ -428,13 +428,6 @@ function Page({ params }) {
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "20px 0 0 20px", width: "100%" }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-                                        {/* <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100">
-                                            <circle cx="50" cy="50" r="48" fill="#ccc" stroke="#999" strokeWidth="2" />
-                                            <circle cx="50" cy="40" r="20" fill="#fff" />
-                                            <circle cx="42" cy="38" r="2" fill="#000" />
-                                            <circle cx="58" cy="38" r="2" fill="#000" />
-                                            <path d="M40 50 Q50 60 60 50" stroke="#000" strokeWidth="2" fill="none" />
-                                        </svg> */}
                                         <Avatar sx={{ width: "50px", height: "50px" }} src={data.userVO[0].userEtc01 ? `${imgUrl}/user/${data.userVO[0].userEtc01}` : '/default-product-image.jpg'} />
                                         <span style={{ fontWeight: "bold" }}>{data.userVO[0].userNickname}</span>
                                         <span style={{ color: "gray" }}>{data.logVO.logRegDate}</span>
@@ -635,7 +628,7 @@ function Page({ params }) {
                                                                                     {tag.dealIdx ?
                                                                                         (
                                                                                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx[tag.dealIdx]}`}
+                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx.find(data => data.dealIdx == tag.dealIdx).fileName}`}
                                                                                                     alt=''
                                                                                                     style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px", cursor: "pointer" }}
                                                                                                     onClick={() => handleGoDeal(tag.dealIdx)}>
