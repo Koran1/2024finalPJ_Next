@@ -746,7 +746,7 @@ function Page({ params }) {
                                 }
 
                                 // 현재 로그인한 유저의 idx == 댓글 신고한 유저 idx 일 때
-                                if (reportComment && reportComment.userIdx == user.userIdx) {
+                                if (user && reportComment && reportComment.userIdx == user.userIdx) {
                                     return (
                                         <div key={comment.logCommentIdx}>
                                             <p>신고하신 댓글 입니다.</p>
@@ -850,7 +850,7 @@ function Page({ params }) {
                                                     }
 
                                                     // 현재 로그인한 유저의 idx == 해당 답글 신고한 유저 idx 일 때
-                                                    if (reportReply && reportReply.userIdx == user.userIdx) {
+                                                    if (user && reportReply && reportReply.userIdx == user.userIdx) {
                                                         return (
                                                             <div key={reply.logCommentIdx} style={{ marginLeft: '50px' }}>
                                                                 <p>신고하신 답글 입니다.</p>

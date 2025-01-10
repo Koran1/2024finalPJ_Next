@@ -33,7 +33,13 @@ export default function RootLayout({ children }) {
       "/deal/interest", "/deal/management", "/deal/purchase", "/deal/rating", "/deal/report", "/deal/update", "/deal/write",
       "/deal/message",
       // mycamp 관련 페이지
-      "/mycamp",
+      "/mycamp/mylog/list", "/camp/favCamp",
+
+      // 예약 관련 페이지
+      "/book/list",
+
+      // 캠핑로그 관련 페이지
+      "/camplog/edit", "/camplog/write",
 
       // mypage 관련 페이지
       "/mypage", "/mypage/changePw", "/mypage/changeUserInfo", "/mypage/mycomments", "/mypage/qna",
