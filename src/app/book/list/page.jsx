@@ -11,6 +11,7 @@ import useAuthStore from "../../../../store/authStore";
 import axios from "axios";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CardTravelIcon from '@mui/icons-material/CardTravel';
+import { Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 
 // 커스텀 화살표 컴포넌트
 const CustomArrow = ({ className, style, onClick, direction }) => (
@@ -40,6 +41,8 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 
 function Page() {
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
+    const KakaoAK = process.env.KakaoAK_KEY;
+
     const { user, token } = useAuthStore(); // authStore에서 사용자 정보 가져오기
     const userIdx = user?.userIdx; // userIdx 추출
     const [navMenu, setNavMenu] = useState("/book/list");
@@ -103,6 +106,7 @@ function Page() {
         const diffTime = checkInDate - currentDate; // 밀리초 차이 계산
         const countdown = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 일 단위로 변환
 
+
         return {
             id: reservation.bookIdx,
             title: reservation.facltNm || "예약 제목 없음",
@@ -118,8 +122,13 @@ function Page() {
                     ? "D-day" // 오늘
                     // : `D+${Math.abs(countdown)}`, // 현재 날짜 이후
                     : "(캠프 진행 중)", // 현재 날짜 이후
-            regionCode: reservation.regionCode,
+            // 지역, 좌표
             addr1: reservation.addr1,
+            mapY: reservation.mapY,
+            mapX: reservation.mapX,
+
+            // 날씨 관련
+            regionCode: reservation.regionCode,
             wthrLunAge: reservation.wthrLunAge,
             wthrMoonrise: reservation.wthrMoonrise,
             wthrMoonset: reservation.wthrMoonset,
@@ -274,7 +283,14 @@ function Page() {
     const [modalOpen, setModalOpen] = useState(false);
 
     const handlePathModal = () => setModalOpen(true)
-    const handleCloseModal = () => setModalOpen(false)
+    const handleCloseModal = () => {
+        setModalOpen(false)
+        setPathSearch("");   // Clear the search input
+        setMarkers([]);      // Clear markers
+        setCoords([]);       // Clear Polyline path
+        setDistance("");     // Clear distance
+        setTime("");         // Clear time
+    }
 
     const modalStyle = {
         position: 'absolute',
@@ -288,12 +304,142 @@ function Page() {
         p: 4,
     };
 
+    const [info, setInfo] = useState()
     const [pathSearch, setPathSearch] = useState("")
-    const handlePathSearch = (e) => {
+    const [markers, setMarkers] = useState([])
+    const [map, setMap] = useState(null)
+
+
+    // 출발지 설정
+    const handleSetOrigin = (e) => {
         if (e.key === "Enter") {
-            alert(pathSearch)
+            if (!map) {
+                return
+            }
+            setMarkers([]);
+            setCoords([]);
+            const places = new kakao.maps.services.Places();
+
+            places.keywordSearch(pathSearch, (data, status, _pagination) => {
+
+                if (status === kakao.maps.services.Status.OK) {
+                    const bounds = new kakao.maps.LatLngBounds()
+                    let markers = []
+                    console.log(data)
+                    for (var i = 0; i < data.length; i++) {
+                        markers.push({
+                            position: {
+                                lat: data[i].y,
+                                lng: data[i].x,
+                            },
+                            content: data[i].place_name,
+                        })
+                        bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x))
+                    }
+                    setMarkers(markers)
+
+                    map.setBounds(bounds);
+                } else {
+                    alert('검색 결과 없음')
+                }
+            })
         }
     }
+
+    const [distance, setDistance] = useState("");
+    const [time, setTime] = useState("");
+    const [coords, setCoords] = useState([]);
+
+
+    const formatTime = (seconds) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const formatDistance = (meters) => {
+        return (meters / 1000).toFixed(2); // Convert to kilometers and round to 2 decimal places
+    };
+
+    // 경로 탐색
+    const handlePathSearch = async (selectedReservation, originLat, originLng, originContent) => {
+        const destLat = selectedReservation.mapY;
+        const destLng = selectedReservation.mapX;
+        console.log(destLat)
+        console.log(destLng)
+        console.log(originLat)
+        console.log(originLng)
+
+        try {
+            const origin = `${originLng},${originLat}`;
+            const destination = `${destLng},${destLat}`;
+
+            const API_url = "https://apis-navi.kakaomobility.com/v1/directions?origin=" + origin + "&destination="
+                + destination;
+
+            const response = await axios.get(API_url, {
+                headers: {
+                    // Authorization: `KakaoAK ${KakaoAK}`,
+                    Authorization: `KakaoAK 1a31dbd4bb00984c5b2d38a62c3d2f0f`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            const route = response.data.routes[0];
+            const distanceInMeters = route.summary.distance;
+            const durationInSeconds = route.summary.duration;
+
+            setDistance(formatDistance(distanceInMeters)); // Convert to km
+            setTime(formatTime(durationInSeconds));
+
+            const road = response.data.routes[0].sections[0].roads;
+            const vertexes = [];
+            road.map((item) => {
+                item.vertexes.map((ver) => {
+                    vertexes.push(ver);
+                })
+            })
+            const coords = [];
+            for (let i = 0; i < vertexes.length; i += 2) {
+                coords.push({
+                    lat: vertexes[i + 1],
+                    lng: vertexes[i]
+                })
+            }
+
+            setCoords(coords);
+
+            // Add markers for origin, destination, and waypoints
+            const newMarkers = [
+                {
+                    position: { lat: originLat, lng: originLng },
+                    content: `출발: ${originContent}`,
+                },
+                {
+                    position: { lat: destLat, lng: destLng },
+                    content: `목적: ${selectedReservation.addr1}`,
+                },
+            ];
+
+
+            setMarkers(newMarkers);
+
+            // Update the map bounds to fit all markers and the route
+            const bounds = new kakao.maps.LatLngBounds();
+            newMarkers.forEach((marker) => {
+                bounds.extend(new kakao.maps.LatLng(marker.position.lat, marker.position.lng));
+            });
+            coords.forEach((coord) => {
+                bounds.extend(new kakao.maps.LatLng(coord.lat, coord.lng));
+            });
+
+            map.setBounds(bounds); // Adjust the map view
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     // 로딩 중 화면
     if (loading) {
         return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
@@ -310,12 +456,6 @@ function Page() {
         <div className="book-list-main-container">
             {/* 상단 네비게이션 */}
             <div className="book-navmenu-container">
-                {/* <Link href="/mycamp/plan/list"
-                    className={`btn1 ${getActiveClass('/mycamp/plan/list')}`}
-                    onClick={() => setNavMenu('/mycamp/plan/list')}
-                >
-                    캠핑플래너
-                </Link> */}
                 <Link href="/book/list"
                     className={`btn1 ${getActiveClass('/book/list')}`}
                     onClick={() => setNavMenu('/book/list')}
@@ -453,23 +593,82 @@ function Page() {
                                             <Box sx={modalStyle}>
                                                 <Box sx={{ width: '100%', minHeight: '600px', display: "flex", flexDirection: "row" }}>
                                                     <Box sx={{
-                                                        width: "30%", backgroundColor: "green",
+                                                        width: "30%",
                                                         alignContent: "center", justifyItems: "center",
                                                         padding: "0px 10px"
                                                     }}>
                                                         <TextField
                                                             value={pathSearch}
                                                             onChange={(e) => setPathSearch(e.target.value)}
-                                                            onKeyUp={handlePathSearch}></TextField>
+                                                            onKeyUp={(e) => handleSetOrigin(e)}
+                                                            label="출발지 입력"
+                                                        />
                                                         <p>
                                                             <ExpandMoreIcon fontSize="large" />
                                                         </p>
                                                         <p>{selectedReservation.addr1}</p>
-                                                        <p>예상시간 : </p>
-                                                        <p>예상거리 : </p>
+                                                        <p>예상거리 : {distance ?? ""} Km</p>
+                                                        <p>예상시간 : {time ?? ""}</p>
                                                     </Box>
-                                                    <Box sx={{ width: "70%", backgroundColor: "blue" }}>
 
+                                                    <Box sx={{ width: "70%", backgroundColor: "blue" }}>
+                                                        <Map
+                                                            id="map"
+                                                            center={{ lat: selectedReservation.mapY, lng: selectedReservation.mapX }}
+                                                            style={{ width: "100%", height: "100%" }}
+                                                            level={3}
+                                                            onCreate={setMap}
+                                                        >
+                                                            {
+                                                                markers.length == 0 ?
+                                                                    <MapMarker position={{ lat: selectedReservation.mapY, lng: selectedReservation.mapX }}>
+                                                                        <div style={{ textAlign: 'center', height: '100%' }} className="info-window">
+                                                                            <b>{selectedReservation.addr1}</b> <br />
+                                                                            <a href={`https://map.kakao.com/link/map/${selectedReservation.addr1},${selectedReservation.mapY},${selectedReservation.mapX}`} style={{ color: 'blue' }} target="_blank">
+                                                                                큰지도보기
+                                                                            </a>
+
+                                                                        </div>
+                                                                    </MapMarker>
+                                                                    :
+                                                                    markers.map((marker) => (
+                                                                        <MapMarker
+                                                                            key={`${marker.position.lat},${marker.position.lng}`}
+                                                                            position={marker.position}
+                                                                            onClick={() => setInfo(marker)} // Optional for showing info on click
+                                                                        >
+                                                                            {coords.length > 0 ? (
+                                                                                <div style={{ color: "#000", fontWeight: "bold" }} className="info-window">
+                                                                                    {marker.content}
+                                                                                </div>
+                                                                            ) : (
+                                                                                info &&
+                                                                                info.content === marker.content && (
+                                                                                    <div style={{ color: "#000" }} className="info-window">
+                                                                                        {marker.content}
+                                                                                        <Button
+                                                                                            size="small"
+                                                                                            variant="contained"
+                                                                                            onClick={() => handlePathSearch(selectedReservation, marker.position.lat, marker.position.lng, marker.content)}
+                                                                                        >
+                                                                                            출발지로 선택
+                                                                                        </Button>
+                                                                                    </div>
+                                                                                )
+                                                                            )}
+                                                                        </MapMarker>
+                                                                    ))
+                                                            }
+                                                            {coords && (
+                                                                <Polyline
+                                                                    path={coords}
+                                                                    strokeWeight={5} // 선의 두께 입니다
+                                                                    strokeColor={"#000000"} // 선의 색깔입니다
+                                                                    strokeOpacity={0.7} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+                                                                    strokeStyle={"solid"} // 선의 스타일입니다
+                                                                />
+                                                            )}
+                                                        </Map>
                                                     </Box>
                                                 </Box>
                                             </Box>

@@ -301,3 +301,22 @@
     background-color: #3a6db3;
     transform: scale(1.1);
 }
+
+.info-window {
+    max-width: 150px;
+    /* Adjust based on your needs */
+    white-space: normal;
+    /* Allow text to wrap */
+    word-wrap: break-word;
+    /* Break long words */
+    overflow: hidden;
+    /* Hide overflowing content */
+    text-align: center;
+    /* Center the text */
+    padding: 5px;
+    /* Add some padding for readability */
+    font-size: 12px;
+    /* Adjust font size */
+    line-height: 1.2;
+    /* Adjust line spacing */
+}
