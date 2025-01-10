@@ -15,7 +15,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 
-function Page(ㄱ) {
+function Page() {
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const imgUrl = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [extraFields, setExtraFields] = useState([]);
@@ -473,12 +473,12 @@ function Page(ㄱ) {
 
     return (
         <>
-            <header >
-                <span style={{ fontSize: "70px", display: "inline-block" }}> </span><span style={{ display: "inline-block", fontSize: "50px", marginLeft: "44%" }}>캠핑로그 작성</span>
+            <header>
+                <span style={{ fontSize: "70px", display: "inline-block" }}> </span>
+                <span style={{ display: "inline-block", fontSize: "50px", marginLeft: "50%", transform: "translate(-50%, -0%)"}}>캠핑로그 작성</span>
             </header>
-            <Grid2 container spacing={2}>
-                <Grid2 size={2} />
-                <Grid2 size={1}>
+            <Grid2 container spacing={5}>
+                <Grid2 size={3} justifyContent={'right'} display={"flex"} gap={"100px"}>
                     {extraFields.some(field => field.previewImg != null) ? (
                         <div style={{ border: "1px solid gray", width: "120px", maxHeight: "50vh", position: "fixed", textAlign: 'center', overflowY: "auto" }}>
                             <style>
@@ -523,7 +523,7 @@ function Page(ㄱ) {
                         </div>
                     ) : null}
                 </Grid2>
-                <Grid2 size={6} textAlign={'center'} >
+                <Grid2 size={6} textAlign={'center'}  minWidth={"320px"}>
                     <Button variant="outlined" style={{ float: "left", marginRight: "10px" }} onClick={() => handleCampModal()}>+ 장소 추가</Button>
                     <span style={{ fontWeight: "bold", fontSize: "20px", float: "left" }}>{campData.filter(camp => camp.campIdx === confirmedCampIdx).map(camp => camp.facltNm)}</span>
                     <Button variant="contained" style={{ float: "right" }} onClick={handleWrite}>작성</Button>

@@ -602,11 +602,12 @@ function EditPage({ params }) {
         <>
             <header>
                 <span style={{ fontSize: "70px", display: "inline-block" }}> </span>
-                <span style={{ display: "inline-block", fontSize: "50px", marginLeft: "43%" }}>캠핑로그 수정</span>
+                <span style={{ display: "inline-block", fontSize: "50px", marginLeft: "50%", transform: "translate(-50%, -0%)"}}>캠핑로그 수정</span>
             </header>
-            <Grid2 container spacing={2}>
-                <Grid2 size={1} > {extraFields.some(field => field.previewUrl != null || field.fileName) ? (
-                        <div style={{ border: "1px solid gray", width: "120px", maxHeight: "50vh", position: "fixed", textAlign: 'center', overflowY: "auto" }}>
+            <Grid2 container spacing={5}>
+                <Grid2 size={3} justifyContent={'right'} display={"flex"} gap={"100px"}>
+                    {extraFields.some(field => field.previewUrl != null || field.fileName) ? (
+                        <div style={{ border: "1px solid gray", width: "120px", maxHeight: "50vh", position: "fixed", textAlign: 'center', overflowY: "auto"}}>
                             <style>
                                 {/* 이미지바 스크롤 CSS */}
                                 {`
@@ -647,10 +648,9 @@ function EditPage({ params }) {
                                 )
                             })}
                         </div>
-                    ) : null}</Grid2>
-                <Grid2 size={2}>
+                    ) : null}
                 </Grid2>
-                <Grid2 size={6} textAlign={'center'}>
+                <Grid2 size={6} textAlign={'center'} minWidth={"320px"}>
                     <Button variant="outlined" style={{ float: "left", marginRight: "10px" }} onClick={() => handleCampModal()}>+ 장소 추가</Button>
                     <span style={{ fontWeight: "bold", fontSize: "20px", float: "left" }}>{campData.length > 0 ? campData.filter(camp => camp.campIdx == confirmedCampIdx).map(camp => camp.facltNm) : data.facltNm}</span>
                     <Button variant="contained" style={{ float: "right" }} disabled={isLogSame} onClick={handIsAuthenticated}>수정</Button>
