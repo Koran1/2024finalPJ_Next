@@ -635,7 +635,8 @@ function Page(ㄱ) {
                                                                                     style={{
                                                                                         zIndex: "1",
                                                                                         fontSize: "70px",
-                                                                                        cursor: "pointer"
+                                                                                        cursor: "pointer", 
+                                                                                        userSelect: "none"
                                                                                     }}
                                                                                     onClick={() => handleTagModal(tag.tagId)}
                                                                                 >&rsaquo;</p>

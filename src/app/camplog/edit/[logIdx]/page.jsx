@@ -41,7 +41,7 @@ function EditPage({ params }) {
     const filteredDealList = linkList.filter(list => list.dealTitle.toLowerCase().includes(dealKeyWord.toLowerCase()));
     const [campKeyWord, setCampKeyWord] = useState("");
     const [filteredCampList, setFilteredCampList] = useState([]);
-    const isExfieldFilled = () => extraFields.some(field => field.text.length > 0 || field.file != null);
+    const isExfieldFilled = () => extraFields.some(field => field.text.length > 0 || (field.file != null || field.fileName));
     const [selectedCampIdx, setSelectedCampIdx] = useState(0);
     const [selectedDealIdx, setSelectedDealIdx] = useState(0);
     const [confirmedDealIdx, setConfirmedDealIdx] = useState(0);
@@ -52,7 +52,6 @@ function EditPage({ params }) {
     const { isAuthenticated, token, user } = useAuthStore();
 
 
-    console.log("extraField: , " , extraFields);
     // 기존 데이터 불러오기
     useEffect(() => {
         const fetchData = async () => {
@@ -336,7 +335,7 @@ function EditPage({ params }) {
     const handleExtraContent = (e, fieldId) => {
         setExtraFields(extraFields.map(field => {
             return (
-                field.id === fieldId ?
+                field.id == fieldId ?
                     ({ ...field, text: e.target.value })
                     :
                     (field)
@@ -358,7 +357,7 @@ function EditPage({ params }) {
         if (iscanWrite() === "ok") {
             const { logIdx } = await Promise.resolve(params);
             const apiUrl = `${baseUrl}/camplog/update`;
-
+            
             const contentData = [
                 {
                     logContent: logDefaultContent,
@@ -369,17 +368,21 @@ function EditPage({ params }) {
                     logContentOrder: index + 1
                 }))
             ].filter(item => item.logContent != "");
-
+            
             const mpFiles = extraFields.filter(item => item.file != null).map(field => field.file);
-
+            
             const beforeFile = data.pData.filter((item, index) => index != 0).map(item => item.fileName);
             const afterFile = extraFields.map(item => item.fileName);
+
             const deleteOrders = [];
             for (let i = 0; i < beforeFile.length; i++) {
                 if (beforeFile[i] != afterFile[i]) {
                     deleteOrders.push(i + 1);
                 }
             }
+            console.log("beforeFile",beforeFile );
+            console.log("afterFile",afterFile );
+            console.log("deleteOrders",deleteOrders );
             const fileData = [
                 ...extraFields.map((field, index) => ({
                     fileOrder: index + 1,
@@ -388,7 +391,6 @@ function EditPage({ params }) {
                     file: field.file,
                 })).filter(data => data.isFileThere == true)
             ];
-
             const tagData = tags.map(tag => ({
                 logIdx: logIdx,
                 fieldIdx: tag.fieldIdx,
@@ -539,11 +541,15 @@ function EditPage({ params }) {
     const judgeIsChange = () => { // 전의 데이터랑 같으면 수정 안되게. 
         if (!data.pData) return;
         const isTitleSame = logTitle === data.logVO.logTitle;
-        const isContentSame = logDefaultContent === data.pData[0].logContent;
+        const isDefaultContentSame = logDefaultContent === data.pData[0].logContent;
+        const bfExtraContent = data.pData.flatMap(item => item.logContent || "").filter((item, index) => index != 0);
+        const afExtraContent = extraFields.map(item => item.text || "");
+        const isExtraContentSame =   bfExtraContent.length === afExtraContent.length && bfExtraContent.every((value, index) => value == afExtraContent[index]);
         const isconfirmedIdxSame = confirmedCampIdx == data.logVO.campIdx;
-        const bfFile = data.pData.flatMap(item => item.fileName || []);
-        const afFile = extraFields.map(item => item.fileName ? item.fileName : null);
-        const isFileSame = bfFile.length === afFile.length && bfFile.every((value, index) => value === afFile[index])
+        const bfFile = data.pData.flatMap(item => item.fileName || null).filter((item, index) => index != 0);
+        const afFile = extraFields.map(item => item.fileName || null);
+        const isFileSame = bfFile.length === afFile.length && bfFile.every((value, index) => value === afFile[index]);
+        
         const bfTag = data.pData.flatMap(item => item.tagData || []).map(tag => {
             return {
                 text: tag.tagContent,
@@ -557,13 +563,14 @@ function EditPage({ params }) {
             }
         });
         const isTagSame =
-            bfTag.length === afTag.length &&
-            bfTag.every(
-                (value, index) =>
-                    value.text == afTag[index].text &&
-                    value.dealIdx == afTag[index].dealIdx
-            );
-        setIssLogSame(isTitleSame && isContentSame && isconfirmedIdxSame && isFileSame && isTagSame);
+        bfTag.length === afTag.length &&
+        bfTag.every(
+            (value, index) =>
+                value.text == afTag[index].text &&
+            value.dealIdx == afTag[index].dealIdx
+        );
+        console.log("isExtraContentSame: ", isExtraContentSame);
+        setIssLogSame(isTitleSame && isDefaultContentSame && isconfirmedIdxSame && isFileSame && isTagSame &&  isExtraContentSame );
     }
     useEffect(() => {
         judgeIsChange();
@@ -628,7 +635,7 @@ function EditPage({ params }) {
                 </Grid2>
                 <Grid2 size={6} textAlign={'center'}>
                     <Button variant="outlined" style={{ float: "left", marginRight: "10px" }} onClick={() => handleCampModal()}>+ 장소 추가</Button>
-                    <span style={{ fontWeight: "bold", fontSize: "20px", float: "left" }}>{campData ? campData.filter(camp => camp.campIdx == confirmedCampIdx).map(camp => camp.facltNm) : data.facltNm}</span>
+                    <span style={{ fontWeight: "bold", fontSize: "20px", float: "left" }}>{campData.length > 0 ? campData.filter(camp => camp.campIdx == confirmedCampIdx).map(camp => camp.facltNm) : data.facltNm}</span>
                     <Button variant="contained" style={{ float: "right" }} disabled={isLogSame} onClick={handIsAuthenticated}>수정</Button>
                     <Button variant="outlined" style={{ float: "right", marginRight: "50px" }} onClick={handleCancel}>취소</Button>
                     <br />
@@ -751,7 +758,8 @@ function EditPage({ params }) {
                                                                                     style={{
                                                                                         zIndex: "2",
                                                                                         fontSize: "70px",
-                                                                                        cursor: "pointer"
+                                                                                        cursor: "pointer", 
+                                                                                        userSelect: "none"
                                                                                     }}
                                                                                     onClick={() => handleTagModal(tag.tagId)}
                                                                                 >&rsaquo;</p>

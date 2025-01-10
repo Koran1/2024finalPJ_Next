@@ -589,7 +589,9 @@ function Page({ params }) {
                                                                                         fontSize: "70px",
                                                                                         cursor: "pointer",
                                                                                         textAlign: 'right',
-                                                                                        marginRight: "7px"
+                                                                                        marginRight: "7px", 
+                                                                                        userSelect: "none"
+
                                                                                     }}
                                                                                     onClick={() => showLink(tag.tagId, field.order)}
                                                                                 >&rsaquo;</p>
