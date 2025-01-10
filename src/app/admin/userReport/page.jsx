@@ -208,7 +208,7 @@ function Page(props) {
                                         <TableCell>{row.reportCategory}</TableCell>
                                         <TableCell>{row.reportContent}</TableCell>
                                         <TableCell>{row.reportRegDate}</TableCell>
-                                        <TableCell>{row.reportStatus == 0 ? "처리중" : row.reportStatus == 1 ? "승인" : "반려"}</TableCell> {/* 신고 처리여부 텍스트로 표시 */}
+                                        <TableCell>{row.reportStatus == '0' ? "처리중" : row.reportStatus == '1' ? "승인" : "반려"}</TableCell> {/* 신고 처리여부 텍스트로 표시 */}
                                     </TableRow>
                                 ))
                                 :

@@ -31,7 +31,6 @@ function Page() {
     // 거래 목록 조회
     const fetchDeals = async () => {
         try {
-            setLoading(true); // 로딩 시작
             const response = await axios.get(`${LOCAL_API_BASE_URL}/admin/dealList`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -39,7 +38,7 @@ function Page() {
                 }
             });
             console.log("API 응답:", response);
-            
+
             if (response.data.success) {
                 setDeals(response.data.data);
                 console.log("거래 목록 데이터:", response.data.data);
@@ -54,15 +53,15 @@ function Page() {
         try {
             // currentStatus가 1이면 0으로, 0이면 1로 변경
             const newStatus = currentStatus === 1 ? 0 : 1;
-            
+
             const response = await axios.put(`${LOCAL_API_BASE_URL}/admin/dealList/${dealIdx}`, {
                 dealview: newStatus
             });
-            
+
             if (response.data.success) {
                 // 성공 메시지 표시
                 alert(newStatus === 0 ? '상품이 비활성화되었습니다.' : '상품이 활성화되었습니다.');
-                
+
                 // 목록 새로고침
                 fetchDeals();
             } else {
@@ -100,8 +99,8 @@ function Page() {
                                     <TableRow key={deal.dealIdx}>
                                         <TableCell>
                                             <Link href={`/admin/dealList/dealDetail/${deal.dealIdx}`}>
-                                                <img 
-                                                    src={deal.deal01 === 'noimg' 
+                                                <img
+                                                    src={deal.deal01 === 'noimg'
                                                         ? '/default-product-image.jpg'
                                                         : `${LOCAL_IMG_URL}/deal/${deal.deal01}`
                                                     }
@@ -115,10 +114,10 @@ function Page() {
                                         <TableCell>{deal.dealSellerNick}</TableCell>
                                         <TableCell>{deal.dealBuyerNick || '-'}</TableCell>
                                         <TableCell>
-                                            <Link 
-                                                href={`/admin/dealList/dealDetail/${deal.dealIdx}`} 
-                                                style={{ 
-                                                    textDecoration: "none", 
+                                            <Link
+                                                href={`/admin/dealList/dealDetail/${deal.dealIdx}`}
+                                                style={{
+                                                    textDecoration: "none",
                                                     color: "inherit",
                                                     transition: "all 0.2s ease"
                                                 }}
