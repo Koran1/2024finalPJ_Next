@@ -183,7 +183,9 @@ function Page({ params }) {
         const apiUrl = `${baseUrl}/camplog/logDelete?logIdx=${data.logVO.logIdx}`;
         const response = await axios.post(apiUrl);
         if (response.data.success) {
+            alert("삭제가 완료되었습니다.");
             router.push(`/camplog/list`);
+            
         } else {
             alert(response.data.message)
         }
