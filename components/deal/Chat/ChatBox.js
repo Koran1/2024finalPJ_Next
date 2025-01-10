@@ -80,6 +80,7 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
       }
     })
       .then((res) => {
+        console.log('deal detail')
         console.log(res.data.data);
         setProduct(res.data.data.deal);
         setImg(res.data.data.files[0].fileName)
@@ -222,28 +223,27 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
               <span className="active-status2 successBgColor"></span>
               등록일 : {product.dealRegDate}
             </Typography>
-            {product.deal02 ?
+            {product.deal02 != '판매중' ?
               <>
-                <Box>
-                  {product.deal02}
-                </Box>
                 {
-                  senderIdx == product.dealSellerUserIdx &&
-                  <Button
-                    variant="contained"
-                    color="success"
-                    className="satisfaction-button"
-                    onClick={() => setIsSatisfactionModalOpen(true)}
-                    disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
-                  >
-                    {hasSatisfactionRating ? '후기 등록 완료' : '후기 등록하기'}
-                  </Button>
+                  senderIdx == product.dealSellerUserIdx ?
+                    <Button
+                      variant="contained"
+                      color="success"
+                      className="satisfaction-button"
+                      onClick={() => setIsSatisfactionModalOpen(true)}
+                      disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
+                    >
+                      {hasSatisfactionRating ? '후기 등록 완료' : '후기 등록하기'}
+                    </Button>
+                    :
+                    <p>{product.deal02}</p>
                 }
               </>
               :
               <>
                 {
-                  senderIdx != product.dealSellerUserIdx
+                  senderIdx == product.dealSellerUserIdx
                     ?
                     <Button variant="outlined" onClick={handleSold}>판매중</Button>
                     :
