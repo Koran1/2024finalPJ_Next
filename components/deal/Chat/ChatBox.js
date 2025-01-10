@@ -74,7 +74,11 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
   // deal 정보 가져오기
   useEffect(() => {
     if (!dealIdx) return;
-    axios.get(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`)
+    axios.get(`${LOCAL_API_BASE_URL}/deal/detail/${dealIdx}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         console.log(res.data.data);
         setProduct(res.data.data.deal);
@@ -114,7 +118,11 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
       formData.append("room", room);
       formData.append("userIdx", user.userIdx);
 
-      axios.put(`${LOCAL_API_BASE_URL}/chat/leaveChat`, formData)
+      axios.put(`${LOCAL_API_BASE_URL}/chat/leaveChat`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
         .then((res) => {
           console.log(res.data)
           window.location.reload();
@@ -131,7 +139,11 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
       formData.append("senderIdx", senderIdx);
       formData.append("senderNick", senderNick);
 
-      axios.put(`${LOCAL_API_BASE_URL}/deal/status`, formData)
+      axios.put(`${LOCAL_API_BASE_URL}/deal/status`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
         .then((res) => {
           console.log(res.data)
           window.location.reload();
@@ -146,7 +158,11 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
   // 만족도 등록 여부 확인 함수
   const checkSatisfactionRating = () => {
     console.log('checkSatisfactionRating');
-    axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction?dealIdx=${dealIdx}`)
+    axios.get(`${LOCAL_API_BASE_URL}/deal/check-satisfaction?dealIdx=${dealIdx}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         console.log(res.data);
         setHasSatisfactionRating(res.data.data);

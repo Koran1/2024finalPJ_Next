@@ -8,7 +8,7 @@ import axios from 'axios';
 
 function Page(props) {
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const userIdx = user?.userIdx;
     const [plans, setPlans] = useState([]);
     const [selectedPlans, setSelectedPlans] = useState([]);
@@ -19,7 +19,11 @@ function Page(props) {
         // Fetch favcamp list
         const fetchData = async () => {
             try {
-                const response = await axios.post(`${CAMP_API_BASE_URL}/mycamp/plan/list`, userIdx);
+                const response = await axios.post(`${CAMP_API_BASE_URL}/mycamp/plan/list`, userIdx, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 const data = response.data;
                 if (data.success) {
                     setPlans(data.data);
@@ -105,6 +109,7 @@ function Page(props) {
                 selectedPlans,
                 {
                     headers: {
+                        Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json', // JSON 요청임을 명시
                     }
                 }).then(() => {

@@ -5,12 +5,16 @@ import useAuthStore from '../../../../store/authStore';
 
 const ProductList = () => {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-  const {user} = useAuthStore();
+  const { user, token } = useAuthStore();
   const [products, setProducts] = useState([]);
-  
+
   useEffect(() => {
-    if(user == null) return;
-    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
+    if (user == null) return;
+    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         console.log(res.data);
         setProducts(res.data.data);

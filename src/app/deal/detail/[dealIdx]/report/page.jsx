@@ -5,7 +5,7 @@ import './report.css';
 import axios from 'axios';
 
 function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUserIdx }) {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const [selectedReason, setSelectedReason] = useState('스팸홍보/도배글입니다.');
   const [description, setDescription] = useState('');
@@ -71,8 +71,8 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
       return;
     }
 
-    if(!user) return;
-    
+    if (!user) return;
+
     if (window.confirm('신고를 완료하시겠습니까?')) {
       try {
         const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/report`, {
@@ -82,6 +82,10 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
           reportTableType: "1",
           reportTableIdx: dealIdx,
           reportContent: description
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
 
         if (response.data.success) {

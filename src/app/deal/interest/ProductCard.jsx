@@ -8,12 +8,16 @@ const ProductCard = ({ product }) => {
   const [isFavorite, setIsFavorite] = useState(true);
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
 
   const toggleFavorite = () => {
     if (!isFavorite) {
       const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainfavorite`;
-      axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`)
+      axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
         .then((res) => {
           if (res.data.success) {
             console.log(res.data.message);
@@ -21,7 +25,11 @@ const ProductCard = ({ product }) => {
         })
         .catch((err) => console.log(err));
     } else {
-      axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite?dealIdx=${product.dealIdx}&userIdx=${user.userIdx}`)
+      axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite?dealIdx=${product.dealIdx}&userIdx=${user.userIdx}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
         .then((res) => console.log(res.data.message))
         .catch((err) => console.log(err));
     }
@@ -37,7 +45,7 @@ const ProductCard = ({ product }) => {
           <span className="inter-empty-heart">🤍</span>
         )}
       </div>
-      <Link 
+      <Link
         href={`/deal/detail/${product.dealIdx}`}
         style={{ textDecoration: 'none', color: 'inherit' }}
       >

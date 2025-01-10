@@ -7,7 +7,7 @@ import axios from 'axios';
 
 function Page() {
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
 
     const initUvo = {
         userIdx: "",
@@ -41,7 +41,11 @@ function Page() {
         if (!user) return;
         console.log(uvo);
         uvo.userIdx = user.userIdx;
-        axios.post(`${LOCAL_API_BASE_URL}/mypage/checkPw`, uvo)
+        axios.post(`${LOCAL_API_BASE_URL}/mypage/checkPw`, uvo, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 console.log(res.data);
                 if (res.data.success) {
@@ -70,7 +74,11 @@ function Page() {
     const changePw = () => {
         console.log(uvo);
         if (confirm("비밀번호를 변경하시겠습니까?")) {
-            axios.post(`${LOCAL_API_BASE_URL}/mypage/changePw`, uvo)
+            axios.post(`${LOCAL_API_BASE_URL}/mypage/changePw`, uvo, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
                 .then((res) => {
                     console.log(res.data);
                     if (res.data.success) {

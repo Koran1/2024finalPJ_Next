@@ -20,7 +20,7 @@ function Page({ params }) {
   const [item, setItem] = useState([]);                 // 데이터 상태
   const [loading, setLoading] = useState(true);           // 로딩 상태
   const [error, setError] = useState(null);               // 에러 상태
-  const { isAuthenticated, isExpired, user } = useAuthStore(); // 로그인 상태
+  const { isAuthenticated, isExpired, user, token } = useAuthStore(); // 로그인 상태
   const router = useRouter();
   const { dealIdx } = useParams();  // Next.js의 경우 const router = useRouter(); const { dealIdx } = router.query;
   const [mainImage, setMainImage] = useState('');
@@ -53,7 +53,7 @@ function Page({ params }) {
 
         if (data.success) {
           const dealData = data.data.deal;
-          
+
           // dealview가 0이고 판매자가 아닌 경우 상품 정보를 숨김
           if (dealData.dealview === 0 && user?.userIdx !== dealData.dealSellerUserIdx) {
             setError('상품 정보를 볼 수 없습니다.');
@@ -118,8 +118,8 @@ function Page({ params }) {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-other-deals/${dealIdx}`);
       if (response.data.success) {
         // dealview가 0인 상품은 판매자에게만 보이도록 필터링
-        const filteredDeals = response.data.data.deals.filter(deal => 
-          deal.dealview === 1 || 
+        const filteredDeals = response.data.data.deals.filter(deal =>
+          deal.dealview === 1 ||
           (deal.dealview === 0 && user?.userIdx === deal.dealSellerUserIdx)
         );
         setSellerOtherDeals(filteredDeals);
@@ -191,6 +191,9 @@ function Page({ params }) {
       sellerOtherDeals.forEach(async (deal) => {
         try {
           const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
             params: {
               userIdx: user.userIdx,
               dealIdx: deal.dealIdx
@@ -217,6 +220,9 @@ function Page({ params }) {
 
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         params: {
           userIdx: user.userIdx,
           dealIdx: dealIdx,
@@ -241,7 +247,7 @@ function Page({ params }) {
     const fetchSellerCampLogs = async () => {
       try {
         if (!item?.dealSellerUserIdx) return;
-        
+
         const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-camplogs/${item.dealSellerUserIdx}`);
         setSellerCampLogs(response.data.success ? response.data.data : []);
       } catch (error) {
@@ -274,7 +280,10 @@ function Page({ params }) {
       const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/status/${dealIdx}`, null, {
         params: {
           status: newStatus
-        }
+        },
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
       });
 
       if (response.data.success) {
@@ -359,7 +368,7 @@ function Page({ params }) {
             </div>
           </div>
 
-          <div className="product-info" style={{ 
+          <div className="product-info" style={{
             width: '55%',  // 기존 50%에서 55%로 증가
             paddingLeft: '20px'  // 왼쪽 여백 추가
           }}>
@@ -651,7 +660,7 @@ function Page({ params }) {
                   <div className="review-thumbnail">
                     <img
                       src={log.fileName ? `http://localhost:8080/upload/${log.fileName}` : "/images/campImageholder3.png"}
-                      alt="캠핑 후기 썸네일" 
+                      alt="캠핑 후기 썸네일"
                       className="review-thumbnail-img"
                     />
                   </div>
@@ -661,9 +670,9 @@ function Page({ params }) {
                 </div>
               ))
             ) : (
-              <div style={{ 
-                gridColumn: "1 / -1", 
-                textAlign: "center", 
+              <div style={{
+                gridColumn: "1 / -1",
+                textAlign: "center",
                 padding: "40px 0",
                 color: "#666"
               }}>

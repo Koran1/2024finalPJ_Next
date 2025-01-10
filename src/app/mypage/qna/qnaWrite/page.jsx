@@ -9,7 +9,7 @@ import axios from 'axios';
 function Page() {
 
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const router = useRouter();
 
     const initQna = {
@@ -45,6 +45,7 @@ function Page() {
         if (confirm("질문을 등록하시겠습니까?")) {
             axios.post(`${LOCAL_API_BASE_URL}/add/writeQna`, qnavo, {
                 headers: {
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 }
             })
@@ -115,8 +116,8 @@ function Page() {
                 {/* 제출 & 취소 버튼 */}
                 <Box
                     textAlign="center">
-                    <Button  sx={{ margin:'20px' }}
-                    variant="contained" color="primary"
+                    <Button sx={{ margin: '20px' }}
+                        variant="contained" color="primary"
                         disabled={emptyCheck}
                         onClick={handleSubmit}>제출
                     </Button>

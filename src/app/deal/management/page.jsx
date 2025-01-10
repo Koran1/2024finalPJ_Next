@@ -18,7 +18,7 @@ function Page() {
     const [item, setItem] = useState([]);                 // 데이터 상태 
     const [loading, setLoading] = useState(true);           // 로딩 상태
     const [error, setError] = useState(null);               // 에러 상태
-    const { user } = useAuthStore();       // 로그인 상태
+    const { user, token } = useAuthStore();       // 로그인 상태
 
     useEffect(() => {
         if (user == null) return
@@ -26,8 +26,12 @@ function Page() {
             try {
                 setLoading(true);
                 const API_URL = `${LOCAL_API_BASE_URL}/deal/management/${user.userIdx}`;
-                const response = await axios.get(API_URL);
-                
+                const response = await axios.get(API_URL, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
                 if (response.data.success) {
                     const uniqueItems = response.data.data.reduce((acc, current) => {
                         const existingItem = acc.find(item => item.dealIdx === current.dealIdx);
@@ -36,7 +40,7 @@ function Page() {
                         }
                         return acc;
                     }, []);
-                    
+
                     setItem(uniqueItems);
                 } else {
                     setError("Failed to fetch product data.");
@@ -110,11 +114,11 @@ function Page() {
                                     <tr key={idx}>
                                         <td>
                                             <Link href={`/deal/detail/${k.dealIdx}`}>
-                                                <img 
-                                                    src={`${LOCAL_IMG_URL}/deal/${k.deal01}`} 
-                                                    alt={k.dealTitle} 
-                                                    width="50" 
-                                                    height="50" 
+                                                <img
+                                                    src={`${LOCAL_IMG_URL}/deal/${k.deal01}`}
+                                                    alt={k.dealTitle}
+                                                    width="50"
+                                                    height="50"
                                                 />
                                             </Link>
                                         </td>
@@ -125,8 +129,8 @@ function Page() {
                                             </Link>
                                         </td>
                                         <td>
-                                            {k.dealPrice === 0 
-                                                ? '나눔' 
+                                            {k.dealPrice === 0
+                                                ? '나눔'
                                                 : `${k.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`
                                             }
                                         </td>

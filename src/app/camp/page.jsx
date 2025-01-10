@@ -8,6 +8,7 @@ import axios from "axios";
 import Link from "next/link";
 import Button from '@mui/material/Button';
 import useAuthStore from "../../../store/authStore";
+import { useRouter } from "next/navigation";
 
 function Page() {
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -29,7 +30,7 @@ function Page() {
     const [error, setError] = useState(null);
     const [hoveredRegion, setHoveredRegion] = useState(''); // 추가
 
-    const { user } = useAuthStore();
+    const { user, token, isExpired, isAuthenticated } = useAuthStore();
     const [favList, setFavList] = useState([]);
 
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
@@ -124,7 +125,11 @@ function Page() {
     // 사용자 찜 리스트 가져오기
     const getFavList = () => {
         if (!user) return;
-        axios.get(`${LOCAL_API_BASE_URL}/camp/getLikeList?userIdx=${user.userIdx}`)
+        axios.get(`${LOCAL_API_BASE_URL}/camp/getLikeList?userIdx=${user.userIdx}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 console.log(res.data);
                 setFavList(res.data.data);
@@ -136,10 +141,19 @@ function Page() {
         getFavList();
     }, [user])
 
+    const router = useRouter();
+
     // 사용자 찜 처리
     const handleLike = (isLiked, campIdx) => {
-        if (!user) return;
+        if (!user) {
+            alert("로그인이 필요한 서비스입니다")
+            router.push("/user/login")
+            return;
+        }
         axios.get(`${LOCAL_API_BASE_URL}/camp/like`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             params: {
                 userIdx: user.userIdx,
                 campIdx: campIdx,

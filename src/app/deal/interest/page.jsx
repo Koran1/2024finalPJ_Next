@@ -10,12 +10,16 @@ import useAuthStore from '../../../../store/authStore';
 function Page() {
     const [activeLink, setActiveLink] = useState('/deal/interest');
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const [products, setProducts] = useState([]);
-    
+
     useEffect(() => {
-        if(user == null) return;
-        const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
+        if (user == null) return;
+        const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 console.log(res.data);
                 setProducts(res.data.data);
@@ -59,9 +63,15 @@ function Page() {
             </div>
 
             <div className="inter-product-grid">
-                {products.map((product) => (
-                    <ProductCard key={product.dealIdx} product={product} />
-                ))}
+                {products.length > 0 ?
+                    products.map((product) => (
+                        <ProductCard key={product.dealIdx} product={product} />
+                    ))
+                    :
+                    <p>
+                        찜하신 상품이 없습니다!
+                    </p>
+                }
             </div>
         </div>
     );

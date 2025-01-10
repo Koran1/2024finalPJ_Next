@@ -47,10 +47,10 @@ function Page(ㄱ) {
     const [showCountForDealList, setShowCountForDealList] = useState(5);
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const iscanWrite = () => {
-        
-       
+
+
         if (logTitle.length === 0) { // 제목 여부
             return "noTitle"
         }
@@ -220,7 +220,11 @@ function Page(ㄱ) {
         } else {
             const apiUrl = `${baseUrl}/camplog/linkmodal/${user.userIdx}`; // userIdx대신 임시값
             try {
-                const response = await axios.get(apiUrl);
+                const response = await axios.get(apiUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 console.log("response: ", response);
                 if (response.data.success) {
                     const data = response.data.data;
@@ -333,7 +337,11 @@ function Page(ㄱ) {
             }
 
             try {
-                const response = await axios.post(apiUrl, formData);
+                const response = await axios.post(apiUrl, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 console.log("response: ", response);
                 if (response.data.success) {
                     alert(response.data.message);
@@ -375,21 +383,21 @@ function Page(ㄱ) {
     }, [dealKeyWord]);
 
     const handleGetLinked = () => {
-            setTags(tags.map(tag => {
-                if(tag.showContent) {
-                    return {
-                        ...tag, dealIdx: selectedDealIdx
-                    }
+        setTags(tags.map(tag => {
+            if (tag.showContent) {
+                return {
+                    ...tag, dealIdx: selectedDealIdx
                 }
-                return tag;
-            }))
-            selectedDealIdx &&  selectedDealIdx != tags.find(tag => tag.showContent == true).dealIdx &&  alert("상품연동이 완료되었습니다.");
+            }
+            return tag;
+        }))
+        selectedDealIdx && selectedDealIdx != tags.find(tag => tag.showContent == true).dealIdx && alert("상품연동이 완료되었습니다.");
         setShowLinkModal(false);
     }
     useEffect(() => {
         setSelectedDealIdx(null);
     }, [showLinkModal]);
-    
+
     const handleCurrencyToWon = (price) => {
         return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(price);
     }
@@ -401,7 +409,11 @@ function Page(ㄱ) {
                 setShowCampModal(true);
             } else {
                 setShowCampModal(true);
-                const response = await axios.get(apiUrl);
+                const response = await axios.get(apiUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 setIsLoading(false);
                 console.log("response: ", response);
                 if (response.data.success) {
@@ -635,7 +647,7 @@ function Page(ㄱ) {
                                                                                     style={{
                                                                                         zIndex: "1",
                                                                                         fontSize: "70px",
-                                                                                        cursor: "pointer", 
+                                                                                        cursor: "pointer",
                                                                                         userSelect: "none"
                                                                                     }}
                                                                                     onClick={() => handleTagModal(tag.tagId)}
@@ -804,7 +816,7 @@ function Page(ㄱ) {
                                                     <TableCell >
                                                         <div style={{ width: "fit-content", position: "relative" }}>
                                                             <img src={`${imgUrl}/deal/${list.fileName}`} alt='' style={{ width: '100px', height: '100px', filter: list.dealIdx === selectedDealIdx ? "brightness(0.5)" : "brightness(1)" }} ></img>
-                                                            {list.dealIdx === selectedDealIdx   &&  <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
+                                                            {list.dealIdx === selectedDealIdx && <CheckIcon style={{ position: "absolute", transform: "translate(-50%, -50%)", top: "50%", left: "50%", fontSize: "80px", color: "white" }} />}
                                                         </div>
                                                     </TableCell>
                                                     <TableCell>

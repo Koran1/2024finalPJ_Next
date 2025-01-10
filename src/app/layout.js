@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
   const KAKAO_KEY = process.env.NEXT_PUBLIC_KAKAO_KEY;
   // zustand 상태 가져오기
-  const { isAuthenticated, user, logout, isExpired } = useAuthStore();
+  const { isAuthenticated, user, token, logout, isExpired } = useAuthStore();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -114,7 +114,11 @@ export default function RootLayout({ children }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
   useEffect(() => {
     if (!user) return
-    const response = axios.get(`${LOCAL_API_BASE_URL}/chat/getUnReadMessages?userIdx=${user.userIdx}`)
+    const response = axios.get(`${LOCAL_API_BASE_URL}/chat/getUnReadMessages?userIdx=${user.userIdx}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then((res) => {
         console.log('안 읽은 메시지 수 : ' + res.data.data);
         setUnReadMessages(res.data.data);

@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation'
 function Page({ onFavoriteChange }) {
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const [isLiked, setIsLiked] = useState(false);
-  const { isAuthenticated, user, isExpired } = useAuthStore();
+  const { isAuthenticated, user, token, isExpired } = useAuthStore();
   const { dealIdx } = useParams();
   const router = useRouter();
 
@@ -17,6 +17,9 @@ function Page({ onFavoriteChange }) {
 
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like-status`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         params: {
           userIdx: user.userIdx,
           dealIdx
@@ -42,6 +45,9 @@ function Page({ onFavoriteChange }) {
 
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/like`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         params: {
           userIdx: user.userIdx,
           dealIdx: dealIdx,

@@ -9,7 +9,7 @@ import { ContentCopy, Phone, Place } from "@mui/icons-material";
 import useAuthStore from "../../../../store/authStore";
 
 function Page() {
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const bookIdx = useSearchParams().get('bookIdx');
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const [loading, setLoading] = useState(false);
@@ -66,7 +66,11 @@ function Page() {
             const API_URL = `${LOCAL_API_BASE_URL}/book/detail?bookIdx=${bookIdx}`;
 
             // 예약 리스트 페이지에서 idx 받아서 넣고 서버에서 해당 예약 내역 데이터 받아오기
-            const response = await axios.get(API_URL);
+            const response = await axios.get(API_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             const dataVO = response.data;
             // console.log("dataVO :" + JSON.stringify(dataVO.data, null, 2));
 
@@ -88,7 +92,11 @@ function Page() {
         try {
             // 예약 취소와 함께 DB 삭제
             const API_URL = `${LOCAL_API_BASE_URL}/book/cancel?bookIdx=${bookIdx}`;
-            await axios.get(API_URL);
+            await axios.get(API_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             alert("예약 취소가 완료되었습니다.");
             window.location.href = "/book/list"
         } catch (error) {

@@ -12,7 +12,7 @@ import MyPageCardLog from './MyPageCardLog';
 function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
 
     const [products, setProducts] = useState([]);
     const [mylogList, setMylogList] = useState([]);
@@ -20,7 +20,11 @@ function Page() {
     // 내가 판매한 상품 정보 가져오기
     useEffect(() => {
         if (!user) return;
-        axios.get(`${LOCAL_API_BASE_URL}/deal/management/${user.userIdx}`)
+        axios.get(`${LOCAL_API_BASE_URL}/deal/management/${user.userIdx}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        })
             .then((res) => {
                 console.log(res.data);
                 const uniqueItems = res.data.data.reduce((acc, current) => {
@@ -44,6 +48,9 @@ function Page() {
         const userIdx = user.userIdx
 
         axios.get(`${LOCAL_API_BASE_URL}/mycamp/mylog/list`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             params: { userIdx, page, size },
         })
             .then((res) => {

@@ -16,7 +16,7 @@ function Page({ params }) {
 
     const [qnaDetail, setQnaDetail] = useState([]);
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
 
     useEffect(() => {
         if (!user) return
@@ -26,7 +26,11 @@ function Page({ params }) {
             const param = await Promise.resolve(params);
             const id = param.qnaIdx;
 
-            axios.get(`${LOCAL_API_BASE_URL}/add/qna/getQnaDetail?qnaIdx=${id}`)
+            axios.get(`${LOCAL_API_BASE_URL}/add/qna/getQnaDetail?qnaIdx=${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
                 .then(res => {
                     if (res.data.success) {
                         console.log(res.data)

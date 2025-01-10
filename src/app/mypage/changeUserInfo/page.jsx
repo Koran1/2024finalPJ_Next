@@ -16,7 +16,7 @@ import { VisuallyHiddenInput } from './VisuallyHiddenInput';
 function Page() {
 
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
-    const { user, updateUser } = useAuthStore();
+    const { user, token, updateUser } = useAuthStore();
     const router = useRouter();
 
     const initUvo = {
@@ -45,7 +45,11 @@ function Page() {
         if (!user) return;
         console.log(uvo);
         uvo.userIdx = user.userIdx;
-        axios.post(`${LOCAL_API_BASE_URL}/mypage/checkPw`, uvo)
+        axios.post(`${LOCAL_API_BASE_URL}/mypage/checkPw`, uvo, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 console.log(res.data);
                 if (res.data.success) {
@@ -65,7 +69,11 @@ function Page() {
     const getUserInfo = () => {
         if (!user) return;
         console.log('유저 정보 가져오기')
-        axios.post(`${LOCAL_API_BASE_URL}/mypage/getUserInfo`, uvo)
+        axios.post(`${LOCAL_API_BASE_URL}/mypage/getUserInfo`, uvo, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 console.log(res.data);
                 setUvo(res.data.data);
@@ -218,6 +226,7 @@ function Page() {
         console.log(uvo);
         axios.put(`${LOCAL_API_BASE_URL}/mypage/changeUserInfo`, uvo, {
             headers: {
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data',
             }
         })

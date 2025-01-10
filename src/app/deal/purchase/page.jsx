@@ -16,7 +16,7 @@ function Page() {
     const [loading, setLoading] = useState(true);           // 로딩 상태
     const [error, setError] = useState(null);               // 에러 상태
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
 
     useEffect(() => {
         if (user == null) return;
@@ -28,7 +28,11 @@ function Page() {
                 const API_URL = `${LOCAL_API_BASE_URL}/deal/purchase/${user.userIdx}`;
 
                 // 데이터 가져오기
-                const response = await axios.get(API_URL);
+                const response = await axios.get(API_URL, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 // const data = response.data;
                 console.log(response);
                 if (response.data.success) {

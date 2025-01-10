@@ -55,7 +55,7 @@ function Page({ params }) {
     const [reportContent, setReportContent] = useState("");         // 신고 내용
     // const [disableCommentCount, setDisableCommentCount] = useState(0); // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
     const [logWriterNickname, setLogWriterNickname] = useState("");
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     // 로그 내용 함수들
     useEffect(() => {
         const fetchData = async () => {
@@ -155,7 +155,11 @@ function Page({ params }) {
         } else {
             try {
                 const apiUrl = `${baseUrl}/camplog/toggleRecommend?logIdx=${data.logVO.logIdx}&userIdx=${user.userIdx}&doRecommend=${doRecommend ? 1 : 0}`;
-                const response = await axios.get(apiUrl);
+                const response = await axios.get(apiUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 if (response.data.success) {
                     response.data.data === "1" ? setDoRecommend(true) : setDoRecommend(false)
                     setRecommendCount(RecommendCount => doRecommend ? RecommendCount - 1 : RecommendCount + 1);
@@ -165,23 +169,15 @@ function Page({ params }) {
             }
         }
     }
-    // 기존 로그 글 삭제 함수
-    // const handleLogDelete = async () => {
-    //     if (confirm("정말 삭제하시겠습니까? ")) {
-    //         const apiUrl = `${baseUrl}/camplog/logDelete?logIdx=${data.logVO.logIdx}`;
-    //         const response = await axios.post(apiUrl);
-    //         if (response.data.success) {
-    //             router.push(`/camplog/list`);
-    //         }else {
-    //             alert(response.data.message)
-    //         }
-    //     }
-    // }
 
     // 모달로 바꾼 로그 글 삭제 함수(모달로 바꾸면서 confirm필요없어짐 confirm 차이)
     const handleLogDelete = async () => {
         const apiUrl = `${baseUrl}/camplog/logDelete?logIdx=${data.logVO.logIdx}`;
-        const response = await axios.post(apiUrl);
+        const response = await axios.post(apiUrl, null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         if (response.data.success) {
             alert("삭제가 완료되었습니다.");
             router.push(`/camplog/list`);
@@ -210,7 +206,11 @@ function Page({ params }) {
                 sendData.append("reportContent", reportContent);
 
                 // 서버에 저장
-                await axios.post(API_URL, sendData);
+                await axios.post(API_URL, sendData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
                 // 페이지 새로 고침
                 window.location.reload();
@@ -276,7 +276,11 @@ function Page({ params }) {
                     data.append("logCommentContent", logCommentContent);
 
                     // 서버에 저장
-                    await axios.post(API_URL, data);
+                    await axios.post(API_URL, data, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
 
                     // 페이지 새로 고침
                     window.location.reload(); // 페이지 새로 고침
@@ -316,7 +320,11 @@ function Page({ params }) {
                     data.append("commentIdx", commentIdx);
 
                     // 서버에 저장
-                    await axios.post(API_URL, data);
+                    await axios.post(API_URL, data, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
 
                     // 페이지 새로 고침
                     window.location.reload();
@@ -336,7 +344,11 @@ function Page({ params }) {
             data.append("logCommentIdx", comm.logCommentIdx);
 
             // 서버에 저장
-            await axios.post(API_URL, data);
+            await axios.post(API_URL, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             // 페이지 새로 고침
             window.location.reload(); // 페이지 새로 고침
@@ -395,7 +407,11 @@ function Page({ params }) {
             data.append("reportContent", reportContent);
 
             // 서버에 저장
-            await axios.post(API_URL, data);
+            await axios.post(API_URL, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             // 페이지 새로 고침
             window.location.reload();
@@ -591,7 +607,7 @@ function Page({ params }) {
                                                                                         fontSize: "70px",
                                                                                         cursor: "pointer",
                                                                                         textAlign: 'right',
-                                                                                        marginRight: "7px", 
+                                                                                        marginRight: "7px",
                                                                                         userSelect: "none"
 
                                                                                     }}

@@ -16,7 +16,7 @@ function Page(props) {
     const [isModalOpen, setModalOpen] = useState(false);
     const [coordinates, setCoordinates] = useState([]);
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const userIdx = user?.userIdx;
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +30,9 @@ function Page(props) {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${CAMP_API_BASE_URL}/mycamp/favCampList`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
                     params: {
                         userIdx: userIdx,
                     },
@@ -81,6 +84,9 @@ function Page(props) {
     const handleLike = (campIdx, facltNm, isLiked) => {
         try {
             axios.get(`${CAMP_API_BASE_URL}/camp/like`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 params: {
                     userIdx: userIdx,
                     campIdx: campIdx,

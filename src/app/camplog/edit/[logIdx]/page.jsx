@@ -59,7 +59,11 @@ function EditPage({ params }) {
             try {
                 const { logIdx } = await Promise.resolve(params);
                 const apiUrl = `${baseUrl}/camplog/getLogForEdit?logIdx=${logIdx}`;
-                const response = await axios.get(apiUrl);
+                const response = await axios.get(apiUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 console.log("response: ", response);
                 if (response.data.success) {
                     const data = response.data.data;
@@ -290,7 +294,11 @@ function EditPage({ params }) {
         } else {
             const apiUrl = `${baseUrl}/camplog/linkmodal/${user.userIdx}`; // userIdx대신 임시값
             try {
-                const dealData = await axios.get(apiUrl);
+                const dealData = await axios.get(apiUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 console.log("dealData: ", dealData);
                 if (dealData.data.success) {
                     const data = dealData.data.data;
@@ -358,7 +366,7 @@ function EditPage({ params }) {
         if (iscanWrite() === "ok") {
             const { logIdx } = await Promise.resolve(params);
             const apiUrl = `${baseUrl}/camplog/update`;
-            
+
             const contentData = [
                 {
                     logContent: logDefaultContent,
@@ -369,9 +377,9 @@ function EditPage({ params }) {
                     logContentOrder: index + 1
                 }))
             ].filter(item => item.logContent != "");
-            
+
             const mpFiles = extraFields.filter(item => item.file != null).map(field => field.file);
-            
+
             const beforeFile = data.pData.filter((item, index) => index != 0).map(item => item.fileName);
             const afterFile = extraFields.map(item => item.fileName);
 
@@ -418,7 +426,11 @@ function EditPage({ params }) {
             }
 
             try {
-                // const response = await axios.post(apiUrl, formData);
+                const response = await axios.post(apiUrl, formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 if (response.data.success) {
                     alert(response.data.message);
                     router.push(`/camplog/detail/${logIdx}`);
@@ -457,21 +469,21 @@ function EditPage({ params }) {
         setShowCountForDealList(5);
     }, [dealKeyWord]);
 
-      const handleGetLinked = () => {
-                setTags(tags.map(tag => {
-                    if(tag.showContent) {
-                        return {
-                            ...tag, dealIdx: selectedDealIdx
-                        }
-                    }
-                    return tag;
-                }))
-                selectedDealIdx &&  selectedDealIdx != tags.find(tag => tag.showContent == true).dealIdx &&  alert("상품연동이 완료되었습니다.");
-            setShowLinkModal(false);
-        }
-        useEffect(() => {
-            setSelectedDealIdx(null);
-        }, [showLinkModal]);
+    const handleGetLinked = () => {
+        setTags(tags.map(tag => {
+            if (tag.showContent) {
+                return {
+                    ...tag, dealIdx: selectedDealIdx
+                }
+            }
+            return tag;
+        }))
+        selectedDealIdx && selectedDealIdx != tags.find(tag => tag.showContent == true).dealIdx && alert("상품연동이 완료되었습니다.");
+        setShowLinkModal(false);
+    }
+    useEffect(() => {
+        setSelectedDealIdx(null);
+    }, [showLinkModal]);
     const handleCurrencyToWon = (price) => {
         return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(price);
     }
@@ -482,7 +494,11 @@ function EditPage({ params }) {
                 setShowCampModal(true);
             } else {
                 setShowCampModal(true);
-                const response = await axios.get(apiUrl);
+                const response = await axios.get(apiUrl, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 setIsLoading(false);
                 console.log("response: ", response);
                 if (response.data.success) {
@@ -543,16 +559,16 @@ function EditPage({ params }) {
         const isDefaultContentSame = logDefaultContent === data.pData[0].logContent;
         const bfExtraContent = data.pData.flatMap(item => item.logContent || "").filter((item, index) => index != 0);
         const afExtraContent = extraFields.map(item => item.text || "");
-        const isExtraContentSame =   bfExtraContent.length === afExtraContent.length && bfExtraContent.every((value, index) => value == afExtraContent[index]);
+        const isExtraContentSame = bfExtraContent.length === afExtraContent.length && bfExtraContent.every((value, index) => value == afExtraContent[index]);
         const isconfirmedIdxSame = confirmedCampIdx == data.logVO.campIdx;
         const bfFile = data.pData.flatMap(item => item.fileName || null).filter((item, index) => index != 0);
         const afFile = extraFields.map(item => item.fileName || null);
         const isFileSame = bfFile.length === afFile.length && bfFile.every((value, index) => value === afFile[index]);
-        const bfTumbnail = data.pData.filter(item => item.fileName != null).flatMap(item => [{fileName: item.fileName, isThumbnail: item.isTumbnail}]).filter(item => item.isThumbnail == "1").map(item => item.fileName);;
+        const bfTumbnail = data.pData.filter(item => item.fileName != null).flatMap(item => [{ fileName: item.fileName, isThumbnail: item.isTumbnail }]).filter(item => item.isThumbnail == "1").map(item => item.fileName);;
         const afTumbnail = extraFields.filter(item => item.isThumbnail == true).map(item => item.fileName);
-        const isTumbnailSame = bfTumbnail[0] == afTumbnail[0] ;
+        const isTumbnailSame = bfTumbnail[0] == afTumbnail[0];
 
-        
+
         const bfTag = data.pData.flatMap(item => item.tagData || []).map(tag => {
             return {
                 text: tag.tagContent,
@@ -566,13 +582,13 @@ function EditPage({ params }) {
             }
         });
         const isTagSame =
-        bfTag.length === afTag.length &&
-        bfTag.every(
-            (value, index) =>
-                value.text == afTag[index].text &&
-            value.dealIdx == afTag[index].dealIdx
-        );
-        setIssLogSame(isTitleSame && isDefaultContentSame && isconfirmedIdxSame && isFileSame && isTagSame &&  isExtraContentSame && isTumbnailSame );
+            bfTag.length === afTag.length &&
+            bfTag.every(
+                (value, index) =>
+                    value.text == afTag[index].text &&
+                    value.dealIdx == afTag[index].dealIdx
+            );
+        setIssLogSame(isTitleSame && isDefaultContentSame && isconfirmedIdxSame && isFileSame && isTagSame && isExtraContentSame && isTumbnailSame);
     }
     useEffect(() => {
         judgeIsChange();
@@ -760,7 +776,7 @@ function EditPage({ params }) {
                                                                                     style={{
                                                                                         zIndex: "2",
                                                                                         fontSize: "70px",
-                                                                                        cursor: "pointer", 
+                                                                                        cursor: "pointer",
                                                                                         userSelect: "none"
                                                                                     }}
                                                                                     onClick={() => handleTagModal(tag.tagId)}

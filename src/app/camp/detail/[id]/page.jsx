@@ -23,7 +23,7 @@ function Page() {
     const CAMP_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const [item, setItem] = useState([]); //캠프 상세 데이터 상태
     const [posts, setPosts] = useState([]); //Log 데이터 상태
-    const { isAuthenticated, user } = useAuthStore(); // 로그인 상태
+    const { isAuthenticated, user, token } = useAuthStore(); // 로그인 상태
     const params = useParams();
     const campIdx = params?.id; // URL에서 받아온 campIdx
     const userIdx = user?.userIdx;
@@ -132,6 +132,9 @@ function Page() {
 
         try {
             axios.get(`${CAMP_API_BASE_URL}/camp/like`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 params: {
                     userIdx: userIdx,
                     campIdx: campIdx,

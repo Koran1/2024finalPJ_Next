@@ -20,12 +20,16 @@ function Page() {
     const [commentsPerPage] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
 
     useEffect(() => {
         if (!user) return;
-        axios.get(`${LOCAL_API_BASE_URL}/camplog/getMyComments?userIdx=${user.userIdx}`)
+        axios.get(`${LOCAL_API_BASE_URL}/camplog/getMyComments?userIdx=${user.userIdx}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 if (res.data.success) {
                     const comments = res.data.data;

@@ -7,7 +7,7 @@ import useAuthStore from '../../../../../store/authStore';
 import SearchIcon from '@mui/icons-material/Search';
 
 function Page(myBookList) {
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const userIdx = user?.userIdx;
     const [plans, setPlans] = useState([]);
     const [selectedPlan, setSelectedPlan] = useState(null); // 선택된 planIdx
@@ -69,7 +69,11 @@ function Page(myBookList) {
         // Fetch favcamp list
         const fetchData = async () => {
             try {
-                const response = await axios.post(`${CAMP_API_BASE_URL}/mycamp/plan/list`, userIdx);
+                const response = await axios.post(`${CAMP_API_BASE_URL}/mycamp/plan/list`, userIdx, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 const data = response.data;
                 if (data.success) {
                     setPlans(data.data);

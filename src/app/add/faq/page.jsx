@@ -4,6 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React, { useEffect, useState } from 'react';
 import { AddSideBar } from '../../../../components/add/notice/AddSideBar';
 import axios from 'axios';
+import useAuthStore from '../../../../store/authStore';
 
 function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL

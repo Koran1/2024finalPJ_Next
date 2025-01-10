@@ -14,7 +14,7 @@ import { ContentCopy, Phone, Place } from "@mui/icons-material";
 import useAuthStore from "../../../../store/authStore";
 
 function Page() {
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     const campIdx = useSearchParams().get("campIdx");
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const [loading, setLoading] = useState(false);
@@ -71,7 +71,11 @@ function Page() {
             setLoading(true);
             const API_URL = `${LOCAL_API_BASE_URL}/book/goBookPage?campIdx=${campIdx}`;
             // 캠핑장 정보 페이지에서 idx 받아서 넣고 서버에서 해당 캠핑장의 데이터 받아오기
-            const response = await axios.get(API_URL);
+            const response = await axios.get(API_URL, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
             const dataVO = response.data;
             console.log("dataVO : " + dataVO);
 
@@ -223,7 +227,11 @@ function Page() {
             data.append("orderId", orderId);
 
             console.log(data);
-            await axios.post(API_URL, data); // 서버에 데이터 임시 저장 DB에는 X
+            await axios.post(API_URL, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }); // 서버에 데이터 임시 저장 DB에는 X
 
             console.log("토스 서버 시작");
 

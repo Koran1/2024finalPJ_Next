@@ -9,7 +9,7 @@ import useAuthStore from "../../../../../store/authStore"; // authStore 가져�
 
 function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-    const { user } = useAuthStore(); // authStore에서 사용자 정보 가져오기
+    const { user, token } = useAuthStore(); // authStore에서 사용자 정보 가져오기
     const userIdx = user?.userIdx; // userIdx 추출
     const [navMenu, setNavMenu] = useState("/mylog/list");
     const [mylogList, setMylogList] = useState([]); // mylog 리스트
@@ -29,6 +29,9 @@ function Page() {
         setLoading(true);
         try {
             const response = await axios.get(`${LOCAL_API_BASE_URL}/mycamp/mylog/list`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 params: { userIdx, page, size },
             });
             if (response.data.success) {

@@ -40,7 +40,7 @@ const CustomArrow = ({ className, style, onClick, direction }) => (
 
 function Page() {
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
-    const { user } = useAuthStore(); // authStore에서 사용자 정보 가져오기
+    const { user, token } = useAuthStore(); // authStore에서 사용자 정보 가져오기
     const userIdx = user?.userIdx; // userIdx 추출
     const [navMenu, setNavMenu] = useState("/book/list");
     const [mybookList, setMybookList] = useState([]); // mybook 리스트
@@ -53,31 +53,13 @@ function Page() {
         return navMenu === link ? "active" : "";
     };
 
-    // mybook 리스트 가져오기
-    // const getMyBookList = async () => {
-    //     setLoading(true);
-    //     try {
-    //         const response = await axios.get(`http://localhost:8080/api/book/list`, {
-    //             params: { userIdx },
-    //         });
-    //         if (response.data.success) {
-    //             setMybookList(response.data.data.data);
-    //             console.log("Auth Store에 있는 user: ", user);
-    //             console.log("데이터 가져오기", response.data.data);
-    //         } else {
-    //             setError(response.data.message);
-    //         }
-    //     } catch (err) {
-    //         setError("Error fetching data: " + err.message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
-
     const getMyBookList = async () => {
         setLoading(true);
         try {
             const response = await axios.get(`${baseUrl}/book/list`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 params: { userIdx },
             });
             console.log("서버 응답 데이터:", response.data);

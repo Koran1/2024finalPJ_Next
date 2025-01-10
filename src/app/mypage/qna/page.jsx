@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 function Page() {
     // 로그인 확인 절차
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
 
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
 
@@ -22,7 +22,11 @@ function Page() {
         // QNA 정보 가져오기
 
         setLoading(true);
-        axios.get(`${LOCAL_API_BASE_URL}/add/getQnas?userIdx=${user.userIdx}`)
+        axios.get(`${LOCAL_API_BASE_URL}/add/getQnas?userIdx=${user.userIdx}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(res => {
                 if (res.data.success) {
                     console.log(res.data)

@@ -23,12 +23,16 @@ function Page() {
 
     const [userRating, setUserRating] = useState("");
     const [ratings, setRatings] = useState([]);
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
 
     // 평가 정보 가져오기
     useEffect(() => {
         if (!user) return;
-        axios.get(`${LOCAL_API_BASE_URL}/deal/rating?userIdx=${user.userIdx}`)
+        axios.get(`${LOCAL_API_BASE_URL}/deal/rating?userIdx=${user.userIdx}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 console.log(res.data);
                 setUserRating(res.data.data.rating);

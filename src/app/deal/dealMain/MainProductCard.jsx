@@ -10,7 +10,7 @@ function MainProductCard({ product, favProducts }) {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [isFavorite, setIsFavorite] = useState(false);
-    const { isAuthenticated, user, isExpired } = useAuthStore();
+    const { isAuthenticated, user, token, isExpired } = useAuthStore();
     const router = useRouter();
 
     const toggleFavorite = (dealIdx) => {
@@ -22,7 +22,11 @@ function MainProductCard({ product, favProducts }) {
 
         if (!isFavorite) {
             const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainfavorite`
-            const response = axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`)
+            const response = axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
                 .then((res) => {
                     console.log(res.data);
                     if (res.data.success) {
@@ -33,7 +37,11 @@ function MainProductCard({ product, favProducts }) {
                 })
                 .catch((err) => console.log(err))
         } else {
-            const response = axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite?dealIdx=${dealIdx}&userIdx=${user.userIdx}`)
+            const response = axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite?dealIdx=${dealIdx}&userIdx=${user.userIdx}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
                 .then((res) => console.log(res.data.message))
                 .catch((err) => console.log(err))
         }
@@ -50,8 +58,8 @@ function MainProductCard({ product, favProducts }) {
 
     // dealview 상태에 따른 표시 여부 확인
     const shouldShowProduct = () => {
-        return product.dealview === 1 || 
-               (product.dealview === 0 && user?.userIdx === product.dealSellerUserIdx);
+        return product.dealview === 1 ||
+            (product.dealview === 0 && user?.userIdx === product.dealSellerUserIdx);
     };
 
     // 상품을 표시하지 않아야 할 경우 null 반환

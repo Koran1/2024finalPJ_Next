@@ -11,7 +11,7 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
   const [sellerInfo, setSellerInfo] = useState(null);
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
   const modalRef = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -99,7 +99,11 @@ function SatisfactionModal({ isOpen, onClose, dealIdx }) {
         dealSatis01: dealIdx,
       };
 
-      const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/satisfaction`, satisfactionData);
+      const response = await axios.post(`${LOCAL_API_BASE_URL}/deal/satisfaction`, satisfactionData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
       if (response.data.success) {
         alert('만족도 평가가 등록되었습니다.');

@@ -23,7 +23,7 @@ function Page() {
         return activeLink === link ? 'active' : '';
     };
 
-    const { user } = useAuthStore();
+    const { user, token } = useAuthStore();
     // 판매자 정보(idx) 가져오기
     const otherUser = useSearchParams().get('seller');
     const dealIdx = useSearchParams().get('dealIdx');
@@ -41,7 +41,11 @@ function Page() {
         setLoading(true);
 
         console.log('otherUserIdx : ' + otherUser);
-        axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}&dealIdx=${dealIdx}`)
+        axios.get(`${LOCAL_API_BASE_URL}/chat/getChatList?sellerIdx=${otherUser}&userIdx=${user.userIdx}&dealIdx=${dealIdx}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then((res) => {
                 console.log(res.data.data)
                 if (res.data.success) {
