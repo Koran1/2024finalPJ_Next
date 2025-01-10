@@ -605,9 +605,7 @@ function EditPage({ params }) {
                 <span style={{ display: "inline-block", fontSize: "50px", marginLeft: "43%" }}>캠핑로그 수정</span>
             </header>
             <Grid2 container spacing={2}>
-                <Grid2 size={2} />
-                <Grid2 size={1}>
-                    {extraFields.some(field => field.previewUrl != null || field.fileName) ? (
+                <Grid2 size={1} > {extraFields.some(field => field.previewUrl != null || field.fileName) ? (
                         <div style={{ border: "1px solid gray", width: "120px", maxHeight: "50vh", position: "fixed", textAlign: 'center', overflowY: "auto" }}>
                             <style>
                                 {/* 이미지바 스크롤 CSS */}
@@ -649,7 +647,8 @@ function EditPage({ params }) {
                                 )
                             })}
                         </div>
-                    ) : null}
+                    ) : null}</Grid2>
+                <Grid2 size={2}>
                 </Grid2>
                 <Grid2 size={6} textAlign={'center'}>
                     <Button variant="outlined" style={{ float: "left", marginRight: "10px" }} onClick={() => handleCampModal()}>+ 장소 추가</Button>
