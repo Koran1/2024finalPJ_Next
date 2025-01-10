@@ -17,6 +17,7 @@ function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [deals, setDeals] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
     const [loading, setLoading] = useState(false);
 
