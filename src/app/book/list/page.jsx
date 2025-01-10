@@ -5,10 +5,11 @@ import "./booklist.css"; // CSS 파일 가져오기
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Button, Grid2 } from "@mui/material";
+import { Box, Button, Grid2, Modal, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import useAuthStore from "../../../../store/authStore";
 import axios from "axios";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // 커스텀 화살표 컴포넌트
 const CustomArrow = ({ className, style, onClick, direction }) => (
@@ -134,8 +135,21 @@ function Page() {
                     ? "D-day" // 오늘
                     // : `D+${Math.abs(countdown)}`, // 현재 날짜 이후
                     : "(캠프 진행 중)", // 현재 날짜 이후
+            regionCode: reservation.regionCode,
+            addr1: reservation.addr1,
+            wthrLunAge: reservation.wthrLunAge,
+            wthrMoonrise: reservation.wthrMoonrise,
+            wthrMoonset: reservation.wthrMoonset,
+            wthrPOP: reservation.wthrPOP,
+            wthrSKY_PTY: reservation.wthrSKY_PTY,
+            wthrSunrise: reservation.wthrSunrise,
+            wthrSunset: reservation.wthrSunset,
+            wthrTMax: reservation.wthrTMax,
+            wthrTMin: reservation.wthrTMin,
         };
     });
+
+    const [selectedReservation, setSelectedReservation] = useState(null);
 
     // 슬라이더 설정
     const sliderSettings = {
@@ -147,7 +161,15 @@ function Page() {
         arrows: slides.length > 1, // 슬라이드가 2개 이상일 때만 화살표 표시
         prevArrow: <CustomArrow direction="left" />,
         nextArrow: <CustomArrow direction="right" />,
+        afterChange: (currentIndex) => setSelectedReservation(slides[currentIndex]), // Update state on slide change
     };
+
+    useEffect(() => {
+        // Set the initial selected reservation on the first load
+        if (slides.length > 0 && !selectedReservation) {
+            setSelectedReservation(slides[0]); // Set the first slide as the selected reservation
+        }
+    }, [slides, selectedReservation]);
 
     const getZoneDetails = (zone) => {
         const newData = {
@@ -208,13 +230,13 @@ function Page() {
         const checkOutDate = new Date(reservation.bookCheckOutDate);
         const currentDate = new Date();
         console.log("CheckOutDate:", checkOutDate, "CurrentDate:", currentDate);
-
+    
         // 날짜 변환이 실패한 경우 처리
         if (isNaN(checkOutDate.getTime())) {
             console.error("Invalid Date:", reservation.bookCheckOutDate);
             return false;
         }
-
+    
         return checkOutDate <= currentDate;
     })
     .map((reservation) => ({
@@ -257,6 +279,38 @@ function Page() {
     };
 
 
+    // 날씨 정보 관련
+    const getMoonImage = (lunAge) => {
+        const basePath = '/moon_img/new_calendar_moon';
+        const phase = Math.floor(lunAge); // Get the integer part of lunAge
+        const phaseRange = phase < 14 ? `${phase}_${phase + 1}` : `${14}_${17}`;
+        return `${basePath}${phaseRange}.png`;
+    };
+
+    // 길찾기 관련 Modal 창
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handlePathModal = () => setModalOpen(true)
+    const handleCloseModal = () => setModalOpen(false)
+
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '60%',
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
+
+    const [pathSearch, setPathSearch] = useState("")
+    const handlePathSearch = (e) => {
+        if (e.key === "Enter") {
+            alert(pathSearch)
+        }
+    }
     // 로딩 중 화면
     if (loading) {
         return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
@@ -273,12 +327,12 @@ function Page() {
         <div className="book-list-main-container">
             {/* 상단 네비게이션 */}
             <div className="book-navmenu-container">
-                <Link href="/mycamp/plan/list"
+                {/* <Link href="/mycamp/plan/list"
                     className={`btn1 ${getActiveClass('/mycamp/plan/list')}`}
                     onClick={() => setNavMenu('/mycamp/plan/list')}
                 >
                     캠핑플래너
-                </Link>
+                </Link> */}
                 <Link href="/book/list"
                     className={`btn1 ${getActiveClass('/book/list')}`}
                     onClick={() => setNavMenu('/book/list')}
@@ -350,10 +404,89 @@ function Page() {
 
                     {/* 연동된 계획 */}
                     <div className="connect-plan-container">
-                        <p className="connect-plan-header">연동된 계획</p>
+                        <p className="connect-plan-header">예측 정보</p>
                         <div className="connect-plan-body">
-                            <AddCircleOutlineIcon />
-                            <span className="connect-plan-text">현재 연동된 계획이 없습니다.</span>
+                            <>
+                                {selectedReservation &&
+                                    (new Date(selectedReservation.date.substring(0, 10)).getTime() <= Date.now() + 10 * 24 * 60 * 60 * 1000 ? (
+                                        <div style={{ width: "100%" }}>
+                                            {/* <p>{selectedReservation.title}</p>
+                                            <p>{selectedReservation.regionCode}</p>
+                                            <p>{selectedReservation.addr1}</p> */}
+                                            <TableContainer component={Paper}>
+                                                <Table className="custom-table" >
+                                                    <TableHead>
+                                                        <TableRow >
+                                                            {['날짜', '최저', '최고', '날씨', '강수', '일출 / 일몰', '월출 / 월몰', '달모양']
+                                                                .map(header => <TableCell key={header} className="table-header">{header}</TableCell>)}
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        <TableRow>
+                                                            <TableCell>{selectedReservation.date.substring(0, 10)}</TableCell>
+                                                            <TableCell>{Math.round(selectedReservation.wthrTMin)}</TableCell>
+                                                            <TableCell>{Math.round(selectedReservation.wthrTMax)}</TableCell>
+                                                            <TableCell>{selectedReservation.wthrSKY_PTY}</TableCell>
+                                                            <TableCell>{selectedReservation.wthrPOP}</TableCell>
+                                                            <TableCell>
+                                                                {selectedReservation.wthrSunrise.substring(0, 2)}:{selectedReservation.wthrSunrise.substring(2)}
+                                                                /&nbsp;
+                                                                {selectedReservation.wthrSunset.substring(0, 2)}:{selectedReservation.wthrSunset.substring(2)}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {selectedReservation.wthrMoonrise.substring(0, 2)}:{selectedReservation.wthrMoonrise.substring(2)}
+                                                                /&nbsp;
+                                                                {selectedReservation.wthrMoonset.substring(0, 2)}:{selectedReservation.wthrMoonset.substring(2)}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <img src={getMoonImage(selectedReservation.wthrLunAge)} alt={`Moon phase for age ${selectedReservation.wthrLunAge}`} />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <AddCircleOutlineIcon />
+                                            <span className="connect-plan-text">기상 정보는 최대 10일까지 제공됩니다.</span>
+                                        </>
+                                    ))
+                                }
+                                {selectedReservation && (
+                                    <>
+                                        <Button variant="contained" color="success" sx={{ maxWidth: "150px" }} onClick={handlePathModal} >경로 검색</Button>
+                                        <Modal
+                                            open={modalOpen}
+                                            onClose={handleCloseModal}
+                                        >
+                                            <Box sx={modalStyle}>
+                                                <Box sx={{ width: '100%', minHeight: '600px', display: "flex", flexDirection: "row" }}>
+                                                    <Box sx={{
+                                                        width: "30%", backgroundColor: "green",
+                                                        alignContent: "center", justifyItems: "center",
+                                                        padding: "0px 10px"
+                                                    }}>
+                                                        <TextField
+                                                            value={pathSearch}
+                                                            onChange={(e) => setPathSearch(e.target.value)}
+                                                            onKeyUp={handlePathSearch}></TextField>
+                                                        <p>
+                                                            <ExpandMoreIcon fontSize="large" />
+                                                        </p>
+                                                        <p>{selectedReservation.addr1}</p>
+                                                        <p>예상시간 : </p>
+                                                        <p>예상거리 : </p>
+                                                    </Box>
+                                                    <Box sx={{ width: "70%", backgroundColor: "blue" }}>
+
+                                                    </Box>
+                                                </Box>
+                                            </Box>
+                                        </Modal>
+                                    </>
+                                )}
+                            </>
                         </div>
                     </div>
                     <hr className="separated-hr" />

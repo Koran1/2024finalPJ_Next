@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 
 function Page({ params }) {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
+    const IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const router = useRouter();
@@ -68,13 +69,25 @@ function Page({ params }) {
             </Typography>
 
             {/* Attachment Info */}
-            <Typography variant="body2" color="text.secondary" mb={1}>
-                {noticeDetail.noticeFile}
-            </Typography>
 
+            {noticeDetail.noticeFile ?
+                <img
+                    alt='공지사항 첨부사진'
+                    src={`${IMG_URL}/notice/${noticeDetail.noticeFile}`}
+                    width="500px"
+                    height="500px"
+                />
+                :
+                <Typography variant="body2" color="text.secondary" mb={1}>
+                    첨부파일 없음
+                </Typography>
+            }
+
+            <Typography variant="body2" color="text.secondary" mb={1}>
+                {noticeDetail.noticeContent === "" ? "공지사항 내용이 없습니다" : noticeDetail.noticeContent}
+            </Typography>
             {/* Notice Content */}
             <pre>
-                {noticeDetail.noticeContent}
             </pre>
 
 

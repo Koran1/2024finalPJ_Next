@@ -84,21 +84,15 @@ function Page() {
 
     // 신규등록 버튼 클릭 핸들러
     const handleNewRegistration = () => {
-        alert("신규 등록 페이지로 이동합니다.");
-        router.push('/admin/campList/detail');
+        router.push('/admin/campList/write');
     };
 
     // TableRow 클릭 핸들러
     const handleRowClick = (row) => {
-        // 객체를 JSON 문자열로 직렬화하고 URL에 안전하게 인코딩
-        const queryString = new URLSearchParams({
-            data: encodeURIComponent(JSON.stringify(row)), // JSON.stringify로 직렬화 후 encodeURIComponent
-        }).toString();
 
         // 쿼리 파라미터를 사용해 URL을 생성하고, as로 깔끔한 URL 유지
         router.push(
-            `/admin/campList/detail?${row.campIdx}`, // 실제 경로와 쿼리
-            '/admin/campList/detail' // 표시될 경로
+            `/admin/campList/detail?campIdx=${row.campIdx}`
         );
     };
 

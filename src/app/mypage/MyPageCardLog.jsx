@@ -5,7 +5,11 @@ function MyPageCard({ mylog }) {
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
 
     return (
-        <div className="product-item" key={mylog.logIdx}>
+        <div className="product-item" key={mylog.logIdx}
+            style={{
+                border: "1px solid #868e96", padding: "10px",
+                borderRadius: "20px", boxShadow: "3px 3px 2px lightgray"
+            }}>
             <Link href={`/camplog/detail/${mylog.logIdx}`}>
                 <img
                     className="dealMain-image"

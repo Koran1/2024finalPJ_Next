@@ -42,8 +42,7 @@ function Page(props) {
     const handleRowClick = (row) => {
         console.log("클릭한 행의 데이터:", row);
         router.push(
-            `/admin/qnaList/detail?${row.qnaIdx}`, // 실제 경로와 쿼리
-            '/admin/qnaList/detail' // 표시될 경로
+            `/admin/qnaList/detail?qnaIdx=${row.qnaIdx}`
         );
     };
 
@@ -132,7 +131,6 @@ function Page(props) {
                         >
                             <MenuItem value="all">전체</MenuItem>
                             <MenuItem value="진행중">진행중</MenuItem>
-                            <MenuItem value="답변 중">답변 중</MenuItem>
                             <MenuItem value="답변완료">답변완료</MenuItem>
                         </Select>
                     </FormControl>
@@ -182,6 +180,7 @@ function Page(props) {
                                 <TableCell>닉네임</TableCell>
                                 <TableCell>Question</TableCell>
                                 <TableCell>등록일</TableCell>
+                                <TableCell>답변 등록일</TableCell>
                                 <TableCell>답변상태</TableCell>
                             </TableRow>
                         </TableHead>
@@ -199,6 +198,7 @@ function Page(props) {
                                     <TableCell>{row.qnaIdx}</TableCell>
                                     <TableCell>{row.userNickname}</TableCell>
                                     <TableCell>{row.qnaSubject}</TableCell>
+                                    <TableCell>{row.qnaRegDate}</TableCell>
                                     <TableCell>{row.qnaReRegDate}</TableCell>
                                     <TableCell>{row.qnaStatus}</TableCell>
                                 </TableRow>

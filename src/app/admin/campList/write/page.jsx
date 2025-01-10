@@ -2,14 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import AdminList from '../../AdminList';
 import CurrentTime from '../../CurrentTime';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import axios from 'axios';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 function Page() {
     const baseUrl = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
     const initState = {
-        campIdx: "",
         contentId: "",
         facltNm: "",
         lineIntro: "",
@@ -89,7 +88,6 @@ function Page() {
         campActive: "",
     };
     const labels = {
-        campIdx: "캠핑장 고유번호",
         contentId: "콘텐츠 ID",
         facltNm: "야영장명",
         lineIntro: "한줄 소개",
@@ -169,25 +167,6 @@ function Page() {
         campActive: "활성화 여부 (1 : 활성 / 0 : 비활성)"
     };
     const [campData, setCampData] = useState(initState);
-    const [originCampData, setOriginCampData] = useState(initState);
-    const campIdx = useSearchParams().get("campIdx");
-
-    useEffect(() => {
-        axios.get(`${baseUrl}/camp/detail/${campIdx}`)
-            .then((res) => {
-                console.log(res.data)
-                const datas = res.data.data;
-                const excludedKeys = ["totalLikes", "totalLogs", "totalViews"];
-
-                const filteredData = Object.fromEntries(
-                    Object.entries(datas).filter(([key]) => !excludedKeys.includes(key))
-                )
-
-                setCampData(filteredData)
-                setOriginCampData(filteredData)
-            })
-            .catch((err) => console.log(err))
-    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -197,27 +176,22 @@ function Page() {
         });
     };
 
-    // 캠핑 정보 최신화
-    const handleUpdateCampData = () => {
-        alert("정보 최신화!")
-    }
-
     const router = useRouter();
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Submitted Data:", campData);
-        axios.put(`${baseUrl}/admin/updateCamp`, campData)
+        console.log(campData)
+        axios.post(`${baseUrl}/admin/insertCamp`, campData)
             .then((res) => {
+                console.log(res.data)
                 if (res.data.success) {
-                    alert(res.data.message)
                     router.push('/admin/campList')
                 } else {
                     alert(res.data.message)
                 }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.log(err))
     };
+
     return (
         <Box position="relative" display="flex">
             {/* 좌측 네비게이션 메뉴 */}
@@ -235,7 +209,6 @@ function Page() {
                     }}
                 >
                 </Box>
-
 
                 <div style={{ padding: "20px", margin: "auto", border: "1px solid #ddd", borderRadius: "8px" }}>
                     <h3>캠핑장 정보</h3>
@@ -275,7 +248,7 @@ function Page() {
                                 cursor: "pointer",
                             }}
                         >
-                            정보 수정
+                            신규 등록
                         </button>
 
                     </form>

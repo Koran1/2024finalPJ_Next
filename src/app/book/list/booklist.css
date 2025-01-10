@@ -19,7 +19,7 @@
 .btn1:hover {
     color: #3DBDFD;
 }
-  
+
 .btn1.active {
     color: orange;
 }
@@ -104,30 +104,36 @@
     text-align: center;
 }
 
-.slick-prev, .slick-next {
+.slick-prev,
+.slick-next {
     width: 40px;
     height: 40px;
-    z-index: 1000; /* 슬라이드 위에 표시되도록 z-index 조정 */
+    z-index: 1000;
+    /* 슬라이드 위에 표시되도록 z-index 조정 */
 }
 
 .slick-prev {
-    left: -50px; /* 슬라이드 왼쪽 밖으로 이동 */
+    left: -50px;
+    /* 슬라이드 왼쪽 밖으로 이동 */
 }
 
 .slick-next {
-    right: -50px; /* 슬라이드 오른쪽 밖으로 이동 */
+    right: -50px;
+    /* 슬라이드 오른쪽 밖으로 이동 */
 }
 
 .connect-plan-body {
     display: flex;
-    border: 1px solid #000; 
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #000;
     border-radius: 5px;
     padding: 40px;
     margin-top: 10px;
     font-size: 1.1rem;
     color: #000;
     background-color: #fff;
-    gap: 10px; 
+    gap: 10px;
 }
 
 .separated-hr {
@@ -137,7 +143,7 @@
     border: 1px;
     height: 1px;
     background: black;
-    margin: 0; 
+    margin: 0;
 }
 
 .prev-book-container {
@@ -269,7 +275,7 @@
     border: 1px solid #4D88FF;
     color: #333;
     cursor: pointer;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 /* 스크롤 관련 */

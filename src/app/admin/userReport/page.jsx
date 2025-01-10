@@ -90,7 +90,7 @@ function Page(props) {
     // 신고 처리(승인,반려)
     const reportProcess = async (row, state) => {
         const API_URL = `${LOCAL_API_BASE_URL}/admin/reportProcess`;
-        
+
         try {
             // 반려일 땐 신고Idx 만 보내서 해당 신고Idx만 reportStatus = 2로 업데이트
             let data = {
@@ -98,11 +98,11 @@ function Page(props) {
                 reportStatus: '2',
             };
             // 승인일 땐 신고 테이블 종류와 신고 테이블 Idx을 추가로 보내 reportStatus = 1로 일괄 업데이트
-            if(state == "approve"){
+            if (state == "approve") {
                 data.reportTableType = row.reportTableType;
                 data.reportTableIdx = row.reportTableIdx;
                 data.reportStatus = '1'
-            } 
+            }
 
             // 서버에 저장
             await axios.post(API_URL, data);
@@ -190,27 +190,32 @@ function Page(props) {
                             </TableRow>
                         </TableHead>
                         <TableBody className="admin-reportlist-table-body">
-                            {reportList.map((row) => (
-                                <TableRow
-                                    key={row.reportIdx}
-                                    sx={{
-                                        backgroundColor: row.reportStatus == '0' ? 'inherit' : '#D9EAFD', // 신고 승인처리 한 경우 배경색 설정
-                                    }}
-                                    onClick={() => handleRowClick(row)} // TableRow 클릭 시 핸들러 호출
-                                    style={{ cursor: 'pointer' }} // 마우스 포인터를 손 모양으로 변경
-                                    hover // 마우스를 올렸을 때 옅은 회색으로 변경
-                                >
-                                    <TableCell>{row.reportIdx}</TableCell>
-                                    <TableCell>{userNickname[row.userIdx]}</TableCell>        {/* 닉네임 으로 변경하기 */}
-                                    <TableCell>{changeTypeText(row.reportTableType)}</TableCell>{/* 1~4 종류별 이름으로 바꾸기 */}
-                                    <TableCell>{row.reportTableIdx}</TableCell> 
-                                    <TableCell>{row.reportCategory}</TableCell>
-                                    <TableCell>{row.reportContent}</TableCell>
-                                    <TableCell>{row.reportRegDate}</TableCell>
-                                    <TableCell>{row.reportStatus == 0 ? "처리중" : row.reportStatus == 1 ? "승인" : "반려"}</TableCell> {/* 신고 처리여부 텍스트로 표시 */}
-                                    {/* <TableCell>{row.reportStatus}</TableCell> */} {/* 신고 처리여부 0~1로 표시 */}
+                            {reportList.length > 0 ?
+                                reportList.map((row) => (
+                                    <TableRow
+                                        key={row.reportIdx}
+                                        sx={{
+                                            backgroundColor: row.reportStatus == '0' ? 'inherit' : '#D9EAFD', // 신고 승인처리 한 경우 배경색 설정
+                                        }}
+                                        onClick={() => handleRowClick(row)} // TableRow 클릭 시 핸들러 호출
+                                        style={{ cursor: 'pointer' }} // 마우스 포인터를 손 모양으로 변경
+                                        hover // 마우스를 올렸을 때 옅은 회색으로 변경
+                                    >
+                                        <TableCell>{row.reportIdx}</TableCell>
+                                        <TableCell>{userNickname[row.userIdx]}</TableCell>        {/* 닉네임 으로 변경하기 */}
+                                        <TableCell>{changeTypeText(row.reportTableType)}</TableCell>{/* 1~4 종류별 이름으로 바꾸기 */}
+                                        <TableCell>{row.reportTableIdx}</TableCell>
+                                        <TableCell>{row.reportCategory}</TableCell>
+                                        <TableCell>{row.reportContent}</TableCell>
+                                        <TableCell>{row.reportRegDate}</TableCell>
+                                        <TableCell>{row.reportStatus == 0 ? "처리중" : row.reportStatus == 1 ? "승인" : "반려"}</TableCell> {/* 신고 처리여부 텍스트로 표시 */}
+                                    </TableRow>
+                                ))
+                                :
+                                <TableRow>
+                                    <TableCell colSpan={8} align="center">신고사항이 없습니다</TableCell>
                                 </TableRow>
-                            ))}
+                            }
                             {/* Pagination 컴포넌트 추가 */}
                         </TableBody>
 
@@ -258,33 +263,33 @@ function Page(props) {
                         </div>
                         <hr /> */}
                         {/* 이 div 피그마의 필드만큼 작성하기 */}
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <p style={{ marginBottom: "10px", width: "200px", margin: "auto" }}>신고자</p>
                             {/* <p>{userNickname[selectedReportRow.userIdx]}</p> */}
                             <TextField label="신고자" name='userNickname' fullWidth margin="normal" value={userNickname[selectedReportRow.userIdx]} />
                         </div>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             {/* 피신고자 닉네임도 가져오기 */}
                             <p style={{ marginBottom: "10px", width: "200px", margin: "auto" }}>피신고자</p>
                             {/* <p>{userNickname[selectedReportRow.reportedUserIdx]}</p> */}
                             <TextField label="피신고자" name='reportedUserNickname' fullWidth margin="normal" value={userNickname[selectedReportRow.reportedUserIdx]} />
                         </div>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <p style={{ marginBottom: "10px", width: "200px", margin: "auto" }}>신고테이블 종류</p>
                             {/* <p>{selectedReportRow.reportTableType}</p> */}
                             <TextField label="신고테이블 종류" name='reportTableType' fullWidth margin="normal" value={changeTypeText(selectedReportRow.reportTableType)} />
                         </div>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <p style={{ marginBottom: "10px", width: "200px", margin: "auto" }}>신고테이블 Idx</p>
                             {/* <p>{selectedReportRow.reportTableIdx}</p> */}
                             <TextField label="신고테이블 Idx" name='reportTableIdx' fullWidth margin="normal" value={selectedReportRow.reportTableIdx} />
                         </div>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <p style={{ marginBottom: "10px", width: "200px", margin: "auto" }}>신고 카테고리</p>
                             {/* <p>{selectedReportRow.reportCategory}</p> */}
                             <TextField label="신고 카테고리" name='reportCategory' fullWidth margin="normal" value={selectedReportRow.reportCategory} />
                         </div>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <p style={{ marginBottom: "10px", width: "200px", margin: "auto" }}>신고일</p>
                             {/* <p>{selectedReportRow.reportRegDate}</p> */}
                             <TextField label="신고일" name='reportRegDate' fullWidth margin="normal" value={selectedReportRow.reportRegDate} />
@@ -300,7 +305,7 @@ function Page(props) {
                                 margin="normal"
                             />
                         </div>
-                        <div style={{display:"flex", justifyContent: "flex-end", marginTop: "auto"}}>
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "auto" }}>
                             <Button
                                 variant='contained'
                                 color='error'
@@ -310,7 +315,7 @@ function Page(props) {
                             <Button
                                 variant='contained'
                                 color='inherit'
-                                style={{marginLeft: "20px"}}
+                                style={{ marginLeft: "20px" }}
                                 disabled={selectedReportRow.reportStatus == '2' ? true : false}
                                 onClick={() => reportProcess(selectedReportRow, "return")}
                             >반려</Button>

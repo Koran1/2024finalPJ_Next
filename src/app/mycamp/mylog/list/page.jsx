@@ -67,12 +67,12 @@ function Page() {
         <div className="mylog-list-main-container">
             <div className="mylog-navmenu-container">
                 {/* 상단 네비게이션바 */}
-                <Link href="/mycamp/plan/list"
+                {/* <Link href="/mycamp/plan/list"
                     className={`btn1 ${getActiveClass('/mycamp/plan/list')}`}
                     onClick={() => setNavMenu('/mycamp/plan/list')}
                 >
                     캠핑플래너
-                </Link>
+                </Link> */}
                 <Link href="/book/list"
                     className={`btn1 ${getActiveClass('/book/list')}`}
                     onClick={() => setNavMenu('/book/list')}

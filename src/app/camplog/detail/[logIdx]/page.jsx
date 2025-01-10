@@ -68,7 +68,7 @@ function Page({ params }) {
                 }
                 const response = await axios.get(apiUrl);
                 const data = response.data;
-                console.log("response : ", response);
+                console.log("response : ", response.data);
                 // 신고됐거나 삭제된 로그 글은 들어오면 경고창과 함께 리스트로 이동
                 if (data.data.rvo[0].reportCount >= 3) {
                     alert("3명이상의 유저에게 신고된 로그글 입니다.");
@@ -203,6 +203,7 @@ function Page({ params }) {
             try {
                 sendData.append("userIdx", user.userIdx);
                 sendData.append("reportTableIdx", data.logVO.logIdx);
+                sendData.append("reportedUserIdx", data.logVO.userIdx);
                 sendData.append("reportCategory", reportCategory);
                 sendData.append("reportContent", reportContent);
 
@@ -388,6 +389,7 @@ function Page({ params }) {
             data.append("userIdx", user.userIdx);
             data.append("reportTableIdx", comm.logCommentIdx);
             data.append("reportCategory", reportCategory);
+            data.append("reportedUserIdx", comm.userIdx);
             data.append("reportContent", reportContent);
 
             // 서버에 저장

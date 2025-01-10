@@ -193,7 +193,7 @@ export default function RootLayout({ children }) {
                       onClose={() => setPhoto(null)}
                     >
                       {/* 글로벌 css에 있음 */}
-                      <MenuItem><Link className='nav-menu' href={"/mycamp/plan/list"}>나의캠핑</Link></MenuItem>
+                      <MenuItem><Link className='nav-menu' href={"/book/list"}>나의캠핑</Link></MenuItem>
                       <MenuItem ><Link className='nav-menu' href={"/mypage"}>마이페이지</Link></MenuItem>
                       <MenuItem onClick={handleLogout}>로그아웃</MenuItem>
                     </Menu></>
@@ -208,7 +208,7 @@ export default function RootLayout({ children }) {
         </header>
         <div className='magin'>
 
-        {children}
+          {children}
         </div>
 
 
