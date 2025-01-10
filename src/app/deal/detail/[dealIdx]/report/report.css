@@ -9,21 +9,34 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 600px;
   z-index: 1000;
+  max-height: 90vh;
+  overflow-y: auto;
+  margin-top: 40px;
 }
 
 .report-header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1001;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  cursor: move;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
 
 .close-button {
+  position: absolute;
+  right: 20px;
+  top: 15px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 24px;
   cursor: pointer;
+  padding: 5px;
+  line-height: 1;
 }
 
 .report-form {
@@ -86,6 +99,9 @@ textarea {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .radio-option label {
@@ -98,4 +114,22 @@ textarea::placeholder {
 
 input[type="text"] {
   opacity: 0.9;
+}
+
+.report-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.report-modal::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.report-modal::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.report-modal::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

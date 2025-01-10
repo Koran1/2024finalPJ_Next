@@ -85,14 +85,34 @@
 .seller-info {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 15px;
   margin: 15px 0;
 }
 
-.seller-info span {
+/* 판매자 정보와 평점을 감싸는 컨테이너 */
+.seller-info-container {
   display: flex;
   align-items: center;
+  gap: 20px;
+}
+
+/* 판매자 정보 */
+.seller-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 평점 정보 */
+.seller-rating-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seller-info span {
   font-weight: 500;
+  color: #525050;
 }
 
 .action-buttons {
@@ -101,6 +121,8 @@
   align-items: center;
   gap: 2px;
   margin: 20px 0;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .action-buttons > div {

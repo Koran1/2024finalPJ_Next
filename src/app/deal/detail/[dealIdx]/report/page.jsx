@@ -117,7 +117,6 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
           <h2>신고하기</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
-        <hr />
         <div className="report-form">
           <div className="form-group">
             <label>작성자</label>

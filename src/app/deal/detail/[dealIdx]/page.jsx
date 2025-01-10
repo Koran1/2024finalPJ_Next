@@ -1,7 +1,7 @@
 'use client'
 import './detail.css';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Button, Rating } from '@mui/material';
 import useAuthStore from '../../../../../store/authStore';
 import { useParams, useRouter } from 'next/navigation';
@@ -37,7 +37,6 @@ function Page({ params }) {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [sellerCampLogs, setSellerCampLogs] = useState([]);
-
 
   // isSellerUser를 여기서 먼저 선언
   const isSellerUser = user?.userIdx === item?.dealSellerUserIdx;
@@ -259,6 +258,33 @@ function Page({ params }) {
     fetchSellerCampLogs();
   }, [item?.dealSellerUserIdx, LOCAL_API_BASE_URL]);
 
+  // 이미지 배열 생성 (useMemo 사용)
+  const images = useMemo(() => {
+    if (!smallImages) return [];
+    return smallImages.map(image => image);
+  }, [smallImages]);
+
+  // 이미지 클릭 핸들러 수정
+  const handleImageClick = (index) => {
+    setCurrentImageIndex(index);
+    setIsImageModalOpen(true);
+  };
+
+  // 이미지 네비게이션 핸들러 수정
+  const handleModalPrevImage = (e) => {
+    e.stopPropagation();
+    const newIndex = (currentImageIndex - 1 + smallImages.length) % smallImages.length;
+    setCurrentImageIndex(newIndex);
+    setMainImage(smallImages[newIndex]);
+  };
+
+  const handleModalNextImage = (e) => {
+    e.stopPropagation();
+    const newIndex = (currentImageIndex + 1) % smallImages.length;
+    setCurrentImageIndex(newIndex);
+    setMainImage(smallImages[newIndex]);
+  };
+
   // item이 null일 경우 처리 추가
   if (!item) {
     return (
@@ -303,21 +329,6 @@ function Page({ params }) {
     setCurrentImageIndex(smallImages.indexOf(src));
   };
 
-  // 이전/다음 이미지로 이동하는 함수 추가
-  const handlePrevImage = (e) => {
-    e.stopPropagation();
-    const newIndex = (currentImageIndex - 1 + smallImages.length) % smallImages.length;
-    setMainImage(smallImages[newIndex]);
-    setCurrentImageIndex(newIndex);
-  };
-
-  const handleNextImage = (e) => {
-    e.stopPropagation();
-    const newIndex = (currentImageIndex + 1) % smallImages.length;
-    setMainImage(smallImages[newIndex]);
-    setCurrentImageIndex(newIndex);
-  };
-
   // 로딩 중
   if (loading) {
     return <div style={{ textAlign: "center", padding: "20px" }}>Loading...</div>;
@@ -359,10 +370,10 @@ function Page({ params }) {
             {/* 메인 이미지 컨테이너 */}
             <div className="main-image-container">
               <img
-                src={mainImage || '/default-product-image.jpg'}
-                alt="상품 이미지"
+                src={mainImage}
+                alt="상품 메인 이미지"
                 className="product-image"
-                onClick={() => setIsImageModalOpen(true)}
+                onClick={() => handleImageClick(currentImageIndex)}
                 style={{ cursor: 'pointer' }}
               />
             </div>
@@ -682,6 +693,56 @@ function Page({ params }) {
           </div>
         </div>
       </div>
+
+      {/* 신고 모달 컴포넌트 추가 */}
+      {isReportModalOpen && (
+        <ReportModal
+          isOpen={isReportModalOpen}
+          onClose={() => setIsReportModalOpen(false)}
+          dealTitle={item.dealTitle}
+          sellerNick={item.dealSellerNick}
+          dealIdx={dealIdx}
+          sellerUserIdx={item.dealSellerUserIdx}
+        />
+      )}
+
+      {/* 이미지 모달 추가 */}
+      {isImageModalOpen && (
+        <div className="image-modal-overlay" onClick={() => setIsImageModalOpen(false)}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={smallImages[currentImageIndex]}
+              alt="확대된 상품 이미지"
+              className="modal-image"
+            />
+            <button
+              className="close-modal-btn"
+              onClick={() => setIsImageModalOpen(false)}
+            >
+              ✕
+            </button>
+            {smallImages.length > 1 && (
+              <>
+                <button
+                  className="nav-btn prev-btn"
+                  onClick={handleModalPrevImage}
+                >
+                  ❮
+                </button>
+                <button
+                  className="nav-btn next-btn"
+                  onClick={handleModalNextImage}
+                >
+                  ❯
+                </button>
+                <div className="image-counter">
+                  {currentImageIndex + 1} / {smallImages.length}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

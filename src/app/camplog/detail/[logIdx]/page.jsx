@@ -1036,75 +1036,121 @@ function Page({ params }) {
                 {/* 신고 모달 */}
                 <Modal
                     open={isReportModalOpen}
-                    // onClose={() => setReportModalOpen(false)}
                     aria-labelledby="reportModal"
                     aria-describedby="reportModal-description"
                 >
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: '500px',
-                            height: '80%',
-                            bgcolor: 'background.paper',
-                            boxShadow: 24,
-                            p: 4,
-                            overflowY: 'auto', // 스크롤 기능 추가
-                        }}
-                    >
-                        {/* 신고 내용 */}
-                        <div>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <h4 style={{ margin: "0" }}>신고하기</h4>
-                                <IconButton onClick={() => setReportModalOpen(false)}><Close /></IconButton>
+                    <div className="overlay" onClick={() => setReportModalOpen(false)}>
+                        <div className="report-modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="report-header">
+                                <h2>신고하기</h2>
+                                <button className="close-button" onClick={() => setReportModalOpen(false)}>×</button>
                             </div>
-                            <hr />
-                            {
-                                selectedComment === "" ?
-                                    (<>
-                                        <p style={{ marginBottom: "10px" }}><b>후기 글 작성자</b> : {logWriterNickname}</p>
-                                    </>)
-                                    :
-                                    (<>
-                                        <p style={{ marginBottom: "10px" }}><b>댓글 작성자</b> : {userNickname[selectedComment.userIdx]}</p>
-                                        <p><b>댓글 내용</b> : {selectedComment.logCommentContent}</p>
-                                    </>)
-                            }
-                            <hr />
-                            <h5>신고사유</h5>
-                            <RadioGroup aria-label="complaint" name="commentReport" value={reportCategory} onChange={reportRadioChange}>
-                                <FormControlLabel value="스팸홍보 / 도배글 입니다." control={<Radio size='small' />} label="스팸홍보 / 도배글 입니다." />
-                                <FormControlLabel value="음란물 입니다." control={<Radio size='small' />} label="음란물 입니다." />
-                                <FormControlLabel value="불법정보를 포함하고 있습니다." control={<Radio size='small' />} label="불법정보를 포함하고 있습니다." />
-                                <FormControlLabel value="청소년에게 유해한 내용입니다." control={<Radio size='small' />} label="청소년에게 유해한 내용입니다." />
-                                <FormControlLabel value="욕설/생명경시/혐오/차별적 표현입니다." control={<Radio size='small' />} label="욕설/생명경시/혐오/차별적 표현입니다." />
-                                <FormControlLabel value="개인정보 노출 게시물 입니다." control={<Radio size='small' />} label="개인정보 노출 게시물 입니다." />
-                                <FormControlLabel value={"불쾌한 표현이 있습니다."} control={<Radio size='small' />} label="불쾌한 표현이 있습니다." />
-                            </RadioGroup>
-                            <hr />
-                            <h6>상세 내용</h6>
-                            <TextField label="신고 내용"
-                                name='reportContent'
-                                value={reportContent}
-                                onChange={reportContentChange}
-                                fullWidth
-                                multiline
-                                maxRows={5}
-                                margin="normal"
-                            />
-                            <div style={{ marginTop: "20px", textAlign: "right" }}>
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    // onClick={() => commentReport(selectedComment)}
+                            <div className="report-form">
+                                <div className="form-group">
+                                    <label>작성자</label>
+                                    <span> {user.nickname}</span>
+                                </div>
+                                <hr />
+                                <div className="form-group">
+                                    <label>신고 사유</label>
+                                    <div className="radio-group">
+                                        <div className="radio-option">
+                                            <input
+                                                type="radio"
+                                                id="spam"
+                                                name="reportCategory"
+                                                value="스팸홍보 / 도배글 입니다."
+                                                checked={reportCategory === "스팸홍보 / 도배글 입니다."}
+                                                onChange={reportRadioChange}
+                                            />
+                                            <label htmlFor="spam">스팸홍보 / 도배글 입니다.</label>
+                                        </div>
+                                        <div className="radio-option">
+                                            <input
+                                                type="radio"
+                                                id="adult"
+                                                name="reportCategory"
+                                                value="음란물 입니다."
+                                                checked={reportCategory === "음란물 입니다."}
+                                                onChange={reportRadioChange}
+                                            />
+                                            <label htmlFor="adult">음란물 입니다.</label>
+                                        </div>
+                                        <div className="radio-option">
+                                            <input
+                                                type="radio"
+                                                id="illegal"
+                                                name="reportCategory"
+                                                value="불법정보를 포함하고 있습니다."
+                                                checked={reportCategory === "불법정보를 포함하고 있습니다."}
+                                                onChange={reportRadioChange}
+                                            />
+                                            <label htmlFor="illegal">불법정보를 포함하고 있습니다.</label>
+                                        </div>
+                                        <div className="radio-option">
+                                            <input
+                                                type="radio"
+                                                id="harmful"
+                                                name="reportCategory"
+                                                value="청소년에게 유해한 내용입니다."
+                                                checked={reportCategory === "청소년에게 유해한 내용입니다."}
+                                                onChange={reportRadioChange}
+                                            />
+                                            <label htmlFor="harmful">청소년에게 유해한 내용입니다.</label>
+                                        </div>
+                                        <div className="radio-option">
+                                            <input
+                                                type="radio"
+                                                id="abuse"
+                                                name="reportCategory"
+                                                value="욕설/생명경시/혐오/차별적 표현입니다."
+                                                checked={reportCategory === "욕설/생명경시/혐오/차별적 표현입니다."}
+                                                onChange={reportRadioChange}
+                                            />
+                                            <label htmlFor="abuse">욕설/생명경시/혐오/차별적 표현입니다.</label>
+                                        </div>
+                                        <div className="radio-option">
+                                            <input
+                                                type="radio"
+                                                id="privacy"
+                                                name="reportCategory"
+                                                value="개인정보 노출 게시물 입니다."
+                                                checked={reportCategory === "개인정보 노출 게시물 입니다."}
+                                                onChange={reportRadioChange}
+                                            />
+                                            <label htmlFor="privacy">개인정보 노출 게시물 입니다.</label>
+                                        </div>
+                                        <div className="radio-option">
+                                            <input
+                                                type="radio"
+                                                id="offensive"
+                                                name="reportCategory"
+                                                value="불쾌한 표현이 있습니다."
+                                                checked={reportCategory === "불쾌한 표현이 있습니다."}
+                                                onChange={reportRadioChange}
+                                            />
+                                            <label htmlFor="offensive">불쾌한 표현이 있습니다.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div className="form-group">
+                                    <label>상세 내용</label>
+                                    <textarea
+                                        value={reportContent}
+                                        onChange={reportContentChange}
+                                        placeholder="상세 내용을 입력해주세요."
+                                    />
+                                </div>
+                                <button 
+                                    className="submit-button" 
                                     onClick={() => selectedComment === "" ? logReport() : commentReport(selectedComment)}
-                                    fullWidth
-                                >신고하기</Button>
+                                >
+                                    신고하기
+                                </button>
                             </div>
                         </div>
-                    </Box>
+                    </div>
                 </Modal>
             </div>
         </>

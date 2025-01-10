@@ -607,21 +607,27 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 20px;  /* 화면 가장자리와의 여백 */
 }
 
 .image-modal-content {
   position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
+  width: auto;  /* 자동 너비로 변경 */
+  height: auto;  /* 자동 높이로 변경 */
   background-color: #adadad;
-  padding: 20px;
+  padding: 2.5%;  /* 이미지 주변 2.5% 패딩으로 총 5% 여백 */
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .modal-image {
-  max-width: 100%;
-  max-height: calc(90vh - 40px);
+  max-width: none;  /* 최대 너비 제한 해제 */
+  max-height: 80vh;  /* 화면 높이의 80%로 제한 */
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 
@@ -658,7 +664,6 @@
   cursor: pointer;
   font-size: 24px;
   border-radius: 5px;
-  transition: background-color 0.3s;
 }
 
 .nav-btn:hover {
@@ -748,4 +753,56 @@
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 20px;
+}
+
+/* 기존 스타일에 font-family 추가 */
+.deal-detail-wrapper {
+  font-family: 'MinSans-Regular';
+}
+
+/* 제목 */
+.deal-detail-wrapper .title {
+  font-family: 'MinSans-Regular';
+}
+
+/* 가격 */
+.deal-detail-wrapper .price {
+  font-family: 'MinSans-Regular';
+}
+
+/* 판매자 정보 */
+.deal-detail-wrapper .seller-info {
+  font-family: 'MinSans-Regular';
+}
+
+/* 상품 설명 */
+.deal-detail-wrapper .description {
+  font-family: 'MinSans-Regular';
+}
+
+/* 버튼 텍스트 */
+.deal-detail-wrapper button {
+  font-family: 'MinSans-Regular';
+}
+
+/* 댓글 영역 */
+.deal-detail-wrapper .comments-section {
+  font-family: 'MinSans-Regular';
+}
+
+/* 모달 텍스트 */
+.deal-detail-wrapper .modal-content {
+  font-family: 'MinSans-Regular';
+}
+
+/* 기타 텍스트 요소들 */
+.deal-detail-wrapper p,
+.deal-detail-wrapper span,
+.deal-detail-wrapper h1,
+.deal-detail-wrapper h2,
+.deal-detail-wrapper h3,
+.deal-detail-wrapper h4,
+.deal-detail-wrapper h5,
+.deal-detail-wrapper h6 {
+  font-family: 'MinSans-Regular';
 }

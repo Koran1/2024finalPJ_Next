@@ -26,6 +26,7 @@ function Page() {
   });
   const [isFormValid, setIsFormValid] = useState(false);
 
+  // 폼 유효성 검사
   useEffect(() => {
     const checkFormValidity = () => {
       // 폼 유효성 검사
@@ -39,7 +40,7 @@ function Page() {
       // 유효성 검사 결과 업데이트
       setIsFormValid(isValid);
     };
-    //
+    // 폼 유효성 검사
     checkFormValidity();
   }, [formData]);
 
@@ -219,21 +220,21 @@ function Page() {
     window.location.href = '/deal/dealMain';
   };
 
-  function insertImage(targetCellIndex, imageUrl) {
-    const table = document.getElementById('imageTable');
-    const rows = table.getElementsByTagName('tr');
+  // function insertImage(targetCellIndex, imageUrl) {
+  //   const table = document.getElementById('imageTable');
+  //   const rows = table.getElementsByTagName('tr');
 
-    for (let i = 0; i < rows.length; i++) {
-      const cells = rows[i].getElementsByTagName('td');
-      if (targetCellIndex < cells.length) {
-        const cell = cells[targetCellIndex];
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = 'Inserted Image';
-        cell.appendChild(img);
-      }
-    }
-  }
+  //   for (let i = 0; i < rows.length; i++) {
+  //     const cells = rows[i].getElementsByTagName('td');
+  //     if (targetCellIndex < cells.length) {
+  //       const cell = cells[targetCellIndex];
+  //       const img = document.createElement('img');
+  //       img.src = imageUrl;
+  //       img.alt = 'Inserted Image';
+  //       cell.appendChild(img);
+  //     }
+  //   }
+  // }
 
   const handleCategoryChange = (value) => {
     setFormData(prev => ({
@@ -377,7 +378,7 @@ function Page() {
         <h4>상품명</h4>
         <input
           type="text"
-          placeholder="상품명을 입력해 주세요"
+          placeholder="상품명을 입력해 주세요 (40자 이내)"
           name="dealTitle"
           value={formData.dealTitle}
           onChange={handleChange}
@@ -640,17 +641,17 @@ function Page() {
         <h4>상품설명</h4>
         <TextareaAutosize
           className="description-textarea"
-          placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
+          placeholder={`브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 적어주세요. (200자 이내)
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
 안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
-          minRows={5}
-          maxRows={5}
+          minRows={3}
+          maxRows={3}
           name="dealDescription"
           value={formData.dealDescription}
           onChange={handleChange}
           onFocus={(e) => e.target.placeholder = ''}
-          onBlur={(e) => e.target.placeholder = `브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 최대한 자세히 적어주세요.
+          onBlur={(e) => e.target.placeholder = `브랜드, 모델명, 구매 시기, 하자 유무 등 상품 설명을 적어주세요. (200자 이내)
 전화번호, SNS 계정 등 개인정보 기재 시 피해가 발생 할 수 있으니 주의해주세요.
 욕설, 비방, 혐오 발언 등 부적절한 표현은 사전 통보 없이 삭제될 수 있습니다.
 안전하고 건전한 거래 문화 조성을 위해 협조 해주시기 바랍니다.`}
@@ -772,7 +773,7 @@ function Page() {
           <div className="form-group">
             <input
               type="text"
-              placeholder="직거래 가능지역을 입력해 주세요"
+              placeholder="직거래 가능지역을 입력해 주세요 (40자 이내)"
               name="dealDirectContent"
               value={formData.dealDirectContent}
               onChange={handleDirectContentChange}

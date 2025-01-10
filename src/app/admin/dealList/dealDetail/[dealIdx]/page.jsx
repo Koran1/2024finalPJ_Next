@@ -360,38 +360,30 @@ function Page({ params }) {
                 <div className="price">{item.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</div>
 
                 <div className="seller-info">
-                  <span>판매자</span>
-                  <span> {item.dealSellerNick}</span>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <span style={{ fontWeight: 'bold', color: '#525050' }}>평점</span>
-                  <Rating
-                    value={sellerScore}
-                    precision={0.5}
-                    readOnly
-                    size="large"
-                    sx={{
-                      '& .MuiRating-iconFilled': {
-                        color: '#FFD700 !important'
-                      },
-                      '& .MuiRating-iconEmpty': {
-                        color: '#C0C0C0 !important'
-                      },
-                      '& .MuiSvgIcon-root': {
-                        display: 'block',
-                        '& path': {
-                          fill: 'currentColor'
-                        }
-                      },
-                      marginLeft: '5px',
-                      marginRight: '5px',
-                      verticalAlign: 'middle'
-                    }}
-                  />
-                  <span style={{ verticalAlign: 'middle' }}>
-                    {sellerScore ? sellerScore.toFixed(1) : '5.0'}
-                  </span>
-
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <div className="seller-info-container">
+                    <div className="seller-name">
+                      <span>판매자</span>
+                      <span>{item.dealSellerNick}</span>
+                    </div>
+                    <div className="seller-rating-container">
+                      <span>평점</span>
+                      <Rating
+                        value={sellerScore}
+                        precision={0.5}
+                        readOnly
+                        size="large"
+                        sx={{
+                          '& .MuiRating-iconFilled': {
+                            color: '#FFD700 !important'
+                          },
+                          '& .MuiRating-iconEmpty': {
+                            color: '#C0C0C0 !important'
+                          }
+                        }}
+                      />
+                      <span>{sellerScore ? sellerScore.toFixed(1) : '5.0'}</span>
+                    </div>
+                  </div>
                   <div className="action-buttons">
                     <div
                       onClick={() => {

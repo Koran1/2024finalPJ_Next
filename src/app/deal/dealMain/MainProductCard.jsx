@@ -51,7 +51,7 @@ function MainProductCard({ product, favProducts }) {
 
     // 관심 등록 여부 판별
     useEffect(() => {
-        favProducts.map((fav) => {
+        favProducts?.map((fav) => {
             if (fav.dealIdx === product.dealIdx) setIsFavorite(true)
         })
     }, [favProducts])

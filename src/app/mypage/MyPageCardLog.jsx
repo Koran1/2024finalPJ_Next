@@ -5,11 +5,7 @@ function MyPageCard({ mylog }) {
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
 
     return (
-        <div className="product-item" key={mylog.logIdx}
-            style={{
-                border: "1px solid #868e96", padding: "10px",
-                borderRadius: "20px", boxShadow: "3px 3px 2px lightgray"
-            }}>
+        <div className="product-item" key={mylog.logIdx}>
             <Link href={`/camplog/detail/${mylog.logIdx}`}>
                 <img
                     className="dealMain-image"
@@ -17,7 +13,11 @@ function MyPageCard({ mylog }) {
                         ? `${LOCAL_IMG_URL}/${mylog.fileName}`
                         : "/images/defaultImage.png"}
                     alt={mylog.logTitle}
-                    style={{ width: "180px", height: "200px" }}
+                    style={{ 
+                        width: "180px", 
+                        height: "200px",
+                        borderRadius: "8px"
+                    }}
                     onError={(e) => {
                         console.log("Image load error:", e);
                         e.target.src = "/images/defaultImage.png";

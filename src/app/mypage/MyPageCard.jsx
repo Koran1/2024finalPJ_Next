@@ -5,11 +5,7 @@ function MyPageCard({ product }) {
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
 
     return (
-        <div className="product-item" key={product.dealIdx}
-            style={{
-                border: "1px solid #868e96", padding: "10px",
-                borderRadius: "20px", boxShadow: "3px 3px 2px lightgray"
-            }}>
+        <div className="product-item" key={product.dealIdx}>
             {product.dealview === 0 && (
                 <div className="inactive-notice">
                     Disabled
@@ -22,7 +18,11 @@ function MyPageCard({ product }) {
                         ? `${LOCAL_IMG_URL}/deal/${product.deal01}`
                         : "/images/defaultImage.png"}
                     alt={product.dealTitle}
-                    style={{ width: "180px", height: "200px" }}
+                    style={{ 
+                        width: "180px", 
+                        height: "200px",
+                        borderRadius: "8px"
+                    }}
                     onError={(e) => {
                         console.log("Image load error:", e);
                         e.target.src = "/images/defaultImage.png";

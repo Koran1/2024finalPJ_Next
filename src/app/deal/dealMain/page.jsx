@@ -23,7 +23,7 @@ export default function ProductSearchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const { user, token, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const [favProducts, setFavProducts] = useState([]);
   const router = useRouter();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -79,11 +79,7 @@ export default function ProductSearchPage() {
   // 찜 목록
   useEffect(() => {
     if (user == null) return
-    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
       .then((res) => {
         console.log(res.data)
         setFavProducts(res.data.data)
@@ -156,12 +152,12 @@ export default function ProductSearchPage() {
   const filteredProducts = products.filter((prod) => {
     // 기본 카테고리 필터링
     const categoryMatch = selectedCategories === '전체' || prod.dealCategory === selectedCategories;
-
+    
     // dealview 조건 추가
-    const viewCondition =
+    const viewCondition = 
       prod.dealview === 1 || // 활성화된 상품은 모두에게 보임
       (prod.dealview === 0 && user?.userIdx === prod.dealSellerUserIdx); // 비활성화된 상품은 판매자에게만 보임
-
+      
     return categoryMatch && viewCondition;
   });
 
@@ -206,7 +202,7 @@ export default function ProductSearchPage() {
 
   // 카테고리별 상품 수를 계산하는 함수 추가
   const getCategoryCount = (category) => {
-    return products.filter(product =>
+    return products.filter(product => 
       category === "전체" ? true : product.dealCategory === category
     ).length;
   };
@@ -228,18 +224,18 @@ export default function ProductSearchPage() {
   return (
     <div className="deal-main-wrapper">
       <div className='deal-main-nav'>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
           padding: '0 20px',
           gap: '20px'  // 요소들 사이의 간격 추가
         }}>
           {/* 왼쪽 여백을 위한 div */}
           <div style={{ flex: '1' }}></div>
-
+          
           {/* 검색창 컨테이너 */}
-          <div className='search-container' style={{
+          <div className='search-container' style={{ 
             flex: '2',  // 더 많은 공간 차지
             display: 'flex',
             justifyContent: 'center'  // 중앙 정렬
@@ -270,16 +266,16 @@ export default function ProductSearchPage() {
               }}
             />
           </div>
-
+          
           {/* 오른쪽 버튼 그룹 */}
-          <div className='btn-nav' style={{
+          <div className='btn-nav' style={{ 
             flex: '1',
             display: 'flex',
             alignItems: 'center',
             marginLeft: '-5px' // 전체를 왼쪽으로 5px 이동
           }}>
-            <Link
-              href={isAuthenticated ? "/deal/write" : '/user/login'}
+            <Link 
+              href={isAuthenticated ? "/deal/write" : '/user/login'} 
               className="nav-link"
               onClick={(e) => {
                 if (!isAuthenticated) {
@@ -290,11 +286,11 @@ export default function ProductSearchPage() {
               }}
               style={{ marginRight: '10px' }}
             >
-              <AppRegistrationIcon sx={{ marginRight: '4px', fontSize: '20px', verticalAlign: 'middle', color: '#4D88FF' }} />
+              <AppRegistrationIcon sx={{ marginRight: '4px', fontSize: '20px', verticalAlign: 'middle', color: '#4D88FF' }}/>
               상품등록
             </Link>
-            <Link
-              href={isAuthenticated ? `/deal/management` : '/user/login'}
+            <Link 
+              href={isAuthenticated ? `/deal/management` : '/user/login'} 
               className="nav-link"
               onClick={(e) => {
                 if (!isAuthenticated) {
@@ -304,7 +300,7 @@ export default function ProductSearchPage() {
                 }
               }}
             >
-              <ListAltIcon sx={{ fontSize: '20px', verticalAlign: 'middle', color: '#4D88FF' }} />
+              <ListAltIcon sx={{ fontSize: '20px', verticalAlign: 'middle', color: '#4D88FF' }}/>
               나의거래
             </Link>
           </div>
@@ -323,7 +319,7 @@ export default function ProductSearchPage() {
             "전체", "텐트/타프", "식품/음료", "휴대용품", "가방/스토리지", "취미/게임", "침구류",
             "의류/신발", "위생용품", "난방/화로", "반려동물용품", "취사도구", "디지털기기",
             "안전보안", "뷰티/미용", "테이블/의자", "기타 물품"
-          ].filter(category =>
+          ].filter(category => 
             category === "전체" || getCategoryCount(category) > 0
           ).map((category) => (
             <button
@@ -390,7 +386,7 @@ export default function ProductSearchPage() {
                 <div className="review-thumbnail">
                   <img
                     src={log.fileName ? `http://localhost:8080/upload/${log.fileName}` : "/images/campImageholder3.png"}
-                    alt="캠핑 후기 썸네일"
+                    alt="캠핑 후기 썸네일" 
                     className="review-thumbnail-img"
                   />
                 </div>

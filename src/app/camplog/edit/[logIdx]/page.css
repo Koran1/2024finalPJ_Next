@@ -1,21 +1,25 @@
 .fade-enter {
   opacity: 0;
   top: calc(${tag.tagY - 107}px) !important;
+  font-family: 'MinSans-Regular';
 }
 
 .fade-enter-active {
   opacity: 1;
   top: calc(${tag.tagY - 57}px) !important;
   transition: opacity 500ms, top 500ms ease-out;
+  font-family: 'MinSans-Regular';
 }
 
 .fade-exit {
   opacity: 1;
   top: calc(${tag.tagY - 57}px) !important;
+  font-family: 'MinSans-Regular';
 }
 
 .fade-exit-active {
   opacity: 0;
   top: calc(${tag.tagY - 107}px) !important;
   transition: opacity 500ms, top 500ms ease-out;
+  font-family: 'MinSans-Regular';
 }
