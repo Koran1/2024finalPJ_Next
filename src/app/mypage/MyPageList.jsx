@@ -1,6 +1,6 @@
 'use client'
 import { Collapse, List, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from "@mui/material";
-import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useState } from "react";
 import CommentIcon from '@mui/icons-material/Comment';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';

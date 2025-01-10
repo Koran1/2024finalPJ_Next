@@ -1,6 +1,4 @@
 'use client'
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { blue, lime, purple } from '@mui/material/colors';
 import { Button, FormControl, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import Link from 'next/link';

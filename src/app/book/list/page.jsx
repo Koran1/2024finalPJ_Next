@@ -10,6 +10,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import useAuthStore from "../../../../store/authStore";
 import axios from "axios";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CardTravelIcon from '@mui/icons-material/CardTravel';
 
 // 커스텀 화살표 컴포넌트
 const CustomArrow = ({ className, style, onClick, direction }) => (
@@ -408,50 +409,57 @@ function Page() {
                         <div className="connect-plan-body">
                             <>
                                 {selectedReservation &&
-                                    (new Date(selectedReservation.date.substring(0, 10)).getTime() <= Date.now() + 10 * 24 * 60 * 60 * 1000 ? (
-                                        <div style={{ width: "100%" }}>
-                                            {/* <p>{selectedReservation.title}</p>
-                                            <p>{selectedReservation.regionCode}</p>
-                                            <p>{selectedReservation.addr1}</p> */}
-                                            <TableContainer component={Paper}>
-                                                <Table className="custom-table" >
-                                                    <TableHead>
-                                                        <TableRow >
-                                                            {['날짜', '최저', '최고', '날씨', '강수', '일출 / 일몰', '월출 / 월몰', '달모양']
-                                                                .map(header => <TableCell key={header} className="table-header">{header}</TableCell>)}
-                                                        </TableRow>
-                                                    </TableHead>
-                                                    <TableBody>
-                                                        <TableRow>
-                                                            <TableCell>{selectedReservation.date.substring(0, 10)}</TableCell>
-                                                            <TableCell>{Math.round(selectedReservation.wthrTMin)}</TableCell>
-                                                            <TableCell>{Math.round(selectedReservation.wthrTMax)}</TableCell>
-                                                            <TableCell>{selectedReservation.wthrSKY_PTY}</TableCell>
-                                                            <TableCell>{selectedReservation.wthrPOP}</TableCell>
-                                                            <TableCell>
-                                                                {selectedReservation.wthrSunrise.substring(0, 2)}:{selectedReservation.wthrSunrise.substring(2)}
-                                                                /&nbsp;
-                                                                {selectedReservation.wthrSunset.substring(0, 2)}:{selectedReservation.wthrSunset.substring(2)}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {selectedReservation.wthrMoonrise.substring(0, 2)}:{selectedReservation.wthrMoonrise.substring(2)}
-                                                                /&nbsp;
-                                                                {selectedReservation.wthrMoonset.substring(0, 2)}:{selectedReservation.wthrMoonset.substring(2)}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <img src={getMoonImage(selectedReservation.wthrLunAge)} alt={`Moon phase for age ${selectedReservation.wthrLunAge}`} />
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
-                                        </div>
-                                    ) : (
+                                    (new Date(selectedReservation.date.substring(0, 10)).getTime() <= Date.now() ?
                                         <>
-                                            <AddCircleOutlineIcon />
-                                            <span className="connect-plan-text">기상 정보는 최대 10일까지 제공됩니다.</span>
+                                            <span className="connect-plan-text">
+                                                <CardTravelIcon />
+                                                즐거운 여행 되세요!
+                                            </span>
                                         </>
-                                    ))
+                                        :
+                                        new Date(selectedReservation.date.substring(0, 10)).getTime() <= Date.now() + 10 * 24 * 60 * 60 * 1000 ? (
+                                            <div style={{ width: "100%" }}>
+                                                <TableContainer component={Paper}>
+                                                    <Table className="custom-table" >
+                                                        <TableHead>
+                                                            <TableRow >
+                                                                {['날짜', '최저', '최고', '날씨', '강수', '일출 / 일몰', '월출 / 월몰', '달모양']
+                                                                    .map(header => <TableCell key={header} className="table-header">{header}</TableCell>)}
+                                                            </TableRow>
+                                                        </TableHead>
+                                                        <TableBody>
+                                                            <TableRow>
+                                                                <TableCell>{selectedReservation.date.substring(0, 10)}</TableCell>
+                                                                <TableCell>{Math.round(selectedReservation.wthrTMin)}</TableCell>
+                                                                <TableCell>{Math.round(selectedReservation.wthrTMax)}</TableCell>
+                                                                <TableCell>{selectedReservation.wthrSKY_PTY}</TableCell>
+                                                                <TableCell>{selectedReservation.wthrPOP}</TableCell>
+                                                                <TableCell>
+                                                                    {selectedReservation.wthrSunrise.substring(0, 2)}:{selectedReservation.wthrSunrise.substring(2)}
+                                                                    /&nbsp;
+                                                                    {selectedReservation.wthrSunset.substring(0, 2)}:{selectedReservation.wthrSunset.substring(2)}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {selectedReservation.wthrMoonrise.substring(0, 2)}:{selectedReservation.wthrMoonrise.substring(2)}
+                                                                    /&nbsp;
+                                                                    {selectedReservation.wthrMoonset.substring(0, 2)}:{selectedReservation.wthrMoonset.substring(2)}
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <img src={getMoonImage(selectedReservation.wthrLunAge)} alt={`Moon phase for age ${selectedReservation.wthrLunAge}`} />
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        </TableBody>
+                                                    </Table>
+                                                </TableContainer>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span className="connect-plan-text">
+                                                    <AddCircleOutlineIcon />
+                                                    기상 정보는 최대 10일까지 제공됩니다.
+                                                </span>
+                                            </>
+                                        ))
                                 }
                                 {selectedReservation && (
                                     <>

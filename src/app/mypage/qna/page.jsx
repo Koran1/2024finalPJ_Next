@@ -2,7 +2,6 @@
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import MyPageList from '../MyPageList';
-import { useRouter } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 import Link from 'next/link';

@@ -1,8 +1,7 @@
 'use client'
 import { Box, Button, Stack, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import MyPageList from '../MyPageList';
-import { useRouter } from 'next/navigation';
 import useAuthStore from '../../../../store/authStore';
 import axios from 'axios';
 

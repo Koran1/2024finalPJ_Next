@@ -1,6 +1,6 @@
 "use client";
 import './login.css'
-import { Avatar, FormControl, TextField, Stack, Button } from '@mui/material';
+import { FormControl, TextField, Stack, Button } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -121,9 +121,7 @@ function Page() {
             {/* <div className='p2'>Social Login</div> */}
             <Stack className="btn1" direction="row" spacing={2} alignItems='center'>
                 <img src='/images/kakao_login_icon.png' onClick={handleKakaoLogin} style={{ width: '200px', height: '48px', cursor: "pointer" }} />
-                <img src='/images/naver_icon.png' onClick={handleNaverLogin} style={{ width: '195px', height: '47px',  cursor: "pointer"}} />
-                {/* <img src='/images/kakao_login_large.png' onClick={handleKakaoLogin} style={{ width: '100px', height: '45px' }} />
-                <img src='/images/btnG_축약형.png' onClick={handleNaverLogin} style={{ width: '120px', height: '45px' }} /> */}
+                <img src='/images/naver_icon.png' onClick={handleNaverLogin} style={{ width: '195px', height: '47px', cursor: "pointer" }} />
             </Stack>
         </div>
     );

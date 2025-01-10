@@ -1,5 +1,5 @@
 "use client"
-import { Avatar, Box, Button, FormControl, Stack, TextField } from '@mui/material';
+import { Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import axios from 'axios';
 import { debounce } from 'lodash';
 import { useRouter } from 'next/navigation';

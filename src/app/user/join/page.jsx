@@ -98,7 +98,7 @@ function Page() {
                         <Button variant='outlined' sx={{ color: "black", border: "none", marginTop: "-10px" }} onClick={handleCloseModal}>X</Button>
                     </Box>
                     <Box>
-                        <Terms />
+                        <Privacy />
                     </Box>
                 </Box>
             </Modal>

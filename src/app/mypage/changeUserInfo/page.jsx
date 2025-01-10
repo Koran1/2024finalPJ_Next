@@ -9,7 +9,7 @@ import { postcodeScriptUrl } from 'react-daum-postcode/lib/loadPostcode';
 import '../mypage.css'
 import { debounce } from 'lodash';
 import { useRouter } from 'next/navigation';
-import { AddAPhoto, Image } from '@mui/icons-material';
+import { AddAPhoto } from '@mui/icons-material';
 import { VisuallyHiddenInput } from './VisuallyHiddenInput';
 
 
@@ -265,12 +265,12 @@ function Page() {
                 <div className='page-text'>회원정보 수정</div>
                 {!isPwChecked ?
                     <Box sx={{ display: 'flex', height: '50vh', width: '100vh', marginLeft: '20px', marginTop: '15px' }}>
-                        <TextField 
-                        className='pp1' type='password' name='userPw'
+                        <TextField
+                            className='pp1' type='password' name='userPw'
                             label='비밀번호'
                             value={uvo.userPw}
                             onChange={changeUvo} />
-                        <Button sx={{ display: 'flex', alignItems: 'center' , height: '56px'}}
+                        <Button sx={{ display: 'flex', alignItems: 'center', height: '56px' }}
                             variant='contained' color='primary'
                             disabled={isPwChecked}
                             onClick={checkPw}>비밀번호 확인</Button>
@@ -337,13 +337,6 @@ function Page() {
                                     type='text' label='닉네임'
                                     name='userNickname' value={uvo.userNickname}
                                     disabled />
-
-                                {/* <TextField className='pp2' error={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && !nickPass}
-                                type='text' label='닉네임'
-                                name='userNickname' value={uvo.userNickname}
-                                helperText={uvo.userNickname && uvo.userNickname != originalUvo.userNickname && (nickHelper ? nickHelper : "중복검사 중...")} onChange={changeUvo}
-                                disabled /> */}
-
 
                                 <Box>
                                     <TextField error={uvo.userMail && uvo.userMail != originalUvo.userMail && (!mailDupl || mailError)}

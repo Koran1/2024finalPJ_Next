@@ -1,7 +1,6 @@
 'use client'
 import { Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import axios from 'axios';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import './findpw.css'
@@ -125,12 +124,12 @@ function Page() {
             .catch(err => console.error(err))
     }
     return (
-        <div className='container-box-pw'> 
+        <div className='container-box-pw'>
             {!userIdx ? (
                 <>
                     <div className='p11'>비밀번호 찾기</div>
 
-                    <FormControl  className='fcontrol' >
+                    <FormControl className='fcontrol' >
                         <Stack direction="column" spacing={1} alignItems='center'>
                             <TextField className='textf' type='text' label='이름' name='userName' value={uvo.userName} onChange={changeUvo} />
                             <TextField className='textf' type='text' label='아이디' name='userId' value={uvo.userId} onChange={changeUvo} />
@@ -147,7 +146,7 @@ function Page() {
                                 <TextField type='text' label='인증번호 확인'
                                     disabled={!mailNum} name="chkMailNum" value={chkMailNum}
                                     onChange={(e) => setChkMailNum(e.target.value)} />
-                                <Button  disabled={!mailNum} variant='contained'
+                                <Button disabled={!mailNum} variant='contained'
                                     sx={{ ml: 2 }} onClick={handleMailChk}>인증번호 확인</Button>
                             </Box>
 

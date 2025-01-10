@@ -1,16 +1,16 @@
 'use client'
-import { Accordion, AccordionActions, AccordionDetails, AccordionSummary, Box, Button, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import React, { useEffect, useState } from 'react';
 import { AddSideBar } from '../../../../components/add/notice/AddSideBar';
 import axios from 'axios';
 
-function Page(props) {
+function Page() {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL
 
     const [faqs, setFaqs] = useState([]);
     useEffect(() => {
-        const data = axios.get(`${LOCAL_API_BASE_URL}/add/faq`)
+        axios.get(`${LOCAL_API_BASE_URL}/add/faq`)
             .then((res) => {
                 console.log(res.data);
                 setFaqs(res.data.data);

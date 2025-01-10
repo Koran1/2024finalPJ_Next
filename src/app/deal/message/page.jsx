@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import "./message.css";
-import { alpha, Avatar, Badge, Box, Card, Grid2, InputBase, styled, Typography } from "@mui/material";
+import { Avatar, Badge, Box, Card, Grid2, Typography } from "@mui/material";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import ChatBox from "../../../../components/deal/Chat/ChatBox";
 import useAuthStore from "../../../../store/authStore";
@@ -23,7 +23,7 @@ function Page() {
         return activeLink === link ? 'active' : '';
     };
 
-    const { isAuthenticated, isExpired, user } = useAuthStore();
+    const { user } = useAuthStore();
     // 판매자 정보(idx) 가져오기
     const otherUser = useSearchParams().get('seller');
     const dealIdx = useSearchParams().get('dealIdx');
@@ -32,8 +32,6 @@ function Page() {
     const [userList, setUserList] = useState([]);
     const [recentChat, setRecentChat] = useState([]);
 
-    // 로그인 확인 절차
-    const router = useRouter();
 
     const [loading, setLoading] = useState(true);
 
@@ -92,71 +90,64 @@ function Page() {
                     </Link>
                 </div>
                 <hr />
-            
 
-            {/* 채팅 화면 */}
-            {chatList.length === 0 ?
-                <Box>
-                    <h1>채팅 내역이 없습니다</h1>
-                </Box>
-                :
 
-                <Tabs className="chat-tabs" >
-                    <Grid2
-                        container
-                        rowSpacing={1}
-                        columnSpacing={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 2 }}
-                    >
-                        <Grid2 xs={4} sm={4} md={4} lg={4} xl={4}
-                            width="30%"
+                {/* 채팅 화면 */}
+                {chatList.length === 0 ?
+                    <Box>
+                        <h1>채팅 내역이 없습니다</h1>
+                    </Box>
+                    :
+
+                    <Tabs className="chat-tabs" >
+                        <Grid2
+                            container
+                            rowSpacing={1}
+                            columnSpacing={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 2 }}
                         >
-                            <Card
-                                sx={{
-                                    boxShadow: "none",
-                                    p: "20px",
-                                    mb: "15px",
-                                }}
+                            <Grid2 xs={4} sm={4} md={4} lg={4} xl={4}
+                                width="30%"
                             >
-                                {/* All Messages */}
-                                <Typography mb="10px">
-                                    <i className="ri-message-2-line"></i> 모든 메세지
-                                </Typography>
+                                <Card
+                                    sx={{
+                                        boxShadow: "none",
+                                        p: "20px",
+                                        mb: "15px",
+                                    }}
+                                >
+                                    {/* All Messages */}
+                                    <Typography mb="10px">
+                                        <i className="ri-message-2-line"></i> 모든 메세지
+                                    </Typography>
 
-                                <TabList >
-                                    {
-                                        chatList
-                                            .sort((a, b) => {
-                                                const isAOtherUser = a.userIdx === otherUser && a.dealIdx === dealIdx;
-                                                const isBOtherUser = b.userIdx === otherUser && b.dealIdx === dealIdx;
+                                    <TabList >
+                                        {
+                                            chatList
+                                                .sort((a, b) => {
+                                                    const isAOtherUser = a.userIdx === otherUser && a.dealIdx === dealIdx;
+                                                    const isBOtherUser = b.userIdx === otherUser && b.dealIdx === dealIdx;
 
-                                                if (isAOtherUser && !isBOtherUser) return -1;   // a가 상대방이면 a를 먼저
-                                                if (!isAOtherUser && isBOtherUser) return 1;    // b가 상대방이면 b를 먼저
+                                                    if (isAOtherUser && !isBOtherUser) return -1;   // a가 상대방이면 a를 먼저
+                                                    if (!isAOtherUser && isBOtherUser) return 1;    // b가 상대방이면 b를 먼저
 
-                                                // 둘 다 아닌 경우
-                                                const aRecentChat = recentChat.find((rec) => rec.chatRoom === a.chatRoom);
-                                                const bRecentChat = recentChat.find((rec) => rec.chatRoom === b.chatRoom);
+                                                    // 둘 다 아닌 경우
+                                                    const aRecentChat = recentChat.find((rec) => rec.chatRoom === a.chatRoom);
+                                                    const bRecentChat = recentChat.find((rec) => rec.chatRoom === b.chatRoom);
 
-                                                const aChatTime = aRecentChat?.chatTime || 0;
-                                                const bChatTime = bRecentChat?.chatTime || 0;
+                                                    const aChatTime = aRecentChat?.chatTime || 0;
+                                                    const bChatTime = bRecentChat?.chatTime || 0;
 
-                                                return new Date(bChatTime) - new Date(aChatTime);
-                                            })
-                                            .map((chat) => {
-                                                return (
-                                                    <Tab style={{
-                                                        border: "1px solid #E8E8F7",
-                                                        borderRadius: "10px",
-                                                        padding: "10px 15px",
-                                                    }}
-                                                        key={chat.chatRoom}
-                                                        value={chat.chatRoom}
-                                                    >
-                                                        <Box
-                                                            sx={{
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                justifyContent: "space-between",
-                                                            }}
+                                                    return new Date(bChatTime) - new Date(aChatTime);
+                                                })
+                                                .map((chat) => {
+                                                    return (
+                                                        <Tab style={{
+                                                            border: "1px solid #E8E8F7",
+                                                            borderRadius: "10px",
+                                                            padding: "10px 15px",
+                                                        }}
+                                                            key={chat.chatRoom}
+                                                            value={chat.chatRoom}
                                                         >
                                                             <Box
                                                                 sx={{
@@ -167,126 +158,133 @@ function Page() {
                                                             >
                                                                 <Box
                                                                     sx={{
-                                                                        position: "relative",
-                                                                        marginRight: "10px",
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "space-between",
                                                                     }}
                                                                 >
-                                                                    {userList.map((user) => {
-                                                                        if (chat.userIdx === user.userIdx) {
-                                                                            <Avatar src={user.userEtc01 ? `${LOCAL_IMG_URL}/user/${user.userEtc01}` : "default-product-image.jpg"} />
-                                                                        }
-                                                                    })}
-                                                                </Box>
-
-                                                                <Box className="ml-1">
-                                                                    <Typography
-                                                                        as="h4"
-                                                                        fontSize="18px"
-                                                                        fontWeight="600"
-                                                                        mb="5px"
+                                                                    <Box
+                                                                        sx={{
+                                                                            position: "relative",
+                                                                            marginRight: "10px",
+                                                                        }}
                                                                     >
-                                                                        {/* // 여기에 보낸 사람 이름 */}
-                                                                        {userList.find((user) => chat.userIdx === user.userIdx).userNickname}
-                                                                    </Typography>
-
-                                                                    {/* // 여기에 메세지 가장 최근 내용 */}
-                                                                    <Typography fontSize="12px">
-                                                                        {(() => {
-                                                                            const rec = recentChat.find((rec) => rec.chatRoom === chat.chatRoom);
-                                                                            if (rec) {
-                                                                                const msg = rec.chatMessage;
-                                                                                return msg ? (msg.length > 15 ? msg.substring(0, 15) + '...' : msg) : "...";
+                                                                        {userList.map((user) => {
+                                                                            if (chat.userIdx === user.userIdx) {
+                                                                                <Avatar src={user.userEtc01 ? `${LOCAL_IMG_URL}/user/${user.userEtc01}` : "default-product-image.jpg"} />
                                                                             }
-                                                                            return
-                                                                        })()}
-                                                                    </Typography>
+                                                                        })}
+                                                                    </Box>
 
-                                                                </Box>
-                                                            </Box>
+                                                                    <Box className="ml-1">
+                                                                        <Typography
+                                                                            as="h4"
+                                                                            fontSize="18px"
+                                                                            fontWeight="600"
+                                                                            mb="5px"
+                                                                        >
+                                                                            {/* // 여기에 보낸 사람 이름 */}
+                                                                            {userList.find((user) => chat.userIdx === user.userIdx).userNickname}
+                                                                        </Typography>
 
-                                                            <Box textAlign="right">
-                                                                <Typography
-                                                                    sx={{
-                                                                        color: "#A9A9C8",
-                                                                        fontSize: "11px",
-                                                                    }}
-                                                                >
-                                                                    {/* // 여기에 메세지 시간 */}
-                                                                    {recentChat.map((rec) => {
-                                                                        if (rec.chatRoom === chat.chatRoom) {
-                                                                            const msgTime = rec.chatTime;
-                                                                            if (msgTime) {
-                                                                                const todayDate = new Date().getDay();
-
-                                                                                // 오늘 날짜이면 시간만 표시
-                                                                                if (todayDate === new Date(msgTime).getDay()) {
-                                                                                    const ampm = msgTime.substring(11, 13) > 11 ? 'PM' : 'AM';
-                                                                                    return msgTime.substring(11, 16) + ' ' + ampm;
-                                                                                } else {
-                                                                                    return msgTime.substring(5, 7) + '.' + msgTime.substring(8, 16);
+                                                                        {/* // 여기에 메세지 가장 최근 내용 */}
+                                                                        <Typography fontSize="12px">
+                                                                            {(() => {
+                                                                                const rec = recentChat.find((rec) => rec.chatRoom === chat.chatRoom);
+                                                                                if (rec) {
+                                                                                    const msg = rec.chatMessage;
+                                                                                    return msg ? (msg.length > 15 ? msg.substring(0, 15) + '...' : msg) : "...";
                                                                                 }
-                                                                            } else {
-                                                                                return ''
-                                                                            }
-                                                                        }
-                                                                    })}
-                                                                </Typography>
+                                                                                return
+                                                                            })()}
+                                                                        </Typography>
 
-                                                                <Box className="mr-10px">
-                                                                    <Badge
-                                                                        badgeContent={chat.unReadCount} // 여기에 메세지 개수
-                                                                        color="primary"
-                                                                        className="for-dark-text-white"
-                                                                    ></Badge>
+                                                                    </Box>
+                                                                </Box>
+
+                                                                <Box textAlign="right">
+                                                                    <Typography
+                                                                        sx={{
+                                                                            color: "#A9A9C8",
+                                                                            fontSize: "11px",
+                                                                        }}
+                                                                    >
+                                                                        {/* // 여기에 메세지 시간 */}
+                                                                        {recentChat.map((rec) => {
+                                                                            if (rec.chatRoom === chat.chatRoom) {
+                                                                                const msgTime = rec.chatTime;
+                                                                                if (msgTime) {
+                                                                                    const todayDate = new Date().getDay();
+
+                                                                                    // 오늘 날짜이면 시간만 표시
+                                                                                    if (todayDate === new Date(msgTime).getDay()) {
+                                                                                        const ampm = msgTime.substring(11, 13) > 11 ? 'PM' : 'AM';
+                                                                                        return msgTime.substring(11, 16) + ' ' + ampm;
+                                                                                    } else {
+                                                                                        return msgTime.substring(5, 7) + '.' + msgTime.substring(8, 16);
+                                                                                    }
+                                                                                } else {
+                                                                                    return ''
+                                                                                }
+                                                                            }
+                                                                        })}
+                                                                    </Typography>
+
+                                                                    <Box className="mr-10px">
+                                                                        <Badge
+                                                                            badgeContent={chat.unReadCount} // 여기에 메세지 개수
+                                                                            color="primary"
+                                                                            className="for-dark-text-white"
+                                                                        ></Badge>
+                                                                    </Box>
                                                                 </Box>
                                                             </Box>
-                                                        </Box>
-                                                    </Tab>
+                                                        </Tab>
 
-                                                )
-                                            })
+                                                    )
+                                                })
+                                        }
+
+
+                                    </TabList>
+                                </Card>
+                            </Grid2>
+
+                            <Grid2 xs={8} sm={8} md={8} lg={8} xl={8}
+                                width="60%" paddingLeft="5%" paddingRight="5%">
+                                <Card
+                                    sx={{
+                                        boxShadow: "none",
+                                        p: "30px 30px",
+                                        mb: "15px",
+                                        borderRadius: "10px",
+                                    }}
+                                >
+                                    {
+                                        chatList.map((chat) => {
+                                            return (
+                                                <TabPanel key={chat.chatRoom} value={chat.chatRoom}>
+                                                    {/* ChatBox */}
+                                                    <ChatBox room={chat.chatRoom} senderIdx={chat.userIdx}
+                                                        senderNick={userList.map((user) => {
+                                                            if (chat.userIdx === user.userIdx) {
+                                                                return user.userNickname
+                                                            }
+                                                        })}
+                                                        dealIdx={chat.dealIdx}
+                                                    />
+                                                </TabPanel>
+                                            )
+                                        })
                                     }
 
 
-                                </TabList>
-                            </Card>
+                                </Card>
+                            </Grid2>
                         </Grid2>
-
-                        <Grid2 xs={8} sm={8} md={8} lg={8} xl={8}
-                            width="60%" paddingLeft="5%" paddingRight="5%">
-                            <Card
-                                sx={{
-                                    boxShadow: "none",
-                                    p: "30px 30px",
-                                    mb: "15px",
-                                    borderRadius: "10px",
-                                }}
-                            >
-                                {
-                                    chatList.map((chat) => {
-                                        return (
-                                            <TabPanel key={chat.chatRoom} value={chat.chatRoom}>
-                                                {/* ChatBox */}
-                                                <ChatBox room={chat.chatRoom} senderIdx={chat.userIdx}
-                                                    senderNick={userList.map((user) => {
-                                                        if (chat.userIdx === user.userIdx) {
-                                                            return user.userNickname
-                                                        }
-                                                    })}
-                                                    dealIdx={chat.dealIdx}
-                                                />
-                                            </TabPanel>
-                                        )
-                                    })
-                                }
-
-
-                            </Card>
-                        </Grid2>
-                    </Grid2>
-                </Tabs>
-            }
-        </div>
+                    </Tabs>
+                }
+            </div>
         </div>
     );
 }
