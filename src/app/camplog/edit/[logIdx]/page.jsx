@@ -50,6 +50,7 @@ function EditPage({ params }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isLogSame, setIssLogSame] = useState(true);
     const { isAuthenticated, token, user } = useAuthStore();
+    console.log("extra: ", extraFields);
 
 
     // 기존 데이터 불러오기
@@ -380,17 +381,15 @@ function EditPage({ params }) {
                     deleteOrders.push(i + 1);
                 }
             }
-            console.log("beforeFile",beforeFile );
-            console.log("afterFile",afterFile );
-            console.log("deleteOrders",deleteOrders );
             const fileData = [
                 ...extraFields.map((field, index) => ({
                     fileOrder: index + 1,
-                    isThumbnail: field.isThumbnail ? 1 : 0,
+                    isThumbnail: field.isThumbnail == true ? "1" : "0",
                     isFileThere: field.file ? true : false,
                     file: field.file,
                 })).filter(data => data.isFileThere == true)
             ];
+            console.log("fileData: ", fileData);
             const tagData = tags.map(tag => ({
                 logIdx: logIdx,
                 fieldIdx: tag.fieldIdx,
@@ -419,7 +418,7 @@ function EditPage({ params }) {
             }
 
             try {
-                const response = await axios.post(apiUrl, formData);
+                // const response = await axios.post(apiUrl, formData);
                 if (response.data.success) {
                     alert(response.data.message);
                     router.push(`/camplog/detail/${logIdx}`);
@@ -477,7 +476,7 @@ function EditPage({ params }) {
         return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(price);
     }
     const handleCampModal = async () => {
-        const apiUrl = `${baseUrl}/camplog/campmodal?userIdx=${1}&campIdx=${LinkedCampIdx}`;// userIdx 임시값
+        const apiUrl = `${baseUrl}/camplog/campmodal?userIdx=${user.userIdx}&campIdx=${LinkedCampIdx}`;// userIdx 임시값
         try {
             if (campData.length > 0) {
                 setShowCampModal(true);
@@ -549,6 +548,10 @@ function EditPage({ params }) {
         const bfFile = data.pData.flatMap(item => item.fileName || null).filter((item, index) => index != 0);
         const afFile = extraFields.map(item => item.fileName || null);
         const isFileSame = bfFile.length === afFile.length && bfFile.every((value, index) => value === afFile[index]);
+        const bfTumbnail = data.pData.filter(item => item.fileName != null).flatMap(item => [{fileName: item.fileName, isThumbnail: item.isTumbnail}]).filter(item => item.isThumbnail == "1").map(item => item.fileName);;
+        const afTumbnail = extraFields.filter(item => item.isThumbnail == true).map(item => item.fileName);
+        const isTumbnailSame = bfTumbnail[0] == afTumbnail[0] ;
+
         
         const bfTag = data.pData.flatMap(item => item.tagData || []).map(tag => {
             return {
@@ -569,8 +572,7 @@ function EditPage({ params }) {
                 value.text == afTag[index].text &&
             value.dealIdx == afTag[index].dealIdx
         );
-        console.log("isExtraContentSame: ", isExtraContentSame);
-        setIssLogSame(isTitleSame && isDefaultContentSame && isconfirmedIdxSame && isFileSame && isTagSame &&  isExtraContentSame );
+        setIssLogSame(isTitleSame && isDefaultContentSame && isconfirmedIdxSame && isFileSame && isTagSame &&  isExtraContentSame && isTumbnailSame );
     }
     useEffect(() => {
         judgeIsChange();
@@ -589,7 +591,7 @@ function EditPage({ params }) {
             <Grid2 container spacing={2}>
                 <Grid2 size={2} />
                 <Grid2 size={1}>
-                    {extraFields.some(field => field.previewUrl != null) ? (
+                    {extraFields.some(field => field.previewUrl != null || field.fileName) ? (
                         <div style={{ border: "1px solid gray", width: "120px", maxHeight: "50vh", position: "fixed", textAlign: 'center', overflowY: "auto" }}>
                             <style>
                                 {/* 이미지바 스크롤 CSS */}
@@ -609,7 +611,7 @@ function EditPage({ params }) {
                                                     }
                                                     `}
                             </style>
-                            {extraFields.filter(field => field.previewUrl != null).map(field => {
+                            {extraFields.filter(field => field.previewUrl != null || field.fileName).map(field => {
                                 return (
                                     <div key={field.id}>
                                         {field.isThumbnail ? (<span style={{ color: "red" }}>대표사진</span>) : ""}
