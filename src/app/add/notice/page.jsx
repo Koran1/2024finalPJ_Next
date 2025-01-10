@@ -59,16 +59,17 @@ function Page() {
         <Box display="flex" style={{ marginTop: '100px' }}>
 
             <AddSideBar />
-            <Box flexGrow={1} p={2}>
+            <Box flexGrow={1} p={2} style={{ marginLeft: '25px' }}>
                 <Box>
                     <TextField
+                        style={{ marginRight: '10px' }}
                         variant="outlined"
                         placeholder="검색어를 입력하세요..."
                         value={searchKeyword}
                         onChange={handleSearch}
                         sx={{ mb: 2 }}
                     />
-                    <Button variant='contained' onClick={getNotice}>검색</Button>
+                    <Button style={{ height: '55px' }} variant='contained' onClick={getNotice}>검색</Button>
                 </Box>
 
                 <TableContainer component={Paper}>
