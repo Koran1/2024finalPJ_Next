@@ -378,7 +378,9 @@ function Page({ params }) {
             </div>
             <hr />
 
-            <div className="price">{item.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원</div>
+            <div className="price">
+              {Number(item.dealPrice) === 0 ? "나눔" : `${item.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
+            </div>
 
             <div className="seller-info" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -629,7 +631,7 @@ function Page({ params }) {
                       <div className="nick">{deal.dealSellerNick}</div>
                       <div className="title">{deal.dealTitle}</div>
                       <div className="price">
-                        {deal.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원
+                        {Number(deal.dealPrice) === 0 ? "나눔" : `${deal.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
                       </div>
                     </div>
                   </Link>

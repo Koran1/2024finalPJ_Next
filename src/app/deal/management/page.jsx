@@ -63,37 +63,38 @@ function Page() {
 
     return (
         <>
-            <div className="pd-reg-container">
-
-                <div className="nav-links">
-                    <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
+            <div className="mag-pd-reg-container">
+                <div className="mag-nav-links">
+                    <Link href="/deal/management" className={`mag-btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
                         상품관리
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
+                    <span className="mag-nav-divider">|</span>
+                    <Link href="/deal/purchase" className={`mag-btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
                         구매내역
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/interest" className={`btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
+                    <span className="mag-nav-divider">|</span>
+                    <Link href="/deal/interest" className={`mag-btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
                         관심목록
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/rating" className={`btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
+                    <span className="mag-nav-divider">|</span>
+                    <Link href="/deal/rating" className={`mag-btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
                         나의평점
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/message" className={`btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
+                    <span className="mag-nav-divider">|</span>
+                    <Link href="/deal/message" className={`mag-btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
                         채팅목록
                     </Link>
                 </div>
                 <hr />
-                <div className="purchase-info">
-                    <div className="pi">상품 상세 정보</div>
-                    <div className="pi-count">상품 {item.length}개</div>
+                <div className="mag-purchase-info">
+                    <div>
+                        <div className="mag-pi">상품 상세 정보</div>
+                    </div>
+                    <div className="mag-pi-count">상품 {item.length}개</div>
                 </div>
 
                 {item.length > 0 ? (
-                    <table className="product-table">
+                    <table className="mag-product-table">
                         <thead>
                             <tr>
                                 <th>상품이미지</th>
@@ -106,7 +107,6 @@ function Page() {
                         <tbody>
                             {item.map((k, idx) => {
                                 return (
-
                                     <tr key={idx}>
                                         <td>
                                             <Link href={`/deal/detail/${k.dealIdx}`}>
@@ -136,7 +136,7 @@ function Page() {
                             })}
                         </tbody>
                     </table>) : ((
-                        <table className="product-table">
+                        <table className="mag-product-table">
                             <thead>
                                 <tr>
                                     <th>사진</th>

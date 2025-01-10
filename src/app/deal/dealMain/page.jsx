@@ -8,7 +8,7 @@ import axios from 'axios';
 
 
 import './dealMain.css';
-import { Box, Button, TextField, IconButton } from '@mui/material';
+import { Box, Button, TextField, IconButton, Pagination, Stack } from '@mui/material';
 import MainProductCard from './MainProductCard';
 import { blue } from '@mui/material/colors';
 import SearchIcon from '@mui/icons-material/Search';
@@ -29,6 +29,9 @@ export default function ProductSearchPage() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeSort, setActiveSort] = useState('latest');
   const [sellerCampLogs, setSellerCampLogs] = useState([]);
+  const [page, setPage] = useState(1);
+  const [itemsPerPage] = useState(30);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // dealMain 로딩
   useEffect(() => {
@@ -112,6 +115,31 @@ export default function ProductSearchPage() {
     fetchCampLogs();
   }, [LOCAL_API_BASE_URL]);
 
+  // 스크롤 이벤트 핸들러
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setShowScrollTop(true);
+    } else {
+      setShowScrollTop(false);
+    }
+  };
+
+  // 최상단으로 스크롤
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  // 스크롤 이벤트 리스너 등록
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
   // 로딩 & 에러 처리
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -177,6 +205,20 @@ export default function ProductSearchPage() {
     return products.filter(product => 
       category === "전체" ? true : product.dealCategory === category
     ).length;
+  };
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    // 페이지 상단으로 부드럽게 스크롤
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 현재 페이지의 상품들만 필터링
+  const getCurrentPageItems = () => {
+    const indexOfLastItem = page * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
   };
 
   return (
@@ -306,10 +348,33 @@ export default function ProductSearchPage() {
 
         {/* 상품 그리드 */}
         <div className="product-grid">
-          {filteredProducts.map((product) => (
+          {getCurrentPageItems().map((product) => (
             <MainProductCard key={product.dealIdx} product={product} favProducts={favProducts} />
           ))}
         </div>
+
+        {/* 페이지네이션 추가 */}
+        <Stack spacing={2} alignItems="center" sx={{ my: 4 }}>
+          <Pagination 
+            count={Math.ceil(filteredProducts.length / itemsPerPage)}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            size="large"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                fontSize: '1rem',
+                '&.Mui-selected': {
+                  backgroundColor: '#4D88FF',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: '#4D88FF',
+                  }
+                }
+              }
+            }}
+          />
+        </Stack>
 
         {/* 캠핑 후기 섹션 추가 */}
         <div className="seller-reviews">
@@ -333,6 +398,16 @@ export default function ProductSearchPage() {
           </div>
         </div>
       </div>
+
+      {/* 페이지 상단으로 가기 버튼 추가 */}
+      {showScrollTop && (
+        <button
+          className="scroll-to-top"
+          onClick={scrollToTop}
+        >
+          &#9650;
+        </button>
+      )}
     </div>
   );
 }

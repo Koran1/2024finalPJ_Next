@@ -18,6 +18,7 @@ function Page() {
     const LOCAL_IMG_URL = process.env.NEXT_PUBLIC_LOCAL_IMG_URL;
     const [deals, setDeals] = useState([]);
     const [mounted, setMounted] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -31,6 +32,7 @@ function Page() {
     // 거래 목록 조회
     const fetchDeals = async () => {
         try {
+            setLoading(true);
             const response = await axios.get(`${LOCAL_API_BASE_URL}/admin/dealList`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -45,6 +47,8 @@ function Page() {
             }
         } catch (error) {
             console.error("거래 목록 조회 에러:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -80,9 +84,12 @@ function Page() {
                 {mounted && <CurrentTime />}
                 <div className="deal-list-container">
                     <h2>캠핑마켓 관리</h2>
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>로딩 중...</div>
+                    ) : (
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableHead>
                                 <TableRow>
                                     <TableCell>상품이미지</TableCell>
                                     <TableCell>판매자</TableCell>
@@ -143,6 +150,7 @@ function Page() {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    )}
                 </div>
             </div>
         </div>

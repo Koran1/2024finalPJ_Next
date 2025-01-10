@@ -5,7 +5,7 @@ import Link from "next/link";
 import "./rating.css";
 import axios from "axios";
 import useAuthStore from "../../../../store/authStore";
-import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow, Rating } from "@mui/material";
 
 // 관심목록 페이지
 
@@ -38,78 +38,109 @@ function Page() {
     }, [user]);
 
     return (
-        <div className="pd-reg-container">
-            {/* 상단 네비게이션 */}
-            <div className="nav-links">
-                <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
+        <div className="rat-pd-reg-container">
+            <div className="rat-nav-links">
+                <Link href="/deal/management" className={`rat-btn1 ${getActiveClass('/deal/management')}`}>
                     상품관리
                 </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
+                <span className="rat-nav-divider">|</span>
+                <Link href="/deal/purchase" className={`rat-btn1 ${getActiveClass('/deal/purchase')}`}>
                     구매내역
                 </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/interest" className={`btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
+                <span className="rat-nav-divider">|</span>
+                <Link href="/deal/interest" className={`rat-btn1 ${getActiveClass('/deal/interest')}`}>
                     관심목록
                 </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/rating" className={`btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
+                <span className="rat-nav-divider">|</span>
+                <Link href="/deal/rating" className={`rat-btn1 ${getActiveClass('/deal/rating')}`}>
                     나의평점
                 </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/message" className={`btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
+                <span className="rat-nav-divider">|</span>
+                <Link href="/deal/message" className={`rat-btn1 ${getActiveClass('/deal/message')}`}>
                     채팅목록
                 </Link>
             </div>
-
             <hr />
-            <div className="rating-info">
-                <Box>
-                    <Box>
-                        <Box className="user-rats">
-                            사용자 평점 : {userRating}
-                        </Box>
-                        <div className="r-count"> 평점 {ratings.length}개</div>
-                    </Box>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>구매 상품</TableCell>
-                                <TableCell>구매자</TableCell>
-                                <TableCell>평가 내용</TableCell>
-                                <TableCell>평가 점수</TableCell>
-                                <TableCell>평가 등록일</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {ratings.length > 0 ?
-                                ratings.map((rating) => (
-                                    <TableRow key={rating.dealSatisSellerIdx}>
-                                        <TableCell>
-                                            <Link href={`/deal/detail/${rating.dealSatis01}`}>
-                                                <img src={`${LOCAL_IMG_URL}/deal/${rating.dealSatis02}`} alt="img"
-                                                    width="150px" height="150px" />
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell>{rating.dealSatisBuyerNick}</TableCell>
-                                        <TableCell>{rating.dealSatisBuyerContent}</TableCell>
-                                        <TableCell>{rating.dealSatisSellerScore}</TableCell>
-                                        <TableCell>{rating.dealSatisBuyerRegDate}</TableCell>
-                                    </TableRow>
-                                ))
-                                :
-                                <TableRow>
-                                    <TableCell colSpan={5}>
-                                        판매한 상품이 없습니다.
-                                    </TableCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-
-
-                </Box>
+            <div className="rat-rating-info">
+                <div className="rat-rating-title-container">
+                    <div className="rat-rating-title">나의 평점</div>
+                    <div className="rat-rating-score">
+                        <Rating
+                            name="read-only"
+                            value={Number(userRating) || 0}
+                            precision={0.5}
+                            readOnly
+                            size="small"
+                            sx={{
+                                '& .MuiRating-iconFilled': {
+                                    color: '#FFD700 !important'
+                                },
+                                '& .MuiRating-iconEmpty': {
+                                    color: '#C0C0C0 !important'
+                                }
+                            }}
+                        />
+                        <span>{userRating ? Number(userRating).toFixed(1) : '0.0'}</span>
+                    </div>
+                </div>
+                <div className="rat-r-count">평가 {ratings.length}개</div>
             </div>
+            <table className="rat-product-table">
+                <thead>
+                    <tr>
+                        <th>구매 상품</th>
+                        <th>구매자</th>
+                        <th>평가 내용</th>
+                        <th>평가 점수</th>
+                        <th>평가 등록일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {ratings.length > 0 ? (
+                        ratings.map((rating) => (
+                            <tr key={rating.dealSatisSellerIdx}>
+                                <td>
+                                    <Link href={`/deal/detail/${rating.dealSatis01}`}>
+                                        <img src={`${LOCAL_IMG_URL}/deal/${rating.dealSatis02}`} 
+                                            alt="img"
+                                            width="150px" 
+                                            height="150px" 
+                                        />
+                                    </Link>
+                                </td>
+                                <td>{rating.dealSatisBuyerNick}</td>
+                                <td>{rating.dealSatisBuyerContent}</td>
+                                <td>
+                                    <Rating
+                                        value={Number(rating.dealSatisSellerScore) || 0}
+                                        precision={0.5}
+                                        readOnly
+                                        size="small"
+                                        sx={{
+                                            '& .MuiRating-iconFilled': {
+                                                color: '#FFD700 !important'
+                                            },
+                                            '& .MuiRating-iconEmpty': {
+                                                color: '#C0C0C0 !important'
+                                            }
+                                        }}
+                                    />
+                                    <span style={{ marginLeft: '5px' }}>
+                                        {Number(rating.dealSatisSellerScore).toFixed(1)}
+                                    </span>
+                                </td>
+                                <td>{rating.dealSatisBuyerRegDate}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={5}>
+                                판매한 상품이 없습니다.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 }

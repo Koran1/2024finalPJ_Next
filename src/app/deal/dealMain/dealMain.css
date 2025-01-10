@@ -33,16 +33,14 @@
 
 .deal-main-wrapper .product-grid {
   text-decoration: none;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin: 1px;
-  padding: 0px;
-  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
+  margin-top: 30px;
   width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  min-height: 1200px;
 }
 
 /* 컨테이너 전체를 감싸는 wrapper 추가 */
@@ -236,8 +234,8 @@
 }
 
 .deal-main-wrapper .product-image {
-  width: 180px;
-  height: 200px;
+  width: 160px;
+  height: 180px;
   object-fit: cover;
   /* 이미지 비율 유지하면서 영역에 맞춤 */
   border-radius: 8px;
@@ -265,8 +263,8 @@
 
 /* dealMain 페이지의 이미지에 대한 별도 스타일 지정 */
 .deal-main-wrapper .dealMain-image {
-  width: 180px;
-  height: 200px;
+  width: 160px;
+  height: 180px;
   object-fit: cover;
   border-radius: 8px;
 }
@@ -333,8 +331,8 @@
 }
 
 .deal-main-wrapper .pd-reg-container .dealMain-image {
-  width: 180px;
-  height: 200px;
+  width: 160px;
+  height: 180px;
   object-fit: cover;
 }
 
@@ -360,7 +358,7 @@
 /* 나머지 스타일들도 .pd-reg-container 선택자 추가 */
 
 .deal-main-wrapper .pd-reg-container .product-item a {
-  width: 180px;
+  width: 160px;
   display: block;
 }
 
@@ -645,4 +643,42 @@
   background-color: #e9ecef;  /* 옅은 회색으로 변경 */
   margin: 15px 0 25px 0;  /* 위아래 여백 조정 */
   opacity: 0.8;  /* 투명도 추가로 더 부드럽게 */
+}
+
+/* 페이지네이션 스타일 */
+.deal-main-wrapper .MuiPagination-root {
+  margin: 40px 0;
+}
+
+.deal-main-wrapper .MuiPaginationItem-root {
+  font-family: 'MinSans-Regular';
+}
+
+/* 상품 그리드 최소 높이 설정 */
+.deal-main-wrapper .product-grid {
+  min-height: 1000px; /* 5줄 기준 최소 높이 */
+}
+
+/* 스크롤 관련 스타일 추가 */
+.deal-main-wrapper .scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #4D88FF;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.deal-main-wrapper .scroll-to-top:hover {
+  background-color: #3a6db3;
+  transform: scale(1.1);
 }

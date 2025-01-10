@@ -1,51 +1,55 @@
-.pd-reg-container {
+.rat-pd-reg-container {
   max-width: 1300px;
   margin: 0 auto;
   padding: 20px;
   font-size: 130%;
   margin-top: 50px;
   font-family: 'MinSans-Regular';
+  box-sizing: border-box;
 }
 
-.r-count {
+.rat-r-count {
+  font-size: 14px;
+  text-align: right;
+  margin-left: auto;
+  display: block;
+  font-weight: 500;
+  color: #666;
+  font-family: 'MinSans-Regular';
+}
+
+.rat-user-rats {
   font-size: 16px;
-  text-align: right; /* 텍스트 오른쪽 정렬 */
-  margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
-  display: block; /* 텍스트를 새로운 줄로 만듬 */
-  font-weight: bold;
-  color: #767474;
-  font-family: 'MinSans-Regular';
-}
-
-.user-rats {
-  font-size: 18px;
   margin-left: 5px;
-  color: #767474;
-  font-weight: bold;
+  color: #666;
+  font-weight: 500;
   font-family: 'MinSans-Regular';
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.btn1 {
-  color: #767474;
-  font-size: 20px;
-  font-weight: bold;
+.rat-btn1 {
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
   text-decoration: none;
   border-radius: 5px;
   display: inline-block;
   padding: 10px 20px;
-  /* 버튼의 내부 여백 추가 */
   font-family: 'MinSans-Regular';
+  transition: color 0.3s;
 }
 
-.btn1:hover {
+.rat-btn1:hover {
   color: #3DBDFD;
 }
 
-.btn1.active {
+.rat-btn1.active {
   color: orange;
 }
 
-.part {
+.rat-part {
   font-size: 16px;
   text-align: right;
   /* 텍스트 오른쪽 정렬 */
@@ -58,20 +62,23 @@
   font-family: 'MinSans-Regular';
 }
 
-.nav-links {
+.rat-nav-links {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-bottom: 20px;
+  padding: 0;
+  width: 100%;
 }
 
-.purchase-info {
+.rat-purchase-info {
   margin-top: 10px;
   font-size: 14px;
 
 }
 
 /* 테이블 스타일 */
-.product-table {
+.rat-product-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -79,7 +86,7 @@
   font-family: 'MinSans-Regular';
 }
 
-.product-table thead {
+.rat-product-table thead {
   background-color: #f4f4f4;
   border-top: 1px solid #333;
   /* 위쪽 선 */
@@ -87,28 +94,28 @@
   /* 아래쪽 선 */
 }
 
-.product-table th,
-.product-table td {
+.rat-product-table th,
+.rat-product-table td {
   padding: 10px;
   text-align: center;
 }
 
-.product-table tbody tr {
+.rat-product-table tbody tr {
   border-bottom: 1px solid #ddd;
   /* 각 행 아래에 선 */
 }
 
-.product-table tbody tr:hover {
+.rat-product-table tbody tr:hover {
   background-color: #f9f9f9;
 }
 
-.product-table img {
+.rat-product-table img {
   border: 1px solid #ddd;
   border-radius: 5px;
 }
 
 
-.chat-tabs {
+.rat-chat-tabs {
   .react-tabs__tab-list {
     border: none;
     margin: 0;
@@ -140,4 +147,153 @@
       }
     }
   }
+}
+
+.rat-MuiRating-root .MuiRating-iconFilled {
+  color: #FFD700 !important;
+}
+
+.rat-MuiRating-root .MuiRating-iconEmpty {
+  color: #C0C0C0 !important;
+}
+
+/* MUI Table 스타일 수정 */
+.rat-MuiTableContainer-root {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.rat-MuiTableCell-head {
+  font-weight: bold !important;
+  background-color: #f5f5f5 !important;
+  text-align: center !important;
+  border-top: 1px solid #e0e0e0 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  padding: 15px !important;
+}
+
+.rat-MuiTableCell-body {
+  text-align: center !important;
+  padding: 15px !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.rat-MuiTableRow-root:hover {
+  background-color: #f8f8f8;
+}
+
+/* 이미지 셀 스타일링 */
+.rat-MuiTableCell-body img {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: transform 0.2s;
+}
+
+.rat-MuiTableCell-body img:hover {
+  transform: scale(1.1);
+}
+
+/* 링크 호버 효과 */
+.rat-MuiTableCell-body a:hover {
+  color: #4caf50;
+  font-weight: bold;
+  text-decoration: underline !important;
+}
+
+/* 상단 정보 컨테이너 */
+.rat-rating-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+
+/* 타이틀 스타일 */
+.rat-rating-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #666;
+  font-family: 'MinSans-Regular';
+  margin-bottom: 5px;
+}
+
+/* 평가 개수 스타일 */
+.rat-r-count {
+  font-size: 15px;
+  color: #666;
+  font-weight: 500;
+  font-family: 'MinSans-Regular';
+}
+
+/* 테이블 스타일 */
+.rat-product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+  font-family: 'MinSans-Regular';
+}
+
+.rat-product-table th {
+  font-weight: 600 !important;
+  text-align: center !important;
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 14px;
+  font-family: 'MinSans-Regular';
+}
+
+.rat-product-table td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+/* 구분선 */
+.rat-nav-divider {
+  color: #E3E5E8;
+  margin: 0 8px;
+  display: flex;
+  align-items: center;
+}
+
+/* hr 태그 스타일 */
+.rat-pd-reg-container hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #E3E5E8;
+}
+
+.rat-product-table th {
+  font-weight: 600 !important;
+  text-align: center !important;
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 14px;
+  font-family: 'MinSans-Regular';
+}
+
+/* 타이틀과 평점 컨테이너 */
+.rat-rating-title-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 평점 점수 스타일 */
+.rat-rating-score {
+  font-size: 18px;
+  color: #666;
+  font-weight: 500;
+  font-family: 'MinSans-Regular';
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }

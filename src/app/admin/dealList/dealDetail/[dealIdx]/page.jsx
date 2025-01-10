@@ -30,6 +30,7 @@ function Page({ params }) {
   const [sellerOtherFiles, setSellerOtherFiles] = useState([]);
   const [sellerScore, setSellerScore] = useState(0);
   const [favoriteStates, setFavoriteStates] = useState({});
+  const [sellerCampLogs, setSellerCampLogs] = useState([]); // 상태 추가
 
 
   // isSellerUser를 여기서 먼저 선언
@@ -211,6 +212,23 @@ function Page({ params }) {
       alert('찜 처리 중 오류가 발생했습니다.');
     }
   };
+
+  // useEffect 추가 (판매자의 캠핑장 후기 조회)
+  useEffect(() => {
+    const fetchSellerCampLogs = async () => {
+      try {
+        if (!item?.dealSellerUserIdx) return;
+        
+        const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/seller-camplogs/${item.dealSellerUserIdx}`);
+        setSellerCampLogs(response.data.success ? response.data.data : []);
+      } catch (error) {
+        console.error('판매자의 캠핑장 후기 조회 실패:', error);
+        setSellerCampLogs([]);
+      }
+    };
+
+    fetchSellerCampLogs();
+  }, [item?.dealSellerUserIdx, LOCAL_API_BASE_URL]);
 
   // item이 null일 경우 처리 추가
   if (!item) {
@@ -573,9 +591,32 @@ function Page({ params }) {
             <div className="seller-reviews">
               <h5>판매자의 캠핑장 후기</h5>
               <hr />
-
               <div className="review-grid">
-                {/* 후기 컴포넌트들이 들어갈 자리 */}
+                {sellerCampLogs.length > 0 ? (
+                  sellerCampLogs.map((log) => (
+                    <div key={log.logIdx} className="review-item" onClick={() => router.push(`/camplog/detail/${log.logIdx}`)}>
+                      <div className="review-thumbnail">
+                        <img
+                          src={log.fileName ? `http://localhost:8080/upload/${log.fileName}` : "/images/campImageholder3.png"}
+                          alt="캠핑 후기 썸네일" 
+                          className="review-thumbnail-img"
+                        />
+                      </div>
+                      <div className="review-content">
+                        <h6>{log.logTitle}</h6>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ 
+                    gridColumn: "1 / -1", 
+                    textAlign: "center", 
+                    padding: "40px 0",
+                    color: "#666"
+                  }}>
+                    판매자가 작성한 캠핑장 후기가 존재하지 않습니다.
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -61,75 +61,90 @@ function Page() {
     if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="pd-reg-container">
-            {/* 상단 네비게이션 */}
-            <div className="nav-links">
-                <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
-                    상품관리
-                </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
-                    구매내역
-                </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/interest" className={`btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
-                    관심목록
-                </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/rating" className={`btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
-                    나의평점
-                </Link>
-                <span className="nav-divider">|</span>
-                <Link href="/deal/message" className={`btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
-                    채팅목록
-                </Link>
-            </div>
+        <>
+            <div className="purch-pd-reg-container">
+                <div className="purch-nav-links">
+                    <Link href="/deal/management" className={`purch-btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
+                        상품관리
+                    </Link>
+                    <span className="purch-nav-divider">|</span>
+                    <Link href="/deal/purchase" className={`purch-btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
+                        구매내역
+                    </Link>
+                    <span className="purch-nav-divider">|</span>
+                    <Link href="/deal/interest" className={`purch-btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
+                        관심목록
+                    </Link>
+                    <span className="purch-nav-divider">|</span>
+                    <Link href="/deal/rating" className={`purch-btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
+                        나의평점
+                    </Link>
+                    <span className="purch-nav-divider">|</span>
+                    <Link href="/deal/message" className={`purch-btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
+                        채팅목록
+                    </Link>
+                </div>
+                <hr />
+                <div className="purch-purchase-info">
+                    <div>
+                        <div className="purch-purchase-title">구매 상세 정보</div>
+                    </div>
+                    <div className="purch-p-count">구매 {item.length}개</div>
+                </div>
 
-
-            {/* 구매 정보는 별도의 줄로 배치 */}
-            <hr />
-            <div className="purchase-info">
-                <div className="p-count">구매 {item.length}개</div>
-                {/* <hr/> */}
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>구매 상품</TableCell>
-                            <TableCell>상품명</TableCell>
-                            <TableCell>판매자 명</TableCell>
-                            <TableCell>상품 가격</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {item.length > 0 ?
-
-                            item.map((product) => (
-                                <TableRow key={product.dealIdx}>
-                                    <TableCell>
+                {item.length > 0 ? (
+                    <table className="purch-product-table">
+                        <thead>
+                            <tr>
+                                <th>상품이미지</th>
+                                <th>상품명</th>
+                                <th>가격</th>
+                                <th>구매일</th>
+                                <th>만족도</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {item.map((product) => (
+                                <tr key={product.dealIdx}>
+                                    <td>
                                         <Link href={`/deal/detail/${product.dealIdx}`}>
-                                            <img src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"} alt={product.dealTitle} width="150px" height="150px" />
+                                            <img src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "https://placehold.jp/180x200.png"} 
+                                                alt={product.dealTitle} 
+                                                width="150px" 
+                                                height="150px" 
+                                            />
                                         </Link>
-                                    </TableCell>
-                                    <TableCell >{product.dealTitle}</TableCell>
-                                    <TableCell>{product.dealSellerNick}</TableCell>
-                                    <TableCell>{product.dealPrice != "0" ? product.dealPrice : "나눔"}</TableCell>
-                                </TableRow>
-                            ))
-                            :
-                            <TableRow>
-                                <TableCell colSpan={5}>
+                                    </td>
+                                    <td>{product.dealTitle}</td>
+                                    <td>{product.dealPrice != "0" ? product.dealPrice : "나눔"}</td>
+                                    <td>{product.dealDate}</td>
+                                    <td>{product.dealSatisfaction}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <table className="purch-product-table">
+                        <thead>
+                            <tr>
+                                <th>상품이미지</th>
+                                <th>상품명</th>
+                                <th>가격</th>
+                                <th>구매일</th>
+                                <th>만족도</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colSpan={5}>
                                     구매한 상품이 없습니다.
-                                </TableCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                )}
             </div>
-
-
-        </div>
-
+        </>
     );
 }
 

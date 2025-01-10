@@ -29,12 +29,12 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <div className="product-item">
-      <div className="heart-icon" onClick={toggleFavorite}>
+    <div className="inter-product-item">
+      <div className="inter-heart-icon" onClick={toggleFavorite}>
         {isFavorite ? (
-          <span className="filled-heart">❤️</span>
+          <span className="inter-filled-heart">❤️</span>
         ) : (
-          <span className="empty-heart">🤍</span>
+          <span className="inter-empty-heart">🤍</span>
         )}
       </div>
       <Link 
@@ -42,7 +42,7 @@ const ProductCard = ({ product }) => {
         style={{ textDecoration: 'none', color: 'inherit' }}
       >
         <img
-          className="dealMain-image"
+          className="inter-dealMain-image"
           src={`${LOCAL_IMG_URL}/deal/${product.deal01}` || "/images/defaultImage.png"}
           alt={product.dealTitle}
           style={{ width: "180px", height: "200px" }}
@@ -50,13 +50,13 @@ const ProductCard = ({ product }) => {
             e.target.src = "/images/defaultImage.png";
           }}
         />
-        <div className="product-content">
-          <div className="nick">{product.dealSellerNick}</div>
-          <div className="title">{product.dealTitle}</div>
-          <div className="price">
+        <div className="inter-product-content">
+          <div className="inter-nick">{product.dealSellerNick}</div>
+          <div className="inter-title">{product.dealTitle}</div>
+          <div className="inter-price">
             {product.dealPrice == 0 ? '나눔' : `${product.dealPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}원`}
           </div>
-          <div className="view-count">
+          <div className="inter-view-count">
             <VisibilityIcon style={{ fontSize: '1.2rem' }} />
             <span> {product.dealCount}</span>
           </div>

@@ -67,25 +67,25 @@ function Page() {
     return (
         <div >
             {/* 상단 네비게이션 */}
-            <div className="pd-reg-container" >
-                <div className="nav-links">
-                    <Link href="/deal/management" className={`btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
+            <div className="msg-pd-reg-container" >
+                <div className="msg-nav-links">
+                    <Link href="/deal/management" className={`msg-btn1 ${getActiveClass('/deal/management')}`} onClick={() => setActiveLink('/deal/management')}>
                         상품관리
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/purchase" className={`btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
+                    <span className="msg-nav-divider">|</span>
+                    <Link href="/deal/purchase" className={`msg-btn1 ${getActiveClass('/deal/purchase')}`} onClick={() => setActiveLink('/deal/purchase')}>
                         구매내역
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/interest" className={`btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
+                    <span className="msg-nav-divider">|</span>
+                    <Link href="/deal/interest" className={`msg-btn1 ${getActiveClass('/deal/interest')}`} onClick={() => setActiveLink('/deal/interest')}>
                         관심목록
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/rating" className={`btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
+                    <span className="msg-nav-divider">|</span>
+                    <Link href="/deal/rating" className={`msg-btn1 ${getActiveClass('/deal/rating')}`} onClick={() => setActiveLink('/deal/rating')}>
                         나의평점
                     </Link>
-                    <span className="nav-divider">|</span>
-                    <Link href="/deal/message" className={`btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
+                    <span className="msg-nav-divider">|</span>
+                    <Link href="/deal/message" className={`msg-btn1 ${getActiveClass('/deal/message')}`} onClick={() => setActiveLink('/deal/message')}>
                         채팅목록
                     </Link>
                 </div>
@@ -99,7 +99,7 @@ function Page() {
                     </Box>
                     :
 
-                    <Tabs className="chat-tabs" >
+                    <Tabs className="msg-chat-tabs" >
                         <Grid2
                             container
                             rowSpacing={1}
@@ -117,7 +117,7 @@ function Page() {
                                 >
                                     {/* All Messages */}
                                     <Typography mb="10px">
-                                        <i className="ri-message-2-line"></i> 모든 메세지
+                                        <i className="msg-ri-message-2-line"></i> 모든 메세지
                                     </Typography>
 
                                     <TabList >
@@ -176,7 +176,7 @@ function Page() {
                                                                         })}
                                                                     </Box>
 
-                                                                    <Box className="ml-1">
+                                                                    <Box className="msg-ml-1">
                                                                         <Typography
                                                                             as="h4"
                                                                             fontSize="18px"
@@ -230,11 +230,11 @@ function Page() {
                                                                         })}
                                                                     </Typography>
 
-                                                                    <Box className="mr-10px">
+                                                                    <Box className="msg-mr-10px">
                                                                         <Badge
                                                                             badgeContent={chat.unReadCount} // 여기에 메세지 개수
                                                                             color="primary"
-                                                                            className="for-dark-text-white"
+                                                                            className="msg-for-dark-text-white"
                                                                         ></Badge>
                                                                     </Box>
                                                                 </Box>

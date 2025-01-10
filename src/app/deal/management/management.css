@@ -1,4 +1,4 @@
-.pd-reg-container {
+.mag-pd-reg-container {
   max-width: 1300px;
   margin: 0 auto;
   padding: 20px;
@@ -7,55 +7,56 @@
   font-family: 'MinSans-Regular';
 }
 
-.purchase-info {
-  display: grid;
+.mag-purchase-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
 }
 
-.nav-links {
+.mag-nav-links {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.btn1 {
-  color: #767474;
-  font-size: 20px;
-  font-weight: bold;
+.mag-btn1 {
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
   text-decoration: none;
   border-radius: 5px;
   display: inline-block;
-  padding: 10px 20px; /* 버튼의 내부 여백 추가 */
+  padding: 10px 20px;
   font-family: 'MinSans-Regular';
+  transition: color 0.3s;
 }
 
-.btn1:hover {
+.mag-btn1:hover {
   color: #3DBDFD;
 }
 
-.btn1.active {
+.mag-btn1.active {
   color: orange; 
 }
 
-.pi-count {
-  font-size: 16px;
-  text-align: right; /* 텍스트 오른쪽 정렬 */
-  margin-left: auto; /* 왼쪽 여백을 자동으로 설정하여 오른쪽 정렬 */
-  display: block; /* 텍스트를 새로운 줄로 만듬 */
-  font-weight: bold;
-  color: #767474;
+.mag-pi-count {
+  font-size: 15px;
+  color: #666;
+  font-weight: 500;
   font-family: 'MinSans-Regular';
 }
 
-.pi{
-  margin-left: 5px;
+.mag-pi {
   font-size: 18px;
-  font-weight: bold;
-  color: #767474;
+  font-weight: 100;
+  color: #666;
   font-family: 'MinSans-Regular';
+  margin-bottom: 5px;
 }
 
 /* 테이블 스타일 */
-.product-table {
+.mag-product-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -63,60 +64,77 @@
   font-family: 'MinSans-Regular';
 }
 
-.product-table thead {
-  background-color: #f4f4f4;
-  border-top: 1px solid #333; /* 위쪽 선 */
-  border-bottom: 1px solid #333; /* 아래쪽 선 */
+.mag-product-table thead {
+  background-color: #f5f5f5;
 }
 
-.product-table th,
-.product-table td {
-  padding: 10px;
+.mag-product-table th {
+  font-weight: 600 !important;
+  text-align: center !important;
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 14px;
+  font-family: 'MinSans-Regular';
+}
+
+.mag-product-table thead th {
+  font-weight: 600 !important;
+}
+
+.mag-product-table td {
+  padding: 15px;
   text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
 }
 
-.product-table tbody tr {
-  border-bottom: 1px solid #ddd; /* 각 행 아래에 선 */
+.mag-product-table tbody tr:hover {
+  background-color: #f8f8f8;
 }
 
-.product-table tbody tr:hover {
-  background-color: #f9f9f9;
-}
-
-.product-table img {
+.mag-product-table img {
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 4px;
+  transition: transform 0.2s;
 }
 
-.nav-divider {
-    color: #E3E5E8;
-    margin: 0 8px;
+.mag-product-table img:hover {
+  transform: scale(1.1);
+}
+
+.mag-product-table a:hover {
+  color: #4caf50;
+  font-weight: bold;
+  text-decoration: underline !important;
+}
+
+.mag-nav-divider {
+  color: #E3E5E8;
+  margin: 0 8px;
 }
 
 /* 판매상태 스타일 */
-.status {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
+.mag-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-.status.active {
-    background-color: #e6f3ff;
-    color: #4D88FF;
+.mag-status.active {
+  background-color: #e6f3ff;
+  color: #4D88FF;
 }
 
-.status.completed {
-    background-color: #e9ecef;
-    color: #495057;
+.mag-status.completed {
+  background-color: #e9ecef;
+  color: #495057;
 }
 
-.status.inactive {
-    background-color: #fff5f5;
-    color: #ff6b6b;
-}
-
-/* 테이블 셀 수직 정렬 */
-.product-table td {
-    vertical-align: middle;
+.mag-status.inactive {
+  background-color: #fff5f5;
+  color: #ff6b6b;
 }

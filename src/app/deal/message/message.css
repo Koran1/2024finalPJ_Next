@@ -1,40 +1,47 @@
-.pd-reg-container {
+.msg-pd-reg-container {
   max-width: 1300px;
   margin: 0 auto;
   padding: 20px;
   font-size: 130%;
   margin-top: 50px;
+  font-family: 'MinSans-Regular';
+  box-sizing: border-box;
 }
 
-.purchase-info {
+.msg-purchase-info {
   display: grid;
 }
 
-.nav-links {
+.msg-nav-links {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-bottom: 20px;
+  padding: 0;
+  width: 100%;
 }
 
-.btn1 {
-  color: #767474;
-  font-size: 20px;
-  font-weight: bold;
+.msg-btn1 {
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
   text-decoration: none;
   border-radius: 5px;
   display: inline-block;
   padding: 10px 20px;
+  font-family: 'MinSans-Regular';
+  transition: color 0.3s;
 }
 
-.btn1:hover {
+.msg-btn1:hover {
   color: #3DBDFD;
 }
 
-.btn1.active {
+.msg-btn1.active {
   color: orange;
 }
 
-.pi-count {
+.msg-pi-count {
   font-size: 16px;
   text-align: right;
   margin-left: auto;
@@ -43,7 +50,7 @@
   color: #767474;
 }
 
-.pi {
+.msg-pi {
   margin-left: 5px;
   font-size: 18px;
   font-weight: bold;
@@ -51,104 +58,135 @@
 }
 
 /* 테이블 스타일 */
-.product-table {
+.msg-product-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   font-size: 14px;
 }
 
-.product-table thead {
+.msg-product-table thead {
   background-color: #f4f4f4;
   border-top: 1px solid #333;
   border-bottom: 1px solid #333;
 }
 
-.product-table th,
-.product-table td {
+.msg-product-table th,
+.msg-product-table td {
   padding: 10px;
   text-align: center;
   vertical-align: middle;
 }
 
-.product-table tbody tr {
+.msg-product-table tbody tr {
   border-bottom: 1px solid #ddd;
 }
 
-.product-table tbody tr:hover {
+.msg-product-table tbody tr:hover {
   background-color: #f9f9f9;
 }
 
-.product-table img {
+.msg-product-table img {
   border: 1px solid #ddd;
   border-radius: 5px;
 }
 
-.nav-divider {
+.msg-nav-divider {
   color: #E3E5E8;
   margin: 0 8px;
+  display: flex;
+  align-items: center;
 }
 
-/* 채팅 관련 스타일 */
-.chat-container {
-  margin-top: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+/* hr 태그 스타일 */
+.msg-pd-reg-container hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #E3E5E8;
+}
+
+/* 채팅 관련 독립 스타일 */
+.msg-chat-container {
+  margin: 20px auto;
   padding: 20px;
+  width: 100%;
+  max-width: 1300px;
+  box-sizing: border-box;
+  border-radius: 5px;
 }
 
-.chat-tabs {
-  .react-tabs__tab-list {
-    border: none;
-    margin: 0;
-    height: 648px;
-    overflow-y: auto;
-    padding-right: 10px;
-  }
+.msg-chat-tabs {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1300px;
+  box-sizing: border-box;
+}
 
-  .react-tabs__tab {
-    display: block;
-    padding: 12px 15px;
-    border-radius: 5px;
-    margin-bottom: 8px;
-    border: 1px solid #E3E5E8;
-    transition: all 0.2s ease;
+/* 채팅 탭 리스트 스타일 */
+.msg-chat-tabs .react-tabs__tab-list {
+  border: none;
+  margin: 0;
+  height: 648px;
+  overflow-y: auto;
+  padding-right: 10px;
+  box-sizing: border-box;
+}
 
-    &:hover {
-      background-color: #f8f9fa;
-    }
+/* 채팅 탭 아이템 스타일 */
+.msg-chat-tabs .react-tabs__tab {
+  display: block;
+  padding: 12px 15px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  border: 1px solid #E3E5E8;
+  transition: all 0.2s ease;
+}
 
-    &.react-tabs__tab--selected {
-      background-color: #3DBDFD;
-      color: white;
-      border-color: #3DBDFD;
-    }
+.msg-chat-tabs .react-tabs__tab:hover {
+  background-color: #f8f9fa;
+}
 
-    &:focus {
-      outline: none;
-    }
-  }
+.msg-chat-tabs .react-tabs__tab--selected {
+  background-color: #3DBDFD;
+  color: white;
+  border-color: #3DBDFD;
+}
+
+.msg-chat-tabs .react-tabs__tab:focus {
+  outline: none;
 }
 
 /* 상태 표시 스타일 */
-.status {
+.msg-status {
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 14px;
   font-weight: bold;
 }
 
-.status.active {
+.msg-status.active {
   background-color: #e6f3ff;
   color: #4D88FF;
 }
 
-.status.completed {
+.msg-status.completed {
   background-color: #e9ecef;
   color: #495057;
 }
 
-.status.inactive {
+.msg-status.inactive {
   background-color: #fff5f5;
   color: #ff6b6b;
+}
+
+/* Grid 컨테이너 스타일 */
+.msg-MuiGrid2-container {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 1300px !important;
+}
+
+/* Grid 아이템 스타일 */
+.msg-MuiGrid2-root {
+  padding: 0 !important;
 }
