@@ -89,7 +89,7 @@ function Page({ params }) {
     }
   }, [dealIdx, user?.userIdx, router, LOCAL_API_BASE_URL, LOCAL_IMG_URL]);
 
-  // 좋아요 개수 조회 함수
+  // 찜 개수 조회 함수
   const getFavoriteCount = async () => {
     try {
       const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/favorite-count/${dealIdx}`);
@@ -101,12 +101,12 @@ function Page({ params }) {
     }
   };
 
-  // 좋아요 상태 변경 시 개수 업데이트를 위한 콜백
+  // 찜 상태 변경 시 개수 업데이트를 위한 콜백
   const handleFavoriteChange = () => {
     getFavoriteCount();
   };
 
-  // 초기 좋아요 개수 조회
+  // 초기 찜 개수 조회
   useEffect(() => {
     getFavoriteCount();
   }, [dealIdx]);
@@ -513,7 +513,7 @@ function Page({ params }) {
                     const today = new Date();
                     const regDate = new Date(item.dealRegDate);
                     const diffTime = Math.floor((today - regDate) / (1000 * 60 * 60 * 24));
-                    return diffTime === 0 ? "금일" : `${diffTime}일 전`;
+                    return diffTime === 0 ? "금일" : `${diffTime}일전`;
                   })()}
                 </span>
               </div>
@@ -694,7 +694,7 @@ function Page({ params }) {
         </div>
       </div>
 
-      {/* 신고 모달 컴포넌트 추가 */}
+      {/* 신고 모달 컴포넌트 */}
       {isReportModalOpen && (
         <ReportModal
           isOpen={isReportModalOpen}
@@ -706,7 +706,7 @@ function Page({ params }) {
         />
       )}
 
-      {/* 이미지 모달 추가 */}
+      {/* 이미지 모달 */}
       {isImageModalOpen && (
         <div className="image-modal-overlay" onClick={() => setIsImageModalOpen(false)}>
           <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>

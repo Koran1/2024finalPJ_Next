@@ -24,6 +24,7 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
     '불쾌한 표현이 있습니다.'
   ];
 
+  // 신고 모달 초기화
   useEffect(() => {
     if (isOpen) {
       setPosition({ x: 0, y: 0 });
@@ -32,6 +33,7 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
     }
   }, [isOpen]);
 
+  // 신고 모달 드래그
   const handleMouseDown = (e) => {
     if (e.target.closest('.report-header')) {
       setIsDragging(true);
@@ -42,6 +44,7 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
     }
   };
 
+  // 신고 모달 드래그
   const handleMouseMove = (e) => {
     if (isDragging) {
       setPosition({
@@ -51,10 +54,12 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
     }
   };
 
+  // 신고 모달 드래그
   const handleMouseUp = () => {
     setIsDragging(false);
   };
 
+  // 신고 모달 드래그 이벤트 리스너
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
@@ -65,6 +70,7 @@ function ReportModal({ isOpen, onClose, dealTitle, sellerNick, dealIdx, sellerUs
     };
   }, [isDragging]);
 
+  // 신고 접수 함수
   const handleSubmit = async () => {
     if (!description.trim()) {
       alert('상세 내용을 입력해주세요.');

@@ -11,7 +11,7 @@ function Page({ onFavoriteChange }) {
   const { dealIdx } = useParams();
   const router = useRouter();
 
-  // 좋아요 상태 체크 함수
+  // 찜 상태 체크 함수
   const checkLikeStatus = useCallback(async () => {
     if (!isAuthenticated || !user?.userIdx || !dealIdx) return;
 
@@ -32,6 +32,7 @@ function Page({ onFavoriteChange }) {
     }
   }, [isAuthenticated, user?.userIdx, dealIdx, LOCAL_API_BASE_URL]);
 
+  // 찜 상태 체크
   useEffect(() => {
     checkLikeStatus();
   }, [checkLikeStatus]);

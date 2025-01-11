@@ -93,7 +93,7 @@ function Page() {
           deal03: dealData.dealPrice === '0' ? '나눔' : '가격 입력'
         });
 
-        // 이미지 설정
+        // 초기 이미지 설정
         if (data.data.files && Array.isArray(data.data.files)) {
           const initialImgs = data.data.files.slice(0, 5).map(file => ({
             file: null,
