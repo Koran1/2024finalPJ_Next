@@ -208,5 +208,85 @@ body {
     width: 100%;
     height: auto;
     aspect-ratio: 1/1;
+    margin-top: 20px;
+  }
+
+  .featurette-heading {
+    font-size: 32px;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .lead {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .featurette .btn {
+    display: block;
+    margin: 20px auto;
+    width: fit-content;
+  }
+
+  .featurette .order-md-2 {
+    order: 2;
+  }
+
+  .featurette .order-md-1 {
+    order: 1;
+  }
+
+  .featurette {
+    margin: 30px 0;
+    padding: 0 15px;
+  }
+
+  .featurette-divider {
+    margin: 3rem 0;
+  }
+}
+
+/* Featurettes 스타일 수정 */
+.featurette {
+  display: flex;
+  align-items: center;
+  margin: 50px 0;
+  gap: 30px;  /* 텍스트와 이미지 사이 간격 */
+}
+
+.featurette-heading {
+  letter-spacing: -.05rem;
+  margin-bottom: 20px;  /* 제목 아래 여백 */
+  font-size: 40px;  /* 기본 폰트 크기 조정 */
+  line-height: 1.2;  /* 줄 간격 조정 */
+}
+
+.featurette-heading span {
+  display: block;  /* 부제목을 새 줄에 표시 */
+  margin-top: 10px;  /* 부제목 위 여백 */
+}
+
+.lead {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 25px;  /* 본문과 버튼 사이 여백 */
+}
+
+/* 이미지 컨테이너 크기 고정 */
+.col-md-5 {
+  flex: 0 0 500px;  /* 이미지 영역 크기 고정 */
+  max-width: 500px;
+}
+
+/* 텍스트 영역 크기 조정 */
+.col-md-7 {
+  flex: 1;  /* 남은 공간 차지 */
+  padding-right: 30px;  /* 오른쪽 여백 */
+}
+
+/* 큰 화면에서의 스타일 */
+@media (min-width: 62em) {
+  .featurette-heading {
+    margin-top: 0;  /* 기존 7rem 제거 */
   }
 }

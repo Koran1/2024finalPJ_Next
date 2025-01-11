@@ -303,23 +303,25 @@ function Page({ params }) {
   // 판매 상태 변경 함수
   const updateDealStatus = async (newStatus) => {
     try {
-      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/status/${dealIdx}`, null, {
-        params: {
-          status: newStatus
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-      });
+      const response = await axios.put(`${LOCAL_API_BASE_URL}/deal/status/${dealIdx}`, 
+        { status: newStatus },  // 데이터를 body에 포함
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       if (response.data.success) {
         setDealStatus(newStatus);
+        alert('거래 상태가 업데이트되었습니다.');
       } else {
-        alert(response.data.message);
+        alert('거래 상태 업데이트에 실패했습니다.');
       }
     } catch (error) {
-      console.error('상태 변경 실패:', error);
-      alert('상태 변경에 실패했습니다.');
+      console.error('거래 상태 업데이트 실패:', error);
+      alert('거래 상태 업데이트 중 오류가 발생했습니다.');
     }
   };
 
