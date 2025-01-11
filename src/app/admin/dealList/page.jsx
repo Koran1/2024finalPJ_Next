@@ -19,7 +19,6 @@ function Page() {
     const [deals, setDeals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         setMounted(true);
