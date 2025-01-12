@@ -27,9 +27,23 @@ function Page({ params }) {
                 .then(res => {
                     if (res.data.success) {
                         console.log(res.data)
-                        setNoticePrev(res.data.data[0])
-                        setNoticeDetail(res.data.data[1])
-                        setNoticeAfter(res.data.data[2])
+                        const notices = res.data.data;
+                        if (notices.length == 1) {
+                            setNoticeDetail(notices[0])
+                        } else {
+                            setNoticePrev(notices[0])
+                            setNoticeDetail(notices[1])
+                            setNoticeAfter(notices[2])
+                        }
+
+                        // } else if (notices.length == 2) {
+                        //     if (notices[0].noticeIdx < notices[1].noticeIdx) {
+                        //         setNoticePrev(notices[0])
+                        //         setNoticeDetail(notices[1])
+                        //     } else {
+                        //         setNoticeDetail(notices[0])
+                        //         setNoticeAfter(notices[1])
+                        //     }
                     }
                 })
                 .catch(err => {
@@ -66,7 +80,7 @@ function Page({ params }) {
                 }}
             >
                 {/* Title */}
-                <Typography mb={2} >
+                <Box mb={2} >
                     <div className='notice-title-css'>
                         공지사항
                     </div>
@@ -86,7 +100,8 @@ function Page({ params }) {
                         {new Date(noticeDetail.noticeReg).toISOString().split('T')[0]}
 
                     </div>
-                </Typography>
+                </Box>
+
                 <Divider sx={{ my: 2 }} />
                 {/* Attachment Info */}
 
@@ -100,7 +115,6 @@ function Page({ params }) {
                     :
                     <Typography variant="body2" color="text.secondary" mb={1}>
                         첨부파일 없음
-                        <pre />
                     </Typography>
                 }
 

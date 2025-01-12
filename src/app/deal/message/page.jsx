@@ -125,7 +125,7 @@ function Page() {
                                     </Typography>
 
                                     <TabList >
-                                        {
+                                        {chatList && userList &&
                                             chatList
                                                 .sort((a, b) => {
                                                     const isAOtherUser = a.userIdx === otherUser && a.dealIdx === dealIdx;

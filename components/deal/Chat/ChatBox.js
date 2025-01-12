@@ -104,6 +104,12 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
     setMessage("");
   }
 
+  const sendMessageByKeyUp = (e) => {
+    if (e.key === "Enter") {
+      sendMessage()
+    }
+  }
+
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);// 신고 모달 창 열기
   // 채팅 신고
   const handleReportChat = () => {
@@ -140,7 +146,7 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
       formData.append("senderIdx", senderIdx);
       formData.append("senderNick", senderNick);
 
-      axios.put(`${LOCAL_API_BASE_URL}/deal/status`, formData, {
+      axios.put(`${LOCAL_API_BASE_URL}/deal/status2`, formData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -224,26 +230,31 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
               등록일 : {product.dealRegDate}
             </Typography>
             {product.deal02 != '판매중' ?
-              <>
-                {
-                  senderIdx == product.dealSellerUserIdx ?
-                    <Button
-                      variant="contained"
-                      color="success"
-                      className="satisfaction-button"
-                      onClick={() => setIsSatisfactionModalOpen(true)}
-                      disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
-                    >
-                      {hasSatisfactionRating ? '후기 등록 완료' : '후기 등록하기'}
-                    </Button>
-                    :
-                    <p>{product.deal02}</p>
-                }
-              </>
+              user.userIdx == product?.dealBuyerUserIdx ?
+                <>
+                  {
+                    senderIdx == product.dealSellerUserIdx ?
+                      <Button
+                        variant="contained"
+                        color="success"
+                        className="satisfaction-button"
+                        onClick={() => setIsSatisfactionModalOpen(true)}
+                        disabled={hasSatisfactionRating} // 만족도 등록 여부에 따라 버튼 비활성화
+                      >
+                        {hasSatisfactionRating ? '후기 등록 완료' : '후기 등록하기'}
+                      </Button>
+                      :
+                      <p>{product.deal02}</p>
+                  }
+                </>
+                :
+                <>
+                  <p>판매완료</p>
+                </>
               :
               <>
                 {
-                  senderIdx == product.dealSellerUserIdx
+                  senderIdx != product.dealSellerUserIdx
                     ?
                     <Button variant="outlined" onClick={handleSold}>판매중</Button>
                     :
@@ -410,7 +421,7 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
         >
           <TextField
             id="typeSomething"
-            label="Type Something..."
+            label="메세지 입력"
             name="message"
             style={{
               background: "#fff",
@@ -419,6 +430,7 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
             }}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyUp={sendMessageByKeyUp}
           />
 
           <Button
