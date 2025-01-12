@@ -323,7 +323,7 @@ function Page() {
             const writeData = {
                 uvo: { userIdx: user.userIdx },
                 cvo: { campIdx: confirmedCampIdx },
-                lvo: { logTitle: logTitle, logIdx: "1" },
+                lvo: { logTitle: logTitle },
                 lcvo: { contentData: contentData },
                 fvo: fileData.length > 0 ? { fileData: fileData } : null,
                 tvo: tagData.length > 0 ? { tagData: tagData } : null,
@@ -344,7 +344,7 @@ function Page() {
                 });
                 console.log("response: ", response);
                 if (response.data.success) {
-                    alert(response.data.message);
+                    alert("작성완료");
                 } else {
                     alert(response.data.message);
                 }
