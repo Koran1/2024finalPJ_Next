@@ -333,7 +333,7 @@ function Page() {
             <div style={{ margin: "20px", textAlign: "center" }}>
                 <Button
                     variant='contained'
-                    color='primary'
+                    color='error'
                     onClick={() => { if (confirm("예약을 취소하시겠습니까?")) { handleSubmit() } }}
                 >예약취소</Button>
             </div>

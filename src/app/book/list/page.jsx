@@ -557,14 +557,14 @@ function Page() {
                                                                 <TableCell>{selectedReservation.wthrSKY_PTY}</TableCell>
                                                                 <TableCell>{selectedReservation.wthrPOP}</TableCell>
                                                                 <TableCell>
-                                                                    {selectedReservation.wthrSunrise.substring(0, 2)}:{selectedReservation.wthrSunrise.substring(2)}
+                                                                    {selectedReservation.wthrSunrise && selectedReservation.wthrSunrise.substring(0, 2)}:{selectedReservation.wthrSunrise && selectedReservation.wthrSunrise.substring(2)}
                                                                     /&nbsp;
-                                                                    {selectedReservation.wthrSunset.substring(0, 2)}:{selectedReservation.wthrSunset.substring(2)}
+                                                                    {selectedReservation.wthrSunset && selectedReservation.wthrSunset.substring(0, 2)}:{selectedReservation.wthrSunset && selectedReservation.wthrSunset.substring(2)}
                                                                 </TableCell>
                                                                 <TableCell>
-                                                                    {selectedReservation.wthrMoonrise.substring(0, 2)}:{selectedReservation.wthrMoonrise.substring(2)}
+                                                                    {selectedReservation.wthrMoonrise && selectedReservation.wthrMoonrise.substring(0, 2)}:{selectedReservation.wthrMoonrise && selectedReservation.wthrMoonrise.substring(2)}
                                                                     /&nbsp;
-                                                                    {selectedReservation.wthrMoonset.substring(0, 2)}:{selectedReservation.wthrMoonset.substring(2)}
+                                                                    {selectedReservation.wthrMoonset && selectedReservation.wthrMoonset.substring(0, 2)}:{selectedReservation.wthrMoonset && selectedReservation.wthrMoonset.substring(2)}
                                                                 </TableCell>
                                                                 <TableCell>
                                                                     <img src={getMoonImage(selectedReservation.wthrLunAge)} alt={`Moon phase for age ${selectedReservation.wthrLunAge}`} />

@@ -31,7 +31,7 @@ function Page() {
 
     // 날짜 차이 계산 (밀리초 단위로 차이를 구하고, 이를 1일(밀리초로 86400000)로 나눔)
     const differenceInTime = selectionRange.endDate - selectionRange.startDate;
-    const differenceInDays = differenceInTime / (1000 * 3600 * 24); // 밀리초 -> 일로 변환
+    const differenceInDays = parseInt(differenceInTime / (1000 * 3600 * 24)); // 밀리초 -> 일로 변환
 
     const [campData, setCampData] = useState({
         // 캠핑장이름, 캠핑장 썸네일일, 주소, 전화번호, 캠핑구역(일반, 자동차, 글램핑, 카라반, 개인카라반)
@@ -117,11 +117,11 @@ function Page() {
 
     const updateSiteAndPriceArray = (siteKor, prev) => {
         const newData = {
-            "일반야영장": { siteImg: "https://moonlightcamp.co.kr/theme/tlog_a/img/nagdong/6.jpg?t=1", siteKor: "일반야영장", site: "A", maxPeople: 6, price: 10 },
-            "자동차야영장": { siteImg: "https://www.5gcamp.com/files/camping/2018/02/17/90a60c2625038d83d7f2a62f335dc474221103.jpg", siteKor: "자동차야영장", maxPeople: 4, site: "P", price: 50 },
-            "글램핑": { siteImg: "https://media.triple.guide/triple-cms/c_limit,f_auto,h_1024,w_1024/95ba8d50-6fb5-486c-babc-8835e8cdac55.jpeg", siteKor: "글램핑", site: "G", maxPeople: 8, price: 90 },
-            "카라반": { siteImg: "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn5SMv%2FbtqEBPtsLaH%2FzDxzTkjkhMpYwrKkXkcVD0%2Fimg.jpg", siteKor: "카라반", site: "C", maxPeople: 4, price: 130 },
-            "개인카라반": { siteImg: "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn5SMv%2FbtqEBPtsLaH%2FzDxzTkjkhMpYwrKkXkcVD0%2Fimg.jpg", siteKor: "개인카라반", site: "I", maxPeople: 6, price: 170 }
+            "일반야영장": { siteImg: "https://moonlightcamp.co.kr/theme/tlog_a/img/nagdong/6.jpg?t=1", siteKor: "일반야영장", site: "A", maxPeople: 6, price: 30000 },
+            "자동차야영장": { siteImg: "https://www.5gcamp.com/files/camping/2018/02/17/90a60c2625038d83d7f2a62f335dc474221103.jpg", siteKor: "자동차야영장", maxPeople: 4, site: "P", price: 40000 },
+            "글램핑": { siteImg: "https://media.triple.guide/triple-cms/c_limit,f_auto,h_1024,w_1024/95ba8d50-6fb5-486c-babc-8835e8cdac55.jpeg", siteKor: "글램핑", site: "G", maxPeople: 8, price: 120000 },
+            "카라반": { siteImg: "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn5SMv%2FbtqEBPtsLaH%2FzDxzTkjkhMpYwrKkXkcVD0%2Fimg.jpg", siteKor: "카라반", site: "C", maxPeople: 4, price: 100000 },
+            "개인카라반": { siteImg: "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fn5SMv%2FbtqEBPtsLaH%2FzDxzTkjkhMpYwrKkXkcVD0%2Fimg.jpg", siteKor: "개인카라반", site: "I", maxPeople: 6, price: 60000 }
         };
 
         if (newData[siteKor]) {

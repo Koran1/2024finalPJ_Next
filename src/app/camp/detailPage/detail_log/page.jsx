@@ -21,7 +21,7 @@ export default function Page({ posts }) {
                         .filter((post) => post.logIsActive == 1) // logIsActive가 1인 경우만 필터링
                         .slice(0, visibleCount)
                         .map((post, index) => (
-                            <div key={index} style={{ textAlign: 'center', padding: '10px', border: '1px solid #ddd' }}
+                            <div key={index} style={{ textAlign: 'center', padding: '10px', border: '1px solid #ddd', cursor: "pointer" }}
                                 onClick={() => router.push(`/camplog/detail/${post.logIdx}`)}>
                                 {/* 이미지 */}
                                 <img

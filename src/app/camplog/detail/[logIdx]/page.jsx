@@ -1048,7 +1048,7 @@ function Page({ params }) {
                             <div className="report-form">
                                 <div className="form-group">
                                     <label>작성자</label>
-                                    <span> {user.nickname}</span>
+                                    <span> {user && user.nickname}</span>
                                 </div>
                                 <hr />
                                 <div className="form-group">
