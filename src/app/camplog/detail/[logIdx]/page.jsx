@@ -68,14 +68,17 @@ function Page({ params }) {
                 }
                 const response = await axios.get(apiUrl);
                 const data = response.data;
-                console.log("response : ", response.data);
+                console.log("response.data : ", data);
                 // 신고됐거나 삭제된 로그 글은 들어오면 경고창과 함께 리스트로 이동
-                if (data.data.rvo[0].reportCount >= 3) {
-                    alert("3명이상의 유저에게 신고된 로그글 입니다.");
+                if (data.data.rvo && data.data.rvo[0].reportCount > 10) {
+                    alert("11명이상의 유저에게 신고된 로그글 입니다.");
                     window.location.href = "../list";
                 } else if (data.data.logVO.logIsActive == 0) {
                     alert("삭제된 로그 글 입니다.");
                     window.location.href = "../list";
+                } else if (user && data.data.rvo && data.data.rvo.some(item => item.userIdx === user.userIdx)) {
+                    alert("신고하신 글 입니다.");
+                    window.location.replace("../list");
                 }
                 if (data.success) {
                     setData(data.data);
@@ -96,6 +99,23 @@ function Page({ params }) {
                         }
                     }));
                     setIsWriter(user ? (response.data.data.userVO[0].userIdx === user.userIdx ? true : false) : false);
+
+                    // 댓글 불러오기
+                    const API_URL = `${baseUrl}/camplog/commentList?logIdx=${logIdx}`;
+                    await axios.get(API_URL)
+                        .then((res) => {
+                            console.log("댓글 res", res);
+                            const commentsList = res.data.data.lcvo.filter(comment => !comment.commentIdx);
+                            const replysList = res.data.data.lcvo.filter(comment => comment.commentIdx);
+                            setLogCommentList(commentsList);
+                            setLogReplyList(replysList);
+                            setUserNickname(res.data.data.userNicknameMap);
+                            setUserImg(res.data.data.userImgMap);
+                            setReportInfo(res.data.data.rvo);
+                            // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
+                            // setDisableCommentCount (res.data.data.lcvo.filter(comment => comment.logCommentIsActive == 0).length);
+                        })
+                        .catch((err) => console.log(err));
                 } else {
                     alert(response.data.message);
                     router.push("/camplog/list");
@@ -212,8 +232,9 @@ function Page({ params }) {
                     }
                 });
 
-                // 페이지 새로 고침
-                window.location.reload();
+                // 신고하면 리스트로
+                alert("신고가 완료되었습니다.");
+                window.location.replace("../list");
             } catch (error) {
                 alert("로그(후기)글 신고 오류 : " + error);
             }
@@ -221,36 +242,36 @@ function Page({ params }) {
     };
 
     // 댓글 함수들
-    // 댓/답글 불러오기
-    const getCommentList = async () => {
-        try {
-            setLoading(true);
-            const { logIdx } = await Promise.resolve(params);
-            const API_URL = `${baseUrl}/camplog/commentList?logIdx=${logIdx}`;
-            await axios.get(API_URL)
-                .then((res) => {
-                    const commentsList = res.data.data.lcvo.filter(comment => !comment.commentIdx);
-                    const replysList = res.data.data.lcvo.filter(comment => comment.commentIdx);
-                    setLogCommentList(commentsList);
-                    setLogReplyList(replysList);
-                    setUserNickname(res.data.data.userNicknameMap);
-                    setUserImg(res.data.data.userImgMap);
-                    setReportInfo(res.data.data.rvo);
-                    // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
-                    // setDisableCommentCount (res.data.data.lcvo.filter(comment => comment.logCommentIsActive == 0).length);
-                })
-                .catch((err) => console.log(err));
-        } catch (error) {
-            alert("댓글 리스트 불러오기 오류 : " + error);
-        } finally {
-            setLoading(false);
-            // setLoading(loading + 1);
-        }
-    }
+    // 댓/답글 불러오기 위로 옮겼음(로그 글 불러올 때)
+    // const getCommentList = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const { logIdx } = await Promise.resolve(params);
+    //         const API_URL = `${baseUrl}/camplog/commentList?logIdx=${logIdx}`;
+    //         await axios.get(API_URL)
+    //             .then((res) => {
+    //                 const commentsList = res.data.data.lcvo.filter(comment => !comment.commentIdx);
+    //                 const replysList = res.data.data.lcvo.filter(comment => comment.commentIdx);
+    //                 setLogCommentList(commentsList);
+    //                 setLogReplyList(replysList);
+    //                 setUserNickname(res.data.data.userNicknameMap);
+    //                 setUserImg(res.data.data.userImgMap);
+    //                 setReportInfo(res.data.data.rvo);
+    //                 // 공백인 댓글(운영자가 신고 승인한 댓글) 개수
+    //                 // setDisableCommentCount (res.data.data.lcvo.filter(comment => comment.logCommentIsActive == 0).length);
+    //             })
+    //             .catch((err) => console.log(err));
+    //     } catch (error) {
+    //         alert("댓글 리스트 불러오기 오류 : " + error);
+    //     } finally {
+    //         setLoading(false);
+    //         // setLoading(loading + 1);
+    //     }
+    // }
 
-    useEffect(() => {
-        getCommentList();
-    }, []);
+    // useEffect(() => {
+    //     getCommentList();
+    // }, []);
 
     useEffect(() => {
         if (isShow && replyTextFieldRef.current) {
@@ -360,8 +381,8 @@ function Page({ params }) {
 
     const handleModalClick = (comment, modalType) => {
         if (!user) {
-            alert("로그인 후 사용 가능합니다.");
-            // window.location.reload();
+            alert('로그인이 필요합니다.');
+            router.push('/user/login');
             return;
         }
         // 로그 글 삭제 또는 신고 버튼 클릭 시 해당 모달 활성화
@@ -817,7 +838,11 @@ function Page({ params }) {
                                                     </div>
                                                     <div style={{ textAlign: "right" }}>
                                                         <Button style={{ width: "80px", height: "30px", padding: "0" }} variant='contained' color='primary'
-                                                            onClick={() => user == null ? alert("로그인 후 작성 가능합니다.") : replyWrite(comment.logCommentIdx)}
+                                                            onClick={() => user == null ? (
+                                                                    alert('로그인이 필요합니다.'),
+                                                                    router.push('/user/login')
+                                                                ) : 
+                                                                replyWrite(comment.logCommentIdx)}
                                                         >답글 작성</Button>
                                                     </div>
                                                     <hr />
@@ -985,7 +1010,11 @@ function Page({ params }) {
                         <Button
                             variant='contained'
                             color='primary'
-                            onClick={() => user == null ? alert("로그인 후 등록 가능합니다.") : commentSubmit(selectedComment)}
+                            onClick={() => user == null ? (
+                                alert('로그인이 필요합니다.'),
+                                router.push('/user/login')
+                            ) : 
+                            commentSubmit(selectedComment)}
                         // disabled={!isFormValid}
                         >등록</Button>
                     </div>

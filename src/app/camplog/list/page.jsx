@@ -214,7 +214,7 @@ function Page(props) {
                     >
                         최신순
                     </span>{" "}
-                    |
+                    {/* | */}
                     <span
                         onClick={() => handleSort("likes")}
                         className={sortOption === "likes" ? "active" : ""}
