@@ -30,7 +30,11 @@ function Page({ params }) {
                         const notices = res.data.data;
                         if (notices.length == 1) {
                             setNoticeDetail(notices[0])
-                        } else {
+                        } else if (notices.length == 2) {
+                            setNoticePrev(notices[0])
+                            setNoticeDetail(notices[1])
+                        }
+                        else {
                             setNoticePrev(notices[0])
                             setNoticeDetail(notices[1])
                             setNoticeAfter(notices[2])
