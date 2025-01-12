@@ -124,11 +124,12 @@ function Page() {
                                 <TableCell>
                                     <TextField
                                         fullWidth
-                                        type="date"
+                                        // type="date"
                                         variant="standard"
                                         name="faqReg"
                                         value={formData.faqReg}
-                                        onChange={handleChange}
+                                        disabled
+                                        // onChange={handleChange}
                                     />
                                 </TableCell>
                             </TableRow>

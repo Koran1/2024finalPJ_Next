@@ -160,7 +160,7 @@ function Page() {
                                 <TableCell>
                                     <TextField
                                         fullWidth
-                                        type="date"
+                                        // type="date"
                                         variant="standard"
                                         name="noticeReg"
                                         value={
@@ -168,7 +168,8 @@ function Page() {
                                             ? formData.noticeReg.split(" ")[0] 
                                             : ""
                                         }
-                                        onChange={handleChange}
+                                        disabled
+                                        // onChange={handleChange}
                                     />
                                 </TableCell>
                             </TableRow>

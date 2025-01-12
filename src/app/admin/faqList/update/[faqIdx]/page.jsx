@@ -149,7 +149,7 @@ function Page() {
                                 <TableCell>
                                     <TextField
                                         fullWidth
-                                        type="date"
+                                        // type="date"
                                         variant="standard"
                                         name="faqReg"
                                         value={
@@ -157,7 +157,8 @@ function Page() {
                                                 ? formData.faqReg.split(" ")[0]
                                                 : ""
                                         }
-                                        onChange={handleChange}
+                                        disabled
+                                        // onChange={handleChange}
                                     />
                                 </TableCell>
                             </TableRow>
