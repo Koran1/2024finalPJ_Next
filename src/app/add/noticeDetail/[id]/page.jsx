@@ -28,26 +28,11 @@ function Page({ params }) {
                     if (res.data.success) {
                         console.log(res.data)
                         const notices = res.data.data;
-                        if (notices.length == 1) {
-                            setNoticeDetail(notices[0])
-                        } else if (notices.length == 2) {
-                            setNoticePrev(notices[0])
-                            setNoticeDetail(notices[1])
-                        }
-                        else {
-                            setNoticePrev(notices[0])
-                            setNoticeDetail(notices[1])
-                            setNoticeAfter(notices[2])
-                        }
 
-                        // } else if (notices.length == 2) {
-                        //     if (notices[0].noticeIdx < notices[1].noticeIdx) {
-                        //         setNoticePrev(notices[0])
-                        //         setNoticeDetail(notices[1])
-                        //     } else {
-                        //         setNoticeDetail(notices[0])
-                        //         setNoticeAfter(notices[1])
-                        //     }
+                        setNoticePrev(notices[0])
+                        setNoticeDetail(notices[1])
+                        setNoticeAfter(notices[2])
+
                     }
                 })
                 .catch(err => {
