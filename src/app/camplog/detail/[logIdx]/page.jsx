@@ -660,7 +660,7 @@ function Page({ params }) {
                                                                                                         style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "20px", marginBottom: "20px", cursor: "pointer" }}
                                                                                                         onClick={() => handleGoDeal(tag.dealIdx)}
                                                                                                     >
-                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
+                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)[0].substring(0, 20)}
                                                                                                     </p>
                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "17px" }}>
                                                                                                         {handleCurrencyToWon(data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원

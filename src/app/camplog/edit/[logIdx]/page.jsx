@@ -594,10 +594,12 @@ function EditPage({ params }) {
         judgeIsChange();
     }, [logTitle, logDefaultContent, confirmedCampIdx, extraFields, tags]);
 
-    window.addEventListener("beforeunload", function (event) { // 새로고침시 물어보는 confirm창창
-        event.preventDefault();
-        event.returnValue = "";
-    });
+// 페이지 로드 시 beforeunload 이벤트 추가
+function addBeforeUnloadListener() {
+    window.addEventListener("beforeunload", beforeUnloadHandler);
+}
+
+
     return (
         <>
             <header>
@@ -836,7 +838,7 @@ function EditPage({ params }) {
                                                                                                 </img>
                                                                                                 <div style={{ width: '55%', height: '110px', display: "block", margin: "10px" }}>
                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "20px", marginBottom: "20px" }}>
-                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
+                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)[0].substring(0, 20)}
                                                                                                     </p>
                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "17px" }}>
                                                                                                         {handleCurrencyToWon(data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원

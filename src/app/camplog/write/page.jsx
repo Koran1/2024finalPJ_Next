@@ -708,7 +708,7 @@ function Page() {
                                                                                                 </img>
                                                                                                 <div style={{ width: '55%', height: '110px', display: "block", margin: "10px" }}>
                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "20px", marginBottom: "20px" }}>
-                                                                                                        {linkList.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
+                                                                                                        {linkList.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)[0].substring(0, 20)}
                                                                                                     </p>
                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "17px" }}>
                                                                                                         {handleCurrencyToWon(linkList.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원
