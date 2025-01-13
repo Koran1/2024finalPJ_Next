@@ -478,7 +478,7 @@ function Page({ params }) {
 
                       const isSelling = dealStatus === '판매중';
                       if (isSelling) {
-                        if (window.confirm("판매 완료 상태로 변경 됩니다.")) {
+                        if (window.confirm("판매완료 상태로 변경하시겠습니까? 이후 변경이 불가합니다")) {
                           updateDealStatus('판매완료');
                         }
                       } else {

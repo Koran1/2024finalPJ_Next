@@ -65,6 +65,8 @@
 
 .status-buttons button {
   cursor: pointer;
+  width: 250px;
+  height: 50px;
 }
 
 .product-header {
@@ -208,16 +210,51 @@
   margin-right: 10px;
   width: 150px;
   height: 50px;
+  font-weight: bold;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .status-button.selling {
   background-color: #1976d2 !important;
-  color: #ffffff !important;
+  color: white !important;
+  border: none;
+  opacity: 1 !important;
 }
 
 .status-button.completed {
-  background-color: #f5f5f5 !important;
-  color: #000000 !important;
+  background-color: #e0e0e0 !important;
+  color: #757575 !important;
+  border: none;
+}
+
+/* 버튼 hover 효과 */
+.status-button:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 비활성화된 버튼 스타일 - opacity 제거 */
+.status-button:disabled {
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 비활성화된 판매중 버튼은 동일한 색상 유지 */
+.status-button.selling:disabled {
+  background-color: #1976d2 !important;
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* 비활성화된 판매완료 버튼 스타일 */
+.status-button.completed:disabled {
+  background-color: #e0e0e0 !important;
+  color: #757575 !important;
+  cursor: not-allowed;
 }
 
 /* 판매자의 다른 상품 스타일 */
@@ -804,5 +841,44 @@
 .deal-detail-wrapper h4,
 .deal-detail-wrapper h5,
 .deal-detail-wrapper h6 {
+  font-family: 'MinSans-Regular';
+}
+
+/* 판매자의 다른 상품 스타일에 추가 */
+.seller-products .inactive-notice {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.seller-products .image-container {
+  position: relative;
+  width: 180px;
+  height: 200px;
+}
+
+.seller-products .sold-out-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  border-radius: 8px;
   font-family: 'MinSans-Regular';
 }

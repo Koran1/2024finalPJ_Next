@@ -13,48 +13,57 @@ function MainProductCard({ product, favProducts }) {
     const { isAuthenticated, user, token, isExpired } = useAuthStore();
     const router = useRouter();
 
-    const toggleFavorite = (dealIdx) => {
+    // 찜 상태 초기화 수정
+    useEffect(() => {
+        // favProducts가 배열인지 확인
+        if (Array.isArray(favProducts) && product?.dealIdx) {
+            setIsFavorite(favProducts.includes(product.dealIdx));
+        }
+    }, [product?.dealIdx, favProducts]); // 의존성 배열 수정
+
+    const toggleFavorite = async (dealIdx, e) => {
+        e.stopPropagation(); // 이벤트 버블링 방지
+        
         if (!isAuthenticated || isExpired()) {
             alert('로그인이 필요한 서비스입니다.');
             router.push("/user/login");
             return;
         }
 
-        if (!isFavorite) {
-            const API_URL = `${LOCAL_API_BASE_URL}/deal/dealMainfavorite`
-            const response = axios.get(`${API_URL}?userIdx=${user.userIdx}&dealIdx=${product.dealIdx}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-                .then((res) => {
-                    console.log(res.data);
-                    if (res.data.success) {
-                        console.log(res.data.message)
-                    } else {
-                        console.log(res.data.message)
+        try {
+            if (!isFavorite) {
+                const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/dealMainfavorite`, {
+                    params: {
+                        userIdx: user.userIdx,
+                        dealIdx: dealIdx
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
-                })
-                .catch((err) => console.log(err))
-        } else {
-            const response = axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite?dealIdx=${dealIdx}&userIdx=${user.userIdx}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+                });
+                
+                if (response.data.success) {
+                    setIsFavorite(true);
                 }
-            })
-                .then((res) => console.log(res.data.message))
-                .catch((err) => console.log(err))
+            } else {
+                const response = await axios.delete(`${LOCAL_API_BASE_URL}/deal/deleteFavorite`, {
+                    params: {
+                        dealIdx: dealIdx,
+                        userIdx: user.userIdx
+                    },
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                
+                if (response.data.success) {
+                    setIsFavorite(false);
+                }
+            }
+        } catch (error) {
+            console.error('찜하기 토글 실패:', error);
         }
-
-        setIsFavorite(!isFavorite);
     };
-
-    // 관심 등록 여부 판별
-    useEffect(() => {
-        favProducts?.map((fav) => {
-            if (fav.dealIdx === product.dealIdx) setIsFavorite(true)
-        })
-    }, [favProducts])
 
     // dealview 상태에 따른 표시 여부 확인
     const shouldShowProduct = () => {
@@ -74,7 +83,7 @@ function MainProductCard({ product, favProducts }) {
                     Disabled
                 </div>
             )}
-            <div className="heart-icon" onClick={() => toggleFavorite(product.dealIdx)}>
+            <div className="heart-icon" onClick={(e) => toggleFavorite(product.dealIdx, e)}>
                 {isFavorite ? (
                     <span className="filled-heart">❤️</span>
                 ) : (
@@ -82,18 +91,25 @@ function MainProductCard({ product, favProducts }) {
                 )}
             </div>
             <Link href={`/deal/detail/${product.dealIdx}`}>
-                <img
-                    className="dealMain-image"
-                    src={product.deal01
-                        ? `${LOCAL_IMG_URL}/deal/${product.deal01}`
-                        : "/images/defaultImage.png"}
-                    alt={product.dealTitle}
-                    style={{ width: "180px", height: "200px" }}
-                    onError={(e) => {
-                        console.log("Image load error:", e);
-                        e.target.src = "/images/defaultImage.png";
-                    }}
-                />
+                <div className="image-container">
+                    <img
+                        className="dealMain-image"
+                        src={product.deal01
+                            ? `${LOCAL_IMG_URL}/deal/${product.deal01}`
+                            : "/images/defaultImage.png"}
+                        alt={product.dealTitle}
+                        style={{ width: "180px", height: "200px" }}
+                        onError={(e) => {
+                            console.log("Image load error:", e);
+                            e.target.src = "/images/defaultImage.png";
+                        }}
+                    />
+                    {product.deal02 === '판매완료' && (
+                        <div className="sold-out-overlay">
+                            SOLD OUT
+                        </div>
+                    )}
+                </div>
                 <div className="product-content">
                     <div className="nick">{product.dealSellerNick}</div>
                     <div className="title">{product.dealTitle}</div>

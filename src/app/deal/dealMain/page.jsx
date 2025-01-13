@@ -23,7 +23,7 @@ export default function ProductSearchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, token } = useAuthStore();
   const [favProducts, setFavProducts] = useState([]);
   const router = useRouter();
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -78,13 +78,27 @@ export default function ProductSearchPage() {
 
   // 찜 목록
   useEffect(() => {
-    if (user == null) return
-    const response = axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList?userIdx=${user.userIdx}`)
-      .then((res) => {
-        console.log(res.data)
-        setFavProducts(res.data.data)
-      })
-  }, [user])
+    const fetchFavorites = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const response = await axios.get(`${LOCAL_API_BASE_URL}/deal/getFavoriteList`, {
+            params: { userIdx: user.userIdx },
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (response.data.success) {
+            // 찜한 상품의 dealIdx 목록을 저장
+            const favoriteDeals = response.data.data.map(deal => deal.dealIdx);
+            setFavProducts(favoriteDeals);
+          }
+        } catch (error) {
+          console.error('찜 목록 조회 실패:', error);
+        }
+      }
+    };
+
+    fetchFavorites();
+  }, [isAuthenticated, user, token]);
 
   // 캠핑 후기 useEffect
   useEffect(() => {
