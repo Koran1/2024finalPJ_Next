@@ -714,3 +714,38 @@
     object-fit: cover;
     border-radius: 8px;
 }
+
+/* 찜 아이콘 스타일 */
+.heart-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  cursor: pointer;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  padding: 5px;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.heart-icon:hover {
+  transform: scale(1.1);
+}
+
+/* 상품 아이템 컨테이너에 position: relative 추가 */
+.product-item {
+  position: relative;
+  /* 기존 스타일 유지 */
+}
+
+/* 하트 아이콘 크기 조정 */
+.filled-heart, .empty-heart {
+  font-size: 1.2rem;
+  line-height: 1;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* 가독성을 위한 약간의 그림자 추가 */
+}

@@ -90,15 +90,15 @@ body {
 .carousel-item img {
   width: 100vw;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   position: relative;
 }
 
-/* bd-placeholder-img 스타일 추가 */
+/* bd-placeholder-img 스타일 수정 */
 .bd-placeholder-img {
   width: 100vw;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* Featurettes
