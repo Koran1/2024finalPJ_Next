@@ -244,8 +244,8 @@ function Page() {
                 orderId: orderId, // 고유 주문 ID(값 변경) 캠핑장idx + 구역 + -YYMMDD + 랜덤수4자리
                 orderName: `${campData.facltNm} 예약 결제`,          // 결제할 때 표시될 제목(값 변경)
                 amount: formData.bookTotalPrice, // 실제 예약 데이터에 따라 금액 설정(값 변경)
-                successUrl: `${window.location.origin}/api/payments`,
-                failUrl: `${window.location.origin}/api/payments/fail`, // 가상 결제는 항상 성공이라 실패url은 미구현
+                successUrl: `${window.location.origin}/api/payments`, // 결제 성공했을 때 url
+                failUrl: `${window.location.origin}/api/payments/fail`, // 결제 실패했을 때 url
             })
         } catch (error) {
             console.error("결제 요청 중 오류 발생 : ", error);

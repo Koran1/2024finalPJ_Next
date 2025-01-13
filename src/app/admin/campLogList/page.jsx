@@ -232,7 +232,7 @@ function Page(props) {
         // 선택한 행의 정보들 저장
         if (type == "log") {
             setSelectedLog(row);
-            logDetailData();
+            logDetailData(row);
             setLogModalOpen(true);
         } else {
             setSelectedLogComment(row);
@@ -241,10 +241,10 @@ function Page(props) {
     };
 
     // 선택한 로그의 정보들 가져오기(로그 내용, 사진, 태그정보)
-    const logDetailData = async () => {
+    const logDetailData = async (row) => {
         setModalLoading(true);
         try {
-            const apiUrl = `${LOCAL_API_BASE_URL}/admin/logModalData?logIdx=${selectedLog.logIdx}`;
+            const apiUrl = `${LOCAL_API_BASE_URL}/admin/logModalData?logIdx=${row.logIdx}`;
             const response = await axios.get(apiUrl);
             const data = response.data;
             console.log("modalData : ", data);
