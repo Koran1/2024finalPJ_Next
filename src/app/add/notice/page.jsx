@@ -73,7 +73,7 @@ function Page() {
                 </Box>
 
                 <TableContainer component={Paper}>
-                    <Table>
+                    <Table className='notice-font'>
                         <TableHead>
                             <TableRow>
                                 <TableCell>제목</TableCell>

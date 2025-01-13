@@ -1,15 +1,28 @@
+.css-rizt0-MuiTypography-root {
+  font-family: inherit !important; /* 부모의 폰트 설정을 따르게 함 */
+}
+
 .mypage-body {
   font-family: 'MinSans-Regular';
   margin-top: 80px;
   background-color: #fff;
 }
 
+.mypage-list-nav{
+  font-family: 'MinSans-Regular' !important;
+}
+
 .mypage-title {
-  /* margin-top: 5px; */
+  font-family: 'MinSans-Regular' !important;
+  margin-top: 5px;
   margin-bottom: 5px;
-  margin-left: 22px;
+  margin-left: 1px !important;
   color: #5a5555;
-  text-decoration: none;
+  text-decoration: none !important;
+}
+
+a{
+  text-decoration: none !important;
 }
 
 .mypage-field {
@@ -17,10 +30,7 @@
 }
 
 .mypage-menu-1 {
-  font-family: Pretendard Variable, Pretendard, -apple-system,
-    BlinkMacSystemFont, system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans,
-    sans-serif, Helvetica Neue, Apple SD Gothic Neo, Noto Sans KR, Malgun Gothic,
-    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  font-family: 'MinSans-Regular' !important;
 }
 
 .page-text {
