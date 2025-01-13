@@ -26,6 +26,7 @@ function Page(props) {
     const [data, setData] = useState([]); // 모달에 띄워줄 정보
     const [tagData, setTagData] = useState([{ tagId: "" }]); // 태그 정보
     const [RecommendCount, setRecommendCount] = useState(0);
+    const [modalLoading, setModalLoading] = useState(false);
 
     // const [logCommentList, setRowList] = useState([]); // 로그 댓/답글 정보
     const [isLogCommentModalOpen, setIsLogCommentModalOpen] = useState(false);// 로그 댓글 모달 창 열기
@@ -241,6 +242,7 @@ function Page(props) {
 
     // 선택한 로그의 정보들 가져오기(로그 내용, 사진, 태그정보)
     const logDetailData = async () => {
+        setModalLoading(true);
         try {
             const apiUrl = `${LOCAL_API_BASE_URL}/admin/logModalData?logIdx=${selectedLog.logIdx}`;
             const response = await axios.get(apiUrl);
@@ -269,6 +271,8 @@ function Page(props) {
             }
         } catch (error) {
             console.error(error);
+        } finally{
+            setModalLoading(false);
         }
     }
 
@@ -574,199 +578,204 @@ function Page(props) {
                             overflowY: 'auto', // 스크롤 기능 추가
                         }}
                     >
-                        {/* 로그 글 내용 */}
-                        <div>
-                            {/* 로그 내용 */}
-                            <Grid2 container spacing={0} >
-                                <Grid2 size={3} />
-                                <Grid2 textAlign={'center'} size={6}>
-                                    <>
-                                        <div style={{ width: '100%', height: "300px", margin: "80px auto", border: "1px solid gray", display: "flex", flexDirection: "column" }}>
-                                            <div style={{ height: "70%" }}>
-                                                <p style={{ fontSize: "50px", margin: "40px auto" }}>{selectedLog.logTitle}</p>
-                                            </div>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-                                                <div style={{ display: "flex", alignItems: "center", gap: "20px", margin: "20px 0 0 20px" }}>
-                                                    {/* 유저 아바타 */}
-                                                    {/* <Avatar sx={{ width: "50px", height: "50px" }} src={logWriterImg[selectedLog.userIdx] ? `${imgUrl}/user/${logWriterImg[selectedLog.userIdx]}` : '/default-product-image.jpg'} /> */}
-                                                    <Avatar sx={{ width: "50px", height: "50px" }} src={data.userVO && data.userVO[0].userEtc01 ? `${imgUrl}/user/${data.userVO[0].userEtc01}` : '/default-product-image.jpg'} />
-                                                    <span style={{ fontWeight: "bold" }}>{userNickname[selectedLog.userIdx]}</span>
-                                                    <span style={{ color: "gray" }}>{selectedLog.logRegDate}</span>
+                        {modalLoading ? 
+                            <div>Loading...</div> : 
+                         <>
+                            {/* 로그 글 내용 */}
+                            <div>
+                                {/* 로그 내용 */}
+                                <Grid2 container spacing={0} >
+                                    <Grid2 size={3} />
+                                    <Grid2 textAlign={'center'} size={6}>
+                                        <>
+                                            <div style={{ width: '100%', height: "300px", margin: "80px auto", border: "1px solid gray", display: "flex", flexDirection: "column" }}>
+                                                <div style={{ height: "70%" }}>
+                                                    <p style={{ fontSize: "50px", margin: "40px auto" }}>{selectedLog.logTitle}</p>
                                                 </div>
-                                                <Button
-                                                    variant='contained'
-                                                    color='error'
-                                                    style={{ margin: "20px 20px 0 0" }}
-                                                    disabled={selectedLog.logIsActive == '1' ? false : true}
-                                                    onClick={() => handleToggleStatus("modal")}
-                                                >비활성화</Button>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "20px", margin: "20px 0 0 20px" }}>
+                                                        {/* 유저 아바타 */}
+                                                        {/* <Avatar sx={{ width: "50px", height: "50px" }} src={logWriterImg[selectedLog.userIdx] ? `${imgUrl}/user/${logWriterImg[selectedLog.userIdx]}` : '/default-product-image.jpg'} /> */}
+                                                        <Avatar sx={{ width: "50px", height: "50px" }} src={data.userVO && data.userVO[0].userEtc01 ? `${imgUrl}/user/${data.userVO[0].userEtc01}` : '/default-product-image.jpg'} />
+                                                        <span style={{ fontWeight: "bold" }}>{userNickname[selectedLog.userIdx]}</span>
+                                                        <span style={{ color: "gray" }}>{selectedLog.logRegDate}</span>
+                                                    </div>
+                                                    <Button
+                                                        variant='contained'
+                                                        color='error'
+                                                        style={{ margin: "20px 20px 0 0" }}
+                                                        disabled={selectedLog.logIsActive == '1' ? false : true}
+                                                        onClick={() => handleToggleStatus("modal")}
+                                                    >비활성화</Button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        {/* 내용(댓글, 사진, 태그정보) */}
-                                        {data && data.pData && data.pData.map(field => {
-                                            return (
-                                                <div key={field.order} style={{ margin: "50px auto", textAlign: "center" }}>
-                                                    <div style={{ display: "inline-block", maxWidth: "100%", margin: "50px auto", position: "relative" }}>
-                                                        <img
-                                                            alt=''
-                                                            src={`${imgUrl}/${field.fileName}`}
-                                                            style={{ width: "100%", maxWidth: "100%" }} // 크기 제한
-                                                        />
-                                                        {(tagData && field.order > 0) && (
-                                                            <>
-                                                                {Array.from(tagData)[field.order].map(tag => {
-                                                                    return (
-                                                                        <div key={tag.tagId}>
-                                                                            <div onClick={() => showTagContent(tag.tagId, field.order)}>
-                                                                                <AddCircleIcon
-                                                                                    style={{
-                                                                                        top: `${tag.tagY}px`,
-                                                                                        left: `${tag.tagX}px`,
-                                                                                        position: "absolute",
-                                                                                        transform: "translate(-50%, -50%)",
-                                                                                        zIndex: "1"
-                                                                                    }}
-                                                                                    color="primary"
-                                                                                    fontSize="large"
-                                                                                />
-                                                                                <div
-                                                                                    style={{
-                                                                                        top: `${tag.tagY}px`,
-                                                                                        left: `${tag.tagX}px`,
-                                                                                        position: "absolute",
-                                                                                        transform: "translate(-50%, -50%)",
-                                                                                        width: "14px",
-                                                                                        height: "14px",
-                                                                                        backgroundColor: "white"
-                                                                                    }}
-                                                                                />
-                                                                            </div>
-                                                                            {tag.isShow && (
-                                                                                <CSSTransition in={tag.isShow} timeout={500} classNames="fade" nodeRef={tag.nodeRef} unmountOnExit>
-                                                                                    <div ref={tag.nodeRef}>
-                                                                                        <div
-                                                                                            style={{
-                                                                                                top: `${tag.tagY - 57}px`,
-                                                                                                left: `${tag.tagX}px`,
-                                                                                                position: "absolute",
-                                                                                                transform: "translate(-50%, -50%)",
-                                                                                                width: "300px",
-                                                                                                height: "50px",
-                                                                                                backgroundColor: "white",
-                                                                                                zIndex: "2",
-                                                                                                display: "flex",
-                                                                                                justifyContent: "flex-start",
-                                                                                                alignItems: "center",
-                                                                                                border: "1px solid lightgray",
-                                                                                                justifyContent: "space-between",
+                                            {/* 내용(댓글, 사진, 태그정보) */}
+                                            {data && data.pData && data.pData.map(field => {
+                                                return (
+                                                    <div key={field.order} style={{ margin: "50px auto", textAlign: "center" }}>
+                                                        <div style={{ display: "inline-block", maxWidth: "100%", margin: "50px auto", position: "relative" }}>
+                                                            <img
+                                                                alt=''
+                                                                src={`${imgUrl}/${field.fileName}`}
+                                                                style={{ width: "100%", maxWidth: "100%" }} // 크기 제한
+                                                            />
+                                                            {(tagData && field.order > 0) && (
+                                                                <>
+                                                                    {Array.from(tagData)[field.order].map(tag => {
+                                                                        return (
+                                                                            <div key={tag.tagId}>
+                                                                                <div onClick={() => showTagContent(tag.tagId, field.order)}>
+                                                                                    <AddCircleIcon
+                                                                                        style={{
+                                                                                            top: `${tag.tagY}px`,
+                                                                                            left: `${tag.tagX}px`,
+                                                                                            position: "absolute",
+                                                                                            transform: "translate(-50%, -50%)",
+                                                                                            zIndex: "1"
+                                                                                        }}
+                                                                                        color="primary"
+                                                                                        fontSize="large"
+                                                                                    />
+                                                                                    <div
+                                                                                        style={{
+                                                                                            top: `${tag.tagY}px`,
+                                                                                            left: `${tag.tagX}px`,
+                                                                                            position: "absolute",
+                                                                                            transform: "translate(-50%, -50%)",
+                                                                                            width: "14px",
+                                                                                            height: "14px",
+                                                                                            backgroundColor: "white"
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                                {tag.isShow && (
+                                                                                    <CSSTransition in={tag.isShow} timeout={500} classNames="fade" nodeRef={tag.nodeRef} unmountOnExit>
+                                                                                        <div ref={tag.nodeRef}>
+                                                                                            <div
+                                                                                                style={{
+                                                                                                    top: `${tag.tagY - 57}px`,
+                                                                                                    left: `${tag.tagX}px`,
+                                                                                                    position: "absolute",
+                                                                                                    transform: "translate(-50%, -50%)",
+                                                                                                    width: "300px",
+                                                                                                    height: "50px",
+                                                                                                    backgroundColor: "white",
+                                                                                                    zIndex: "2",
+                                                                                                    display: "flex",
+                                                                                                    justifyContent: "flex-start",
+                                                                                                    alignItems: "center",
+                                                                                                    border: "1px solid lightgray",
+                                                                                                    justifyContent: "space-between",
 
-                                                                                            }}
-                                                                                        >
-                                                                                            <p style={{ margin: "10px" }}>{tag.tagContent}</p>
-                                                                                            <p
-                                                                                                style={{
-                                                                                                    zIndex: "1",
-                                                                                                    fontSize: "70px",
-                                                                                                    cursor: "pointer",
-                                                                                                    textAlign: 'right',
-                                                                                                    marginRight: "7px"
                                                                                                 }}
-                                                                                                onClick={() => showLink(tag.tagId, field.order)}
-                                                                                            >&rsaquo;</p>
-                                                                                        </div>
-                                                                                        <svg
-                                                                                            style={{
-                                                                                                top: `${tag.tagY - 26}px`,
-                                                                                                left: `${tag.tagX}px`,
-                                                                                                position: "absolute",
-                                                                                                transform: "translate(-50%, -50%)",
-                                                                                                zIndex: "2",
-                                                                                                overflow: "visible"
-                                                                                            }}
-                                                                                            width="30"
-                                                                                            height="30"
-                                                                                            viewBox=" 0 0 100 100"
-                                                                                        >
-                                                                                            <polygon points="50,90 90,30 10,30" fill="white" />
-                                                                                        </svg>
-                                                                                        {tag.isLinkShow && (
-                                                                                            <Paper
+                                                                                            >
+                                                                                                <p style={{ margin: "10px" }}>{tag.tagContent}</p>
+                                                                                                <p
+                                                                                                    style={{
+                                                                                                        zIndex: "1",
+                                                                                                        fontSize: "70px",
+                                                                                                        cursor: "pointer",
+                                                                                                        textAlign: 'right',
+                                                                                                        marginRight: "7px"
+                                                                                                    }}
+                                                                                                    onClick={() => showLink(tag.tagId, field.order)}
+                                                                                                >&rsaquo;</p>
+                                                                                            </div>
+                                                                                            <svg
                                                                                                 style={{
-                                                                                                    top: `${tag.tagY + 7}px`,
-                                                                                                    left: `${tag.tagX + 300}px`,
+                                                                                                    top: `${tag.tagY - 26}px`,
+                                                                                                    left: `${tag.tagX}px`,
                                                                                                     position: "absolute",
                                                                                                     transform: "translate(-50%, -50%)",
                                                                                                     zIndex: "2",
-                                                                                                    width: "300px",
-                                                                                                    height: "180px",
-                                                                                                    backgroundColor: "white",
-
+                                                                                                    overflow: "visible"
                                                                                                 }}
-                                                                                                elevation={3}
+                                                                                                width="30"
+                                                                                                height="30"
+                                                                                                viewBox=" 0 0 100 100"
                                                                                             >
-                                                                                                <span style={{ display: "inline-block", float: "left", fontWeight: "bold", fontSize: "18px", margin: "5px" }}>링크된 상품</span>
-                                                                                                <br />
-                                                                                                <br />
-                                                                                                {tag.dealIdx ?
-                                                                                                    (
-                                                                                                        <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                                                                            <img src={`${imgUrl}/deal/${data.fNameByDealIdx[tag.dealIdx]}`}
-                                                                                                                alt=''
-                                                                                                                style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px", cursor: "pointer" }}
-                                                                                                                onClick={() => handleGoDeal(tag.dealIdx)}>
-                                                                                                            </img>
-                                                                                                            <div style={{ width: '55%', height: '110px', display: "block", margin: "10px" }}>
-                                                                                                                <p
-                                                                                                                    style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "20px", marginBottom: "20px", cursor: "pointer" }}
-                                                                                                                    onClick={() => handleGoDeal(tag.dealIdx)}
-                                                                                                                >
-                                                                                                                    {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
-                                                                                                                </p>
-                                                                                                                <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "17px" }}>
-                                                                                                                    {handleCurrencyToWon(data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원
-                                                                                                                </p>
+                                                                                                <polygon points="50,90 90,30 10,30" fill="white" />
+                                                                                            </svg>
+                                                                                            {tag.isLinkShow && (
+                                                                                                <Paper
+                                                                                                    style={{
+                                                                                                        top: `${tag.tagY + 7}px`,
+                                                                                                        left: `${tag.tagX + 300}px`,
+                                                                                                        position: "absolute",
+                                                                                                        transform: "translate(-50%, -50%)",
+                                                                                                        zIndex: "2",
+                                                                                                        width: "300px",
+                                                                                                        height: "180px",
+                                                                                                        backgroundColor: "white",
+
+                                                                                                    }}
+                                                                                                    elevation={3}
+                                                                                                >
+                                                                                                    <span style={{ display: "inline-block", float: "left", fontWeight: "bold", fontSize: "18px", margin: "5px" }}>링크된 상품</span>
+                                                                                                    <br />
+                                                                                                    <br />
+                                                                                                    {tag.dealIdx ?
+                                                                                                        (
+                                                                                                            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx[tag.dealIdx]}`}
+                                                                                                                    alt=''
+                                                                                                                    style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px", cursor: "pointer" }}
+                                                                                                                    onClick={() => handleGoDeal(tag.dealIdx)}>
+                                                                                                                </img>
+                                                                                                                <div style={{ width: '55%', height: '110px', display: "block", margin: "10px" }}>
+                                                                                                                    <p
+                                                                                                                        style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "20px", marginBottom: "20px", cursor: "pointer" }}
+                                                                                                                        onClick={() => handleGoDeal(tag.dealIdx)}
+                                                                                                                    >
+                                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
+                                                                                                                    </p>
+                                                                                                                    <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "17px" }}>
+                                                                                                                        {handleCurrencyToWon(data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원
+                                                                                                                    </p>
+                                                                                                                </div>
                                                                                                             </div>
-                                                                                                        </div>
-                                                                                                    )
-                                                                                                    :
-                                                                                                    (
-                                                                                                        <>
-                                                                                                            <br />
-                                                                                                            <br />
-                                                                                                            <p>현재 연동된 상품이 없습니다.</p>
-                                                                                                        </>
-                                                                                                    )
-                                                                                                }
-                                                                                            </Paper>
-                                                                                        )}
-                                                                                    </div>
-                                                                                </CSSTransition>
-                                                                            )}
-                                                                        </div>
-                                                                    );
-                                                                })}
-                                                            </>
-                                                        )}
+                                                                                                        )
+                                                                                                        :
+                                                                                                        (
+                                                                                                            <>
+                                                                                                                <br />
+                                                                                                                <br />
+                                                                                                                <p>현재 연동된 상품이 없습니다.</p>
+                                                                                                            </>
+                                                                                                        )
+                                                                                                    }
+                                                                                                </Paper>
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </CSSTransition>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        {field.logContent ?
+                                                            field.logContent.split('\n').map((line, index) => (
+                                                                <span key={index} style={{ display: "block", }}>{line}</span>
+                                                            )) : null
+                                                        }
                                                     </div>
-                                                    {field.logContent ?
-                                                        field.logContent.split('\n').map((line, index) => (
-                                                            <span key={index} style={{ display: "block", }}>{line}</span>
-                                                        )) : null
-                                                    }
-                                                </div>
-                                            );
-                                        })}
-                                        {/* 추천 수 */}
-                                        <div style={{ width: "50px", height: "50px", margin: "50px auto", border: "1px solid #1976D2", display: "inline-block" }}>
-                                            <ThumbUpAlt color='primary' style={{ fontSize: "40px", marginTop: "5px" }} />
-                                            {/* <ThumbUpOffAltIcon color='primary' style={{ fontSize: "40px", marginTop: "5px" }} /> */}
-                                        </div>
-                                        <span style={{ display: "inline-block", fontSize: "25px", fontWeight: "bold", marginLeft: "30px", verticalAlign: "middle" }}>{RecommendCount}</span>
-                                    </>
+                                                );
+                                            })}
+                                            {/* 추천 수 */}
+                                            <div style={{ width: "50px", height: "50px", margin: "50px auto", border: "1px solid #1976D2", display: "inline-block" }}>
+                                                <ThumbUpAlt color='primary' style={{ fontSize: "40px", marginTop: "5px" }} />
+                                                {/* <ThumbUpOffAltIcon color='primary' style={{ fontSize: "40px", marginTop: "5px" }} /> */}
+                                            </div>
+                                            <span style={{ display: "inline-block", fontSize: "25px", fontWeight: "bold", marginLeft: "30px", verticalAlign: "middle" }}>{RecommendCount}</span>
+                                        </>
+                                    </Grid2>
+                                    <Grid2 size={3} />
                                 </Grid2>
-                                <Grid2 size={3} />
-                            </Grid2>
-                        </div>
+                            </div>
+                         </>
+                        }
                     </Box>
                 </Modal>
 
