@@ -63,11 +63,15 @@ function Page() {
                 </>
             ) : (
                 <>
-                    <h2>{msg}</h2>
-                    <Stack direction="row" spacing={2} alignItems='center'>
-                        <Link href='/user/login/findPw'>비밀번호 찾기</Link>
-                        <Link href='/user/login'>로그인</Link>
-                    </Stack>
+                    <div className="container-box-id">
+                        <div className='text-box-fd'>
+                        {msg}
+                        </div>
+                        <Stack className='btn-field' direction="row" spacing={2} alignItems='center'>
+                            <Link className="btn1" href='/user/login'>로그인</Link>
+                            <Link className="btn1" href='/user/login/findPw'>비밀번호 찾기</Link>
+                        </Stack>
+                    </div>
                 </>
             )}
 

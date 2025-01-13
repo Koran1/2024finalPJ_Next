@@ -156,20 +156,24 @@ function Page() {
                 </>
             ) : (
                 <>
-                    <h2>비밀번호 재설정</h2>
-                    <p>특수, 대소문자 1개씩 포함, 공백 불가, 6~15자</p>
+                <div className='text-box-fw'>
+
+             
+                    <div >비밀번호 재설정</div>
+                    <p className='desceription-fw'>특수, 대소문자 1개씩 포함, 공백 불가, 6~15자</p>
                     <FormControl>
-                        <Stack direction="column" spacing={2} alignItems='center'>
-                            <TextField error={inputPwd.userPw && pwError} type='password' label='비밀번호' name='userPw'
+                        <Stack className='textf' direction="column" spacing={2} alignItems='center'>
+                            <TextField className='btn_sub' error={inputPwd.userPw && pwError} type='password' label='비밀번호' name='userPw'
                                 value={inputPwd.userPw} onChange={changePwd}
                                 helperText={pwError && "특수, 대소문자 1개씩 포함, 공백 불가, 6~15자"} />
-                            <TextField error={inputPwd.chkPw && !isPwdChk} type='password' label='비밀번호 확인'
+                            <TextField className='btn_sub' error={inputPwd.chkPw && !isPwdChk} type='password' label='비밀번호 확인'
                                 name='chkPw' value={inputPwd.chkPw} onChange={changePwd}
                                 helperText={inputPwd.chkPw && !isPwdChk && "일치하지 않습니다"} />
                             <Button variant='contained' disabled={!inputPwd.userPw || !isPwdChk || pwError}
                                 onClick={changeUserPw}>비밀번호 재설정</Button>
                         </Stack>
                     </FormControl>
+                    </div>
                 </>
             )}
 

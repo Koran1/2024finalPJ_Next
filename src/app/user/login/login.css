@@ -1,5 +1,7 @@
 .container-box {
-  margin-top: 50px;
+  font-family: 'MinSans-Regular';
+  margin-top: 150px;
+  margin-bottom: 100px;
   display: grid;
   justify-content: center;
   align-items: center;
@@ -60,4 +62,8 @@
   /* text-align: center; */
   margin: 5px;
   transition: all 0.3s ease;
+}
+
+.btn1:hover{
+  color: #3DBDFD;
 }

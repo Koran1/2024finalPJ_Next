@@ -1,4 +1,7 @@
+
+
 .container-box-id {
+  font-family: 'MinSans-Regular';
   padding: 20px;
   display: grid;
   justify-content: center;
@@ -9,7 +12,7 @@
 
 .ex {
   font-size: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 13px;
   color: #767474;
   font-size: 15px;
 }
@@ -20,7 +23,7 @@
   /* display: inline-block; */
   justify-content: center;
   margin-top: 50px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   font-weight: bold;
 }
 
@@ -37,13 +40,38 @@
 }
 
 .btn1 {
+  display: inline;
+  align-content: center;
+  text-align: center;
   padding-top: 10px;
   color: #767474;
   font-size: 15px;
   font-weight: bold;
   text-decoration: none;
   border-radius: 5px;
-  display: inline-block;
   margin: 5px;
   transition: all 0.3s ease;
+}
+
+.btn1:hover{
+  color: #3DBDFD;
+}
+
+.btn-field{
+  display: inline;
+  align-content: center;
+  text-align: center;
+}
+
+.text-box-fd{
+  font-family: 'MinSans-Regular';
+  display: inline;
+  align-content: center;
+  text-align: center;
+  height: 150px;
+  width: 400px;
+  border: 1px solid #b3b3b3;
+  border-radius: 10px;
+  margin: 20px;
+  font-size: 20px;
 }
