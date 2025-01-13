@@ -51,8 +51,8 @@ function EditPage({ params }) {
     const [isLogSame, setIssLogSame] = useState(true);
     const { isAuthenticated, token, user } = useAuthStore();
     console.log("extra: ", extraFields);
-
-
+    
+    
     // 기존 데이터 불러오기
     useEffect(() => {
         const fetchData = async () => {
@@ -550,7 +550,8 @@ function EditPage({ params }) {
         setConfirmedCampIdx(selectedCampIdx);
         setShowCampModal(false);
     }
-    const handleCancel = () => {
+    const handleCancel = async() => {
+        const { logIdx } = await Promise.resolve(params);
         router.push(`/camplog/detail/${logIdx}`);
     }
     const judgeIsChange = () => { // 전의 데이터랑 같으면 수정 안되게. 
