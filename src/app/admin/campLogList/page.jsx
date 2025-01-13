@@ -255,6 +255,39 @@ function Page(props) {
         }
     }
 
+    const showTagContent = (tagId, order) => {
+        setTagData(tagData.map((data, index) => {
+            if (index === order) {
+                return data.map(tag => ({
+                    ...tag,
+                    tagX: parseFloat(tag.tagX),
+                    tagY: parseFloat(tag.tagY),
+                    isShow: tag.tagId === tagId ? !tag.isShow : false,
+                    isLinkShow: tag.tagId === tagId ? true : false
+                }))
+            }
+            return data
+        }));
+    }
+    const showLink = (tagId, order) => {
+        setTagData(tagData.map((data, index) => {
+            if (index === order) {
+                return data.map(tag => ({
+                    ...tag,
+                    isLinkShow: tag.tagId === tagId ? !tag.isLinkShow : false,
+                }))
+            }
+            return data
+        }));
+    }
+
+    const handleCurrencyToWon = (price) => {
+        return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW" }).format(price);
+    }
+    const handleGoDeal = (dealIdx) => {
+        router.push(`/deal/detail/${dealIdx}`);
+    }
+
     if (loading) {
         return <div>Loading...</div>;
     }
