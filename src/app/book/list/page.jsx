@@ -121,7 +121,7 @@ function Page() {
     }
 
     const bookCancelBtn = async () => {
-        if (confirm("예약을 취소하시겠습니까?")){
+        if (confirm("예약을 취소하시겠습니까?")) {
             try {
                 // 예약 취소와 함께 DB 삭제
                 const API_URL = `${baseUrl}/book/cancel?bookIdx=${selectedBook.bookIdx}`;
@@ -895,9 +895,9 @@ function Page() {
                                         <Button onClick={() => handleModalClick(list2.bookIdx)} variant="contained" size="small" className="action-button">
                                             예약정보 확인
                                         </Button>
-                                        <Button variant="outlined" size="small" className="action-button">
+                                        {/* <Button variant="outlined" size="small" className="action-button">
                                             후기 작성하기
-                                        </Button>
+                                        </Button> */}
                                     </div>
                                 </div>
                             ))
@@ -1087,8 +1087,8 @@ function Page() {
                         <hr />
                         {/* 예약 취소 버튼 */}
                         <div style={{ margin: "20px", textAlign: "center" }}>
-                            {isYesterday ? 
-                                <p>예약 취소 가능한 날짜가 아닙니다.</p> : 
+                            {isYesterday ?
+                                <p>예약 취소 가능한 날짜가 아닙니다.</p> :
                                 <Button
                                     variant='contained'
                                     color='error'

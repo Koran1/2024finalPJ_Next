@@ -34,7 +34,6 @@ const ChatBox = ({ room, senderIdx, senderNick, dealIdx }) => {
 
   useEffect(() => {
     if (!user || !token) {
-      console.warn("User or token is not available yet.");
       return;
     }
 

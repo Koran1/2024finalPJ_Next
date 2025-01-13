@@ -94,7 +94,8 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    padding: 10px 0; /* 좌우 패딩 제거 */
+    padding: 10px 0;
+    /* 좌우 패딩 제거 */
     border-radius: 8px;
 }
 
@@ -143,15 +144,15 @@
 }
 
 .camp-total-count {
-    border: 1px solid rgba(25, 118, 210, 0.5); 
-    border-radius: 4px; 
-    padding: 6px 16px; 
-    font-size: 14px; 
-    font-weight: 500; 
-    text-align: center; 
-    color: #3d3d3d; 
+    border: 1px solid rgba(25, 118, 210, 0.5);
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    color: #3d3d3d;
     font-weight: bold;
-    cursor: pointer; 
+    cursor: pointer;
 }
 
 .camp-total-count:hover {
@@ -191,12 +192,14 @@
 .camp-item {
     display: flex;
     padding: 15px 10px;
-    border-bottom: 1px solid #ddd; /* 리스트 사이 가로줄 */
+    border-bottom: 1px solid #ddd;
+    /* 리스트 사이 가로줄 */
     transition: background-color 0.2s;
 }
 
 .camp-item:hover {
-    background-color: #f9f9f9; /* 호버 시 색상 변경 */
+    background-color: #f9f9f9;
+    /* 호버 시 색상 변경 */
 }
 
 .camp-item img {
@@ -204,7 +207,8 @@
     height: 185px;
     object-fit: cover;
     background-color: #f0f0f0;
-    margin-right: 20px; /* 이미지와 텍스트 사이 여백 */
+    margin-right: 20px;
+    /* 이미지와 텍스트 사이 여백 */
 }
 
 /* 오버레이 추가 */
@@ -218,7 +222,7 @@
     top: 10px;
     left: 10px;
     background-color: rgba(0, 0, 0, 0.6);
-    color: white; 
+    color: white;
     width: 40px;
     height: 40px;
     display: flex;
@@ -237,6 +241,7 @@
     justify-content: space-around;
     font-size: 14px;
     line-height: 1.5;
+    width: 577px;
 }
 
 .camp-text h3 {
@@ -380,5 +385,6 @@
 
 /* 키워드 검색 스타일 */
 .camp-search-keyword-container {
-    margin-left: 8px; /* 왼쪽 여백 추가 - 드롭다운과 동일하게 */
+    margin-left: 8px;
+    /* 왼쪽 여백 추가 - 드롭다운과 동일하게 */
 }

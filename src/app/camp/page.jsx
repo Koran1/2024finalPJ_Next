@@ -343,7 +343,7 @@ function Page() {
                             onClick={() => handleSort("views")}
                             className={sortOption === "views" ? "active" : ""}
                         >
-                            조회수
+                            조회순
                         </span>{" "}
                         |
                         <span

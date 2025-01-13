@@ -91,7 +91,7 @@ function Page() {
                                             hover
                                         >
                                             <TableCell component="th" scope="row">
-                                                <Link href={`/mypage/qna/qnaDetail/${qna.qnaIdx}`}>
+                                                <Link href={`/mypage/qna/qnaDetail/${qna.qnaIdx}`} style={{ textDecoration: "none", color: "black" }}>
                                                     {qna.qnaSubject}
                                                 </Link>
                                             </TableCell>

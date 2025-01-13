@@ -97,7 +97,7 @@ function Page() {
                                 return <MyPageCardLog mylog={mylog} key={mylog.logIdx} />
                             })
                             :
-                            <p>등록한 상품이 없습니다!</p>
+                            <p>등록한 후기가 없습니다!</p>
                         }
                     </Stack>
                 </Box>

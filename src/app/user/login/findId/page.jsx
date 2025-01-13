@@ -11,7 +11,7 @@ function Page() {
     const [msg, setMsg] = useState("");
 
     const initUvo = {
-        userId: "",
+        userName: "",
         userMail: ""
     }
     const [uvo, setUvo] = useState(initUvo);
@@ -23,7 +23,7 @@ function Page() {
         }))
     }
 
-    const isBtnChk = !uvo.userId || !uvo.userMail;
+    const isBtnChk = !uvo.userName || !uvo.userMail;
 
     const searchId = () => {
         axios.post(`${LOCAL_API_BASE_URL}/user/login/findId`, uvo)
@@ -43,11 +43,11 @@ function Page() {
                 <>
                     <div className="container-box-id">
                         <div className='p11'>아이디 찾기</div>
-                        <div className='ex'>가입한 아이디와 이메일을 입력하세요</div>
+                        <div className='ex'>가입한 이름과 이메일을 입력하세요</div>
                         <FormControl className='fcontrol' >
                             {/* 수직정렬 */}
                             <Stack direction="column" spacing={1} alignItems='center'>
-                                <TextField className='textf' type='text' label='아이디' name='userId' color="primary" value={uvo.userId} onChange={changeUvo} />
+                                <TextField className='textf' type='text' label='이름' name='userName' color="primary" value={uvo.userName} onChange={changeUvo} />
                                 <TextField className='textf' type='text' label='이메일' name='userMail' color="primary" value={uvo.userMail} onChange={changeUvo} />
                                 <Button fullWidth variant='contained' color="primary" disabled={isBtnChk} onClick={searchId}>아이디 찾기</Button>
 
@@ -65,7 +65,7 @@ function Page() {
                 <>
                     <div className="container-box-id">
                         <div className='text-box-fd'>
-                        {msg}
+                            {msg}
                         </div>
                         <Stack className='btn-field' direction="row" spacing={2} alignItems='center'>
                             <Link className="btn1" href='/user/login'>로그인</Link>
