@@ -179,14 +179,14 @@ function Page(props) {
                     <Table>
                         <TableHead className="admin-reportlist-table-head">
                             <TableRow>
-                                <TableCell>Idx</TableCell>
-                                <TableCell>신고자</TableCell>
-                                <TableCell>신고 테이블 종류</TableCell>
-                                <TableCell>신고 테이블 Idx</TableCell>
-                                <TableCell>신고 카테고리</TableCell>
-                                <TableCell>신고 내용</TableCell>
-                                <TableCell>신고일</TableCell>
-                                <TableCell>처리여부</TableCell>
+                                <TableCell align='center'>Idx</TableCell>
+                                <TableCell align='center'>신고자</TableCell>
+                                <TableCell align='center'>신고 테이블 종류</TableCell>
+                                <TableCell align='center'>신고 테이블 Idx</TableCell>
+                                <TableCell align='center'>신고 카테고리</TableCell>
+                                <TableCell align='center'>신고 내용</TableCell>
+                                <TableCell align='center'>신고일</TableCell>
+                                <TableCell align='center'>처리여부</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody className="admin-reportlist-table-body">
@@ -201,14 +201,14 @@ function Page(props) {
                                         style={{ cursor: 'pointer' }} // 마우스 포인터를 손 모양으로 변경
                                         hover // 마우스를 올렸을 때 옅은 회색으로 변경
                                     >
-                                        <TableCell>{row.reportIdx}</TableCell>
-                                        <TableCell>{userNickname[row.userIdx]}</TableCell>        {/* 닉네임 으로 변경하기 */}
-                                        <TableCell>{changeTypeText(row.reportTableType)}</TableCell>{/* 1~4 종류별 이름으로 바꾸기 */}
-                                        <TableCell>{row.reportTableIdx}</TableCell>
-                                        <TableCell>{row.reportCategory}</TableCell>
-                                        <TableCell>{row.reportContent}</TableCell>
-                                        <TableCell>{row.reportRegDate}</TableCell>
-                                        <TableCell>{row.reportStatus == '0' ? "처리중" : row.reportStatus == '1' ? "승인" : "반려"}</TableCell> {/* 신고 처리여부 텍스트로 표시 */}
+                                        <TableCell align='center'>{row.reportIdx}</TableCell>
+                                        <TableCell align='center'>{userNickname[row.userIdx]}</TableCell>        {/* 닉네임 으로 변경하기 */}
+                                        <TableCell align='center'>{changeTypeText(row.reportTableType)}</TableCell>{/* 1~4 종류별 이름으로 바꾸기 */}
+                                        <TableCell align='center'>{row.reportTableIdx}</TableCell>
+                                        <TableCell align='center'>{row.reportCategory}</TableCell>
+                                        <TableCell align='center'>{row.reportContent ? row.reportContent : "X"}</TableCell>
+                                        <TableCell align='center'>{row.reportRegDate}</TableCell>
+                                        <TableCell align='center'>{row.reportStatus == '0' ? "처리중" : row.reportStatus == '1' ? "승인" : "반려"}</TableCell> {/* 신고 처리여부 텍스트로 표시 */}
                                     </TableRow>
                                 ))
                                 :

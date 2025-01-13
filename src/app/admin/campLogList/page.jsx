@@ -136,10 +136,20 @@ function Page(props) {
     const handleToggleStatus = async (location) => {
         // 모달 상세 안에서 비활성화 버튼 클릭
         if (location == "modal") {
-            console.log("selectedLog: ", selectedLog);
-            if (selectedLog.length === 0) {
-                alert("선택된 글이 없습니다.");
-                return;
+            if(filterStatus == "log"){
+                console.log("selectedLog: ", selectedLog);
+                if (selectedLog.length === 0) {
+                    alert("선택된 글이 없습니다.");
+                    return;
+                }
+            }
+
+            if(filterStatus == "logComment"){
+                console.log("selectedLogComment: ", selectedLogComment);
+                if (selectedLog.length === 0) {
+                    alert("선택된 댓/답글이 없습니다.");
+                    return;
+                }
             }
 
             try {
@@ -148,7 +158,7 @@ function Page(props) {
                 // 비활성화 버튼 클릭 했을 때 선택된 필터가 "log"일 때
                 if (filterStatus == "log") { form.append("logIdx", selectedLog.logIdx) }
                 // 비활성화 버튼 클릭 했을 때 선택된 필터가 "logComment"일 때
-                if (filterStatus == "logComment") { form.append("logCommentIdx", selectedLog.logCommentIdx) }
+                if (filterStatus == "logComment") { form.append("logCommentIdx", selectedLogComment.logCommentIdx) }
 
                 const response = await axios.put(
                     `${LOCAL_API_BASE_URL}/admin/inActiveLog`, form
@@ -156,12 +166,19 @@ function Page(props) {
 
                 if (response.data.success) {
                     alert(response.data.message);
-                    fetchData(); // 상태 변경 후 목록 갱신
                     // logIsActive 값을 변경
-                    setSelectedLog(prevState => ({
+                    if(filterStatus == "log"){
+                        setSelectedLog(prevState => ({
+                            ...prevState,
+                            logIsActive: '0'
+                        }));
+                    }
+                    // logCommentIsActive 값을 변경
+                    setSelectedLogComment(prevState => ({
                         ...prevState,
-                        logIsActive: '0'
+                        logCommentIsActive: '0'
                     }));
+                    fetchData(); // 상태 변경 후 목록 갱신
                 } else {
                     alert(response.data.message);
                 }
@@ -424,7 +441,7 @@ function Page(props) {
                                                 const isChecked = e.target.checked;
                                                 setSelectedRows(
                                                     isChecked && rowList
-                                                        ? rowList.map((item) => item.logIdx) // 전체 선택
+                                                        ? rowList.map((item) => item.logCommentIdx ? item.logCommentIdx : item.logIdx) // 전체 선택
                                                         : [] // 선택 해제
                                                 );
                                             }}
@@ -432,25 +449,25 @@ function Page(props) {
                                     </TableCell>
                                     {filterStatus == "log" &&
                                         <>
-                                            <TableCell>logIdx</TableCell>
-                                            <TableCell>작성자</TableCell>
-                                            <TableCell>제목</TableCell>
-                                            <TableCell>등록일</TableCell>
-                                            <TableCell>수정일</TableCell>
-                                            {/* <TableCell>조회수</TableCell> */}
-                                            <TableCell>공감수</TableCell>
-                                            <TableCell>활성화 여부</TableCell>
+                                            <TableCell align='center'>logIdx</TableCell>
+                                            <TableCell align='center'>작성자</TableCell>
+                                            <TableCell align='center'>제목</TableCell>
+                                            <TableCell align='center'>등록일</TableCell>
+                                            <TableCell align='center'>수정일</TableCell>
+                                            {/* <TableCell align='center'>조회수</TableCell> */}
+                                            <TableCell align='center'>공감수</TableCell>
+                                            <TableCell align='center'>활성화 여부</TableCell>
                                         </>
                                     }
                                     {filterStatus == "logComment" &&
                                         <>
-                                            <TableCell>logCommentIdx</TableCell>
-                                            <TableCell>logIdx</TableCell>
-                                            <TableCell>작성자</TableCell>
-                                            <TableCell>내용</TableCell>
-                                            <TableCell>등록일</TableCell>
-                                            <TableCell>활성화 여부</TableCell>
-                                            <TableCell>삭제 여부</TableCell>
+                                            <TableCell align='center'>logCommentIdx</TableCell>
+                                            <TableCell align='center'>logIdx</TableCell>
+                                            <TableCell align='center'>작성자</TableCell>
+                                            <TableCell align='center'>내용</TableCell>
+                                            <TableCell align='center'>등록일</TableCell>
+                                            <TableCell align='center'>활성화 여부</TableCell>
+                                            <TableCell align='center'>삭제 여부</TableCell>
                                         </>
                                     }
                                 </TableRow>
@@ -495,25 +512,25 @@ function Page(props) {
                                         </TableCell>
                                         {filterStatus == "log" &&
                                             <>
-                                                <TableCell>{row.logIdx}</TableCell>
-                                                <TableCell>{userNickname[row.userIdx]}</TableCell>
-                                                <TableCell>{row.logTitle}</TableCell>
-                                                <TableCell>{row.logRegDate}</TableCell>
-                                                <TableCell>{row.logUpdateDate}</TableCell>
-                                                {/* <TableCell>{row.logView}</TableCell> */}
-                                                <TableCell>{row.logRecommend}</TableCell>
-                                                <TableCell>{row.logIsActive == 1 ? "활성화" : "비활성화"}</TableCell>
+                                                <TableCell align='center'>{row.logIdx}</TableCell>
+                                                <TableCell align='center'>{userNickname[row.userIdx]}</TableCell>
+                                                <TableCell align='center'>{row.logTitle}</TableCell>
+                                                <TableCell align='center'>{row.logRegDate}</TableCell>
+                                                <TableCell align='center'>{row.logUpdateDate}</TableCell>
+                                                {/* <TableCell align='center'>{row.logView}</TableCell> */}
+                                                <TableCell align='center'>{row.logRecommend}</TableCell>
+                                                <TableCell align='center'>{row.logIsActive == 1 ? "활성화" : "비활성화"}</TableCell>
                                             </>
                                         }
                                         {filterStatus == "logComment" &&
                                             <>
-                                                <TableCell>{row.logCommentIdx}</TableCell>
-                                                <TableCell>{row.logIdx}</TableCell>
-                                                <TableCell>{userNickname[row.userIdx]}</TableCell>
-                                                <TableCell>{row.logCommentContent}</TableCell>
-                                                <TableCell>{row.logCommentRegDate}</TableCell>
-                                                <TableCell>{row.logCommentIsActive == 1 ? "활성화" : "비활성화"}</TableCell>
-                                                <TableCell>{row.logCommentIsDelete == 1 ? "O" : "X"}</TableCell>
+                                                <TableCell align='center'>{row.logCommentIdx}</TableCell>
+                                                <TableCell align='center'>{row.logIdx}</TableCell>
+                                                <TableCell align='center'>{userNickname[row.userIdx]}</TableCell>
+                                                <TableCell align='center'>{row.logCommentContent}</TableCell>
+                                                <TableCell align='center'>{row.logCommentRegDate}</TableCell>
+                                                <TableCell align='center'>{row.logCommentIsActive == 1 ? "활성화" : "비활성화"}</TableCell>
+                                                <TableCell align='center'>{row.logCommentIsDelete == 1 ? "O" : "X"}</TableCell>
                                             </>
                                         }
                                     </TableRow>
@@ -777,6 +794,15 @@ function Page(props) {
                         <div>
                             <p style={{ marginBottom: "10px" }}><b>댓글 작성자</b> : {userNickname[selectedLogComment.userIdx]}</p>
                             <p style={{ marginBottom: "0" }}><b style={{ marginBottom: "0" }}>댓글 내용</b> : {selectedLogComment.logCommentContent}</p>
+                        </div>
+                        <div style={{textAlign: "right"}}>
+                            <Button
+                                variant='contained'
+                                color='error'
+                                style={{ marginTop: "20px" }}
+                                disabled={selectedLogComment.logCommentIsActive == '1' ? false : true}
+                                onClick={() => handleToggleStatus("modal")}
+                            >비활성화</Button>
                         </div>
                     </Box>
                 </Modal>
