@@ -20,15 +20,16 @@ function Page({ item }) {
                     level={3}
                 >
                     <MapMarker position={{ lat: position[0], lng: position[1] }}>
-                        <div style={{ padding: '5px', textAlign: 'center' }}>
+                        <div style={{ padding: '5px', textAlign: 'center', width: "150px" }}>
                             <b>{item.facltNm}</b> <br />
-                            <a href={`https://map.kakao.com/link/map/${item.facltNm},${item.mapY},${item.mapX}`} style={{ color: 'blue' }} target="_blank">
-                                큰지도보기
-                            </a>
-                            &nbsp;
-                            <a href={`https://map.kakao.com/link/to/${item.facltNm},${item.mapY},${item.mapX}`} style={{ color: 'blue' }} target="_blank">
-                                길찾기
-                            </a>
+                            <div style={{ display: "flex", justifyContent: "space-around" }}>
+                                <a href={`https://map.kakao.com/link/map/${item.facltNm},${item.mapY},${item.mapX}`} style={{ color: 'blue' }} target="_blank">
+                                    큰지도보기
+                                </a>
+                                <a href={`https://map.kakao.com/link/to/${item.facltNm},${item.mapY},${item.mapX}`} style={{ color: 'blue' }} target="_blank">
+                                    길찾기
+                                </a>
+                            </div>
                         </div>
                     </MapMarker>
                 </Map>

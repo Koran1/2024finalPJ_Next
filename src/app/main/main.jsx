@@ -29,7 +29,7 @@ function Main() {
               <div className="container">
                 <div className="carousel-caption text-start">
                   <h1 className='main-title'>낭만 글램핑</h1>
-                  <p className="main-content">캠핑이 처음이라도 무사히 해낼 수 있는 곳을 찾다가 캠핑과 백팽킹을 사랑하는 지인과 함께 바로 예약했어요</p>
+                  <p className="main-content">캠핑이 처음이라도 무사히 해낼 수 있는 곳을 찾다가 캠핑과 백패킹을 사랑하는 지인과 함께 바로 예약했어요</p>
                   <p><a className="btn btn-lg btn-primary" href="/camp">캠핑장 검색하기</a></p>
                 </div>
               </div>

@@ -35,7 +35,8 @@
 
 .map-image {
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
+    margin: 0 auto;
     width: 100%;
     max-width: 800px;
     border: 1px solid #ddd;

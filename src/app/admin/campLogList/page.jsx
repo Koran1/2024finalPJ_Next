@@ -676,7 +676,9 @@ function Page(props) {
                                                                                                         fontSize: "70px",
                                                                                                         cursor: "pointer",
                                                                                                         textAlign: 'right',
-                                                                                                        marginRight: "7px"
+                                                                                                        marginRight: "7px",
+                                                                                                        userSelect: "none"
+
                                                                                                     }}
                                                                                                     onClick={() => showLink(tag.tagId, field.order)}
                                                                                                 >&rsaquo;</p>
@@ -717,7 +719,7 @@ function Page(props) {
                                                                                                     {tag.dealIdx ?
                                                                                                         (
                                                                                                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx[tag.dealIdx]}`}
+                                                                                                                <img src={`${imgUrl}/deal/${data.fNameByDealIdx.find(data => data.dealIdx == tag.dealIdx).fileName}`}
                                                                                                                     alt=''
                                                                                                                     style={{ width: '45%', height: '110px', display: "inline-block", margin: "10px 0 10px 10px", cursor: "pointer" }}
                                                                                                                     onClick={() => handleGoDeal(tag.dealIdx)}>
@@ -727,7 +729,7 @@ function Page(props) {
                                                                                                                         style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "20px", marginBottom: "20px", cursor: "pointer" }}
                                                                                                                         onClick={() => handleGoDeal(tag.dealIdx)}
                                                                                                                     >
-                                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)}
+                                                                                                                        {data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealTitle)[0].substring(0, 20)}
                                                                                                                     </p>
                                                                                                                     <p style={{ wordWrap: "break-word", wordBreak: "break-all", fontWeight: 'bold', fontSize: "17px" }}>
                                                                                                                         {handleCurrencyToWon(data.dealVO.filter(list => list.dealIdx === tag.dealIdx).map(list => list.dealPrice))}원

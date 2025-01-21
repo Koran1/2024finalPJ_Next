@@ -9,7 +9,6 @@ import axios from 'axios';
 
 function Page(props) {
     const [filterStatus, setFilterStatus] = useState("all"); // 필터 옵션 박스
-    const [isComposing, setIsComposing] = useState(false); // 검색 시 Enter 관련
     const [page, setPage] = useState(1);
     const size = 10;                     // 1페이지당 행 개수
     const [totalPages, setTotalPages] = useState(0);
@@ -22,10 +21,11 @@ function Page(props) {
     const LOCAL_API_BASE_URL = process.env.NEXT_PUBLIC_LOCAL_API_BASE_URL;
 
     const router = useRouter(); // useRouter 훅 사용
+
     useEffect(() => {
         fetchData(); // Call the async function
     }, [page, size, filterStatus]);
-    // Fetch camp list
+    
     const fetchData = async () => {
         const searchData = {
             page: page,
@@ -49,7 +49,6 @@ function Page(props) {
                 setTotalPages(data.data.reportList.totalPages);
 
                 console.log('Fetched camp list:', response);
-            } else {
             }
         } catch (error) {
             console.error('Error fetching camp list:', error);
@@ -62,9 +61,6 @@ function Page(props) {
     const handlePageChange = (event, value) => {
         setPage(value);
     };
-    if (loading) {
-        return <div>Loading...</div>;
-    }
 
     // TableRow 클릭 핸들러(모달 열기)
     const handleRowClick = (row) => {
@@ -112,6 +108,10 @@ function Page(props) {
         } catch (error) {
             alert("신고 처리 오류 : " + error);
         }
+    };
+
+    if (loading) {
+        return <div>Loading...</div>;
     };
 
     return (
@@ -216,7 +216,6 @@ function Page(props) {
                                     <TableCell colSpan={8} align="center">신고사항이 없습니다</TableCell>
                                 </TableRow>
                             }
-                            {/* Pagination 컴포넌트 추가 */}
                         </TableBody>
 
                     </Table>

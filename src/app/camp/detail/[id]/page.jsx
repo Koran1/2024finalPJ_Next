@@ -47,6 +47,7 @@ function Page() {
 
     // 이미지 모달 관련 핸들러들
     const handleImageClick = () => {
+        setCurrentImageIndex(0);
         setIsImageModalOpen(true);
     };
 
